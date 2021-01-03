@@ -13,8 +13,9 @@ A tool in testing for compiling xbox code.
 - Basic Options for compiling
 
   
-  
-  
+**If you want to help the development of Easy-Build, or have some issues,  join the Matrix chat!**
+
+  https://matrix.to/#/!febkSwamiedCsfevDe:matrix.org?via=matrix.org
   
   **NOTE: This is the first release, It is lacking in many features that Easy-Build-NT5 has.. If I get time I will eventually figure out more of the build system**
   
