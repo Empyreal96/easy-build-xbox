@@ -13,7 +13,7 @@ A tool in testing for compiling xbox code.
 - Basic Options for compiling
 
   
-**If you want to help the development of Easy-Build, or have some issues,  join the Matrix chat!**
+**If you want to help the development of Easy-Build, have some issues, or would like a premade VHD..  join the Matrix chat!**
 
   https://matrix.to/#/!febkSwamiedCsfevDe:matrix.org?via=matrix.org
   
