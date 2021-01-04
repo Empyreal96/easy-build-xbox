@@ -12,6 +12,11 @@ A tool in testing for compiling xbox code.
 
 - Basic Options for compiling
 
+**What's Updated?**
+
+- Separated easybuild.cmd (mainmenu) to public/tools/ 
+- Added xcopybins.cmd (basic, needing love, has pauses to tell us what's going down)
+- Actual easybuild.cmd shows correct Razzle Tool Path now, starts xcopybins.cmd as postbuild
   
 **If you want to help the development of Easy-Build, have some issues, or would like a premade VHD..  join the Matrix chat!**
 
