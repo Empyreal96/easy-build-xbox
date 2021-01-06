@@ -1,0 +1,6 @@
+DIRS = dxg    \
+       dmusic \
+       dsound \
+       xact   \
+	misc
+

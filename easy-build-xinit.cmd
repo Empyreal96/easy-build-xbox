@@ -59,12 +59,16 @@ echo Currently the build methods are based off my knowledge
 echo on NT 5.1/2 and the CPXXUPD readme.. 
 echo There may be other methods so please let me know!
 echo.
-echo I recieve 1 error: 'bldrtl.lib' currently,
-echo I haven't looked into patching that, also CHK builds
+echo I recieve 1-2 errors: 'bldrrtl.lib' and 'xonline.lib' currently,
+echo Some users don't have these errors.
+echo I haven't looked into patching this yet, also CHK builds
 echo are likely to have more errors.
 echo. 
-echo I am unsure of the Xbox 'postbuild' method.
+echo I am unsure of the Xbox 'postbuild' method, the MS way is
+echo to push the files to a DevKit..
 echo --------------------------------------------------------
+pause
+echo.
 echo Make sure your dir structure is as follows:
 echo.
 echo %~d0\xbox\easy-build-xinit.cmd

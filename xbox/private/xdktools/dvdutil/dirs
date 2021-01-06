@@ -1,0 +1,4 @@
+DIRS = \
+    xblayout \
+    xbpremaster \
+    dumpfst

@@ -1,0 +1,40 @@
+!IF 0
+
+Copyright (c) 1989  Microsoft Corporation
+
+Module Name:
+
+    dirs.
+
+Abstract:
+
+    This file specifies the subdirectories of the current directory that
+    contain component makefiles.
+
+
+!ENDIF
+
+DIRS=   cover35src \
+        tools \
+        crttests \
+        kernel \
+        usb \
+        win32 \
+        directx \
+        multimedia \
+        mcpx \
+        testexe \
+        xapi \
+        xnet \
+        network \
+        hardware \
+	perf \
+        online \
+        buildxbe \
+        games \
+        ui    \
+        hvs   \
+        common \
+	coverage
+
+OPTIONAL_DIRS=
