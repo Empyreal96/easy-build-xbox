@@ -1,10 +1,11 @@
 @echo off
 cls
 rem Here we set some variables that are not set by Easy-build-xbox.cmd/razzle during load, so we just load them
-if /i "%_BINPLACE_SUBDIR%" == "" call setfre.cmd
+set _BUILDVER=4400
 set COMPLEX=1 
 set NODEVKIT=
 set FOCUS=1
+if /i "%_BINPLACE_SUBDIR%" == "" call setfre.cmd
 :eb-xbox-mainmenu
 cls
 set ebdrive=%_NTDrive%
@@ -12,7 +13,7 @@ set ebntroot=%_NTBINDIR%
 set ebxbbins=%_BINPLACE_DIR%
 set ebxbtype=%_BINPLACE_SUBDIR%
 cd /d %ebntroot%
-color 02
+color 2F
 echo --------------------------------------------------------------------------------------------
 echo  Empyreal's Easy-Build for XBOX ORIGINAL (Very limited features currently, WIP)
 echo --------------------------------------------------------------------------------------------
@@ -20,10 +21,10 @@ echo  Build User: %_NTUSER%	Build Machine: %COMPUTERNAME%
 echo  Build Root: %ebntroot% 	Razzle Tool Path: %ebntroot%\public\tools
 echo  Postbuild Dir: %ebxbbins%
 echo --------------------------------------------------------------------------------------------
-echo - Release Type: %ebxbtype%  - Version: XBOX %BUILD_PRODUCT% %BUILD_PRODUCT_VER%
+echo - Release Type: %ebxbtype%  - NT Tree: XBOX %BUILD_PRODUCT% %BUILD_PRODUCT_VER% - Xbox Ver: %_BUILDVER%
 echo --------------------------------------------------------------------------------------------
-echo  Here you can start the build for the XBOX source with/without 
-echo  the CPXXUPD Patches. (Very limited features currently, WIP)
+echo  Here you can start the build for the XBOX source (with Team Complex's source patch). 
+echo (Very limited features currently, WIP.. Suggestions are needed)
 echo.
 echo ------------------------------------------------------------------------------
 echo  options) Modify Some Build Options.
@@ -33,7 +34,8 @@ echo  2) 'Dirty' Build (Full err path, no checks)
 echo  3) Build Specific Directory Only
 echo  b/w) Open Build Error or Warning Logs
 echo --------------------------------------------------------------------------------------------
-echo  4) Start Postbuild (still figuring this stage out)
+echo  4) Binplace built files to %ebxbbins%\release (VERY WIP)
+echo  5) Build XDK Samples CD
 echo  6) Drop to Razzle Prompt
 echo.
 echo ____________________________________________________________________________________________
@@ -48,7 +50,7 @@ if /i "%NTMMENU%"=="3" goto SpecificBLD
 if /i "%NTMMENU%"=="4" goto postbuild-placeholder
 if /i "%NTMMENU%"=="p" notepad %_NTPOSTBLD%\build_logs\postbuild.err & goto eb-xbox-mainmenu
 if /i "%NTMMENU%"=="w" notepad %_NTPOSTBLD%\build_logs\postbuild.wrn & goto eb-xbox-mainmenu
-if /i "%NTMMENU%"=="5" goto MakeISOCheck
+if /i "%NTMMENU%"=="5" goto XDKSampleCD
 if /i "%NTMMENU%"=="6" exit /b
 if /i "%NTMMENU%"=="var" set && pause
 if /i "%NTMMENU%"=="options" goto BuildOptions
@@ -104,6 +106,17 @@ echo xcopybins
 pause
 cmd /c xcopybins.cmd&& goto eb-xbox-mainmenu
 
+:XDKSampleCD
+cls 
+echo.
+echo Here the XDK Sample CD will be copied and built for Xboxes
+echo These are only Xbox Direct Media Samples of:
+echo Graphics, Sound and other stuff
+echo.
+echo The .iso will be placed in %_BINPLACE_ROOT%\XDKSamples%_BUILDVER%.iso
+echo.
+pause
+cmd /c xmakesamples.cmd&& goto eb-xbox-mainmenu
 :BuildOptions
 
 REM Over time I will add more features, first I need to find what to change and how

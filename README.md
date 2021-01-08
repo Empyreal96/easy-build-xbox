@@ -14,6 +14,7 @@ A tool in testing for compiling xbox code. Easy to Update script.
 
 - 'Unofficial' binplace script 'xcopybins.cmd' to place some built files
 
+
 **How to use**
 You will need access to the Xbox trunk and Team Complex's patch.
 
@@ -30,10 +31,23 @@ You will need access to the Xbox trunk and Team Complex's patch.
 
 **What's Updated?**
 
+- Added 'xmakesamples.cmd' which builds the XDK Sample CD.
+- Added a WIP script to set off the XDK build *see XDK below*
+- Fixed %_BUILDVER% not being set on razzle-easybuild handover
+- Changed menu colours (I may change back depending on feedback)
+
+**Previous Updates**
 - Small update to some 'dirs' files that adds folders to the build process that can build successfully
 - Separated easybuild.cmd (mainmenu) to public/tools/ 
 - Added xcopybins.cmd (basic, needing love, has pauses to tell us what's going down)
 - Actual easybuild.cmd shows correct Razzle Tool Path now, starts xcopybins.cmd as postbuild
+  
+**XDK Building**
+**InstallShield Professional 6.2 is required for this**
+I have included my currently in progress script to try and build the Xbox SDK. Currently it fails compiling the InstallShield specific XDK Setup scripts.. 
+
+- To run the script, load Easy-Build, drop to Razzle prompt and type **"private\SDK\setup\xsdkbuild.cmd"**
+
   
 **If you want to help the development of Easy-Build, have some issues join the Matrix chat!**
 
