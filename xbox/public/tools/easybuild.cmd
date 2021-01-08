@@ -36,7 +36,8 @@ echo  b/w) Open Build Error or Warning Logs
 echo --------------------------------------------------------------------------------------------
 echo  4) Binplace built files to %ebxbbins%\release (VERY WIP)
 echo  5) Build XDK Samples CD
-echo  6) Drop to Razzle Prompt
+echo  6) Build Recovery ISO
+echo  7) Drop to Razzle Prompt
 echo.
 echo ____________________________________________________________________________________________
 set /p NTMMENU=Select:
@@ -51,7 +52,8 @@ if /i "%NTMMENU%"=="4" goto postbuild-placeholder
 if /i "%NTMMENU%"=="p" notepad %_NTPOSTBLD%\build_logs\postbuild.err & goto eb-xbox-mainmenu
 if /i "%NTMMENU%"=="w" notepad %_NTPOSTBLD%\build_logs\postbuild.wrn & goto eb-xbox-mainmenu
 if /i "%NTMMENU%"=="5" goto XDKSampleCD
-if /i "%NTMMENU%"=="6" exit /b
+if /i "%NTMMENU%"=="6" goto XBRecovery
+if /i "%NTMMENU%"=="7" exit /b
 if /i "%NTMMENU%"=="var" set && pause
 if /i "%NTMMENU%"=="options" goto BuildOptions
 goto eb-xbox-mainmenu
@@ -117,6 +119,22 @@ echo The .iso will be placed in %_BINPLACE_ROOT%\XDKSamples%_BUILDVER%.iso
 echo.
 pause
 cmd /c xmakesamples.cmd&& goto eb-xbox-mainmenu
+
+:XBRecovery
+cls
+echo.
+echo This will initiate building the Recovery iso.
+echo This is still WIP and will need modifying to complete successfully
+echo for now its ran to build what it can, users can look into the script:
+echo "xbox\public\tools\hwtrec.cmd" 
+echo If they wish to try apply a fix
+echo.
+pause
+start hwtrec -all
+echo Done you can find the output in %_NT386TREE%\rec_hwtest.iso
+pause
+goto eb-xbox-mainmenu
+
 :BuildOptions
 
 REM Over time I will add more features, first I need to find what to change and how
