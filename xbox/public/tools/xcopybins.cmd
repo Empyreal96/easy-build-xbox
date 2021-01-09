@@ -51,6 +51,14 @@ echo.
 echo Files have been copied to %_NT386TREE%\release in the layout of Xbox partitions
 timeout /t 5
 cls
+echo.
+echo.
+echo Now starting Recovery HWTest ISO Creation, A window will open..
+echo Please close the window once it's done. (DON'T CLOSE THIS WINDOW)
+timeout /t 5
+REM This just calls the script hwtrec.cmd to attempt to create a recovery iso
+start hwtrec -all
+pause
 echo Finished Opening %_NT386TREE%
 pause 
 explorer %_NT386TREE%

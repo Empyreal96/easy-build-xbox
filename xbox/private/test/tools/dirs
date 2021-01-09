@@ -1,0 +1,44 @@
+!IF 0
+
+Copyright (c) 1989-2000  Microsoft Corporation
+
+Module Name:
+
+    dirs
+
+Abstract:
+
+    This file specifies the subdirectories of the current directory that
+    contain component makefiles.
+
+
+!ENDIF
+
+DIRS=xtestlib \
+     tsc \
+     stressmon \
+     GhProf \
+     xmem \
+     xnetref \
+     xonlineref \
+     datamask \
+     xlog \
+     netsync \
+     harness \
+     inifiles \
+     disktool \
+     dxconio \
+     launcher \
+     cpuusage \
+     syncsrv \
+     slixbox  \
+     medialoader \
+     framework \
+     codegen \
+     ghprofiler
+
+OPTIONAL_DIRS=sampledll \
+              harnskdx \
+              badman \
+              stat \
+              timer

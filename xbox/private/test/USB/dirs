@@ -1,0 +1,31 @@
+!IF 0
+
+
+
+Module Name:
+
+    dirs.
+
+Abstract:
+
+    This file specifies the subdirectories of the current directory that
+    contain component makefiles.
+	empyreal96 - 01-2021
+
+!ENDIF
+
+DIRS=lib\
+     cpx \
+     usbInput \
+     hawk \
+     mutests \
+     dvdprod\
+     xid\
+     dvdtest\
+     irrem \
+     btnpress \
+     edttst \
+     remotduke 
+
+
+OPTIONAL_DIRS=
