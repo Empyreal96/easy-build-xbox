@@ -1,0 +1,36 @@
+!IF 0
+
+Copyright (c) Microsoft Corporation
+
+Module Name:
+
+    dirs.
+
+Abstract:
+
+    This file specifies the subdirectories of the current directory that
+    contain component makefiles.
+
+!ENDIF
+
+DIRS= \
+    GenPerBoxData \
+    WritePerBoxData \
+    GenTest \
+    GenOnlineKey \
+    WriteTest \
+    Rework \
+    refresh \
+    CreateCert \
+    KeyFromCert \
+    DecryptTest \
+    LockTest \
+    OnlineDump \
+    unlock \
+    ClientServer \
+    RecoverHD \
+    xtest \
+    screentest \
+    dumpEEPROM \
+    green
+

@@ -24,7 +24,7 @@ echo ---------------------------------------------------------------------------
 echo - Release Type: %ebxbtype%  - NT Tree: XBOX %BUILD_PRODUCT% %BUILD_PRODUCT_VER% - Xbox Ver: %_BUILDVER%
 echo --------------------------------------------------------------------------------------------
 echo  Here you can start the build for the XBOX source (with Team Complex's source patch). 
-echo (Very limited features currently, WIP.. Suggestions are needed)
+echo (Very limited features currently, WIP.. Suggestions are needed, type 'env' to see set variables)
 echo.
 echo ------------------------------------------------------------------------------
 echo  options) Modify Some Build Options.
@@ -37,7 +37,8 @@ echo ---------------------------------------------------------------------------
 echo  4) Binplace built files to %ebxbbins%\release (VERY WIP)
 echo  5) Build XDK Samples CD
 echo  6) Build Recovery ISO
-echo  7) Drop to Razzle Prompt
+echo  7) Place 'HVS Launcher' and it's tests
+echo  r) Drop to Razzle Prompt
 echo.
 echo ____________________________________________________________________________________________
 set /p NTMMENU=Select:
@@ -53,8 +54,9 @@ if /i "%NTMMENU%"=="p" notepad %_NTPOSTBLD%\build_logs\postbuild.err & goto eb-x
 if /i "%NTMMENU%"=="w" notepad %_NTPOSTBLD%\build_logs\postbuild.wrn & goto eb-xbox-mainmenu
 if /i "%NTMMENU%"=="5" goto XDKSampleCD
 if /i "%NTMMENU%"=="6" goto XBRecovery
-if /i "%NTMMENU%"=="7" exit /b
-if /i "%NTMMENU%"=="var" set && pause
+if /i "%NTMMENU%"=="7" goto HVSLaunchtest
+if /i "%NTMMENU%"=="r" exit /b
+if /i "%NTMMENU%"=="set" set && pause
 if /i "%NTMMENU%"=="options" goto BuildOptions
 goto eb-xbox-mainmenu
 
@@ -76,7 +78,19 @@ build -bDeFZP
 pause
 goto eb-xbox-mainmenu
 
-
+:HVSLaunchtest
+CLS
+cd /d %ebntroot%
+echo.
+echo This creates the appropriate directory structure for
+echo the HVS Launcher and all of its tests.  This will allow these
+echo programs to be compiled in to an Xbox disc image, or simply
+echo copied over to an Xbox to be executed from the XDK Launcher.
+echo.
+echo Location: %ebxbbins%\xboxtest
+echo.
+pause
+cmd /c %ebntroot%\private\test\hvs\createdirs.cmd | tee %_NT386TREE%\HVTestBinplace.log&& pause && goto eb-xbox-mainmenu
 
 :SpecificBLD
 cls
@@ -106,7 +120,7 @@ echo This script needs your love! Know how to binplace something? Let me know!
 echo.
 echo xcopybins
 pause
-cmd /c xcopybins.cmd&& goto eb-xbox-mainmenu
+cmd /c xcopybins.cmd | tee %_NT386TREE%\xcopybins.log&& goto eb-xbox-mainmenu
 
 :XDKSampleCD
 cls 
@@ -118,7 +132,7 @@ echo.
 echo The .iso will be placed in %_BINPLACE_ROOT%\XDKSamples%_BUILDVER%.iso
 echo.
 pause
-cmd /c xmakesamples.cmd&& goto eb-xbox-mainmenu
+cmd /c xmakesamples.cmd | tee %_NT386TREE%\xdksamples.log&& goto eb-xbox-mainmenu
 
 :XBRecovery
 cls
@@ -130,7 +144,7 @@ echo "xbox\public\tools\hwtrec.cmd"
 echo If they wish to try apply a fix
 echo.
 pause
-start hwtrec -all
+start hwtrec -all | tee %_NT386TREE%\hwtrec.log
 echo Done you can find the output in %_NT386TREE%\rec_hwtest.iso
 pause
 goto eb-xbox-mainmenu

@@ -6,7 +6,7 @@
 
 A tool in testing for compiling xbox code. Easy to Update script.
 
-- Windows XP - 10 x86
+- Buildable Windows XP - 10 x86
 
 - Fixed issues with mstools/idw folders incorrectly being set
 
@@ -30,13 +30,16 @@ You will need access to the Xbox trunk and Team Complex's patch.
 *Any issues or suggestions please open an issue ticket so I can look into it*
 
 **What's Updated?**
+- Postbuild scripts now have 'basic' logs in the %_NT386TREE% folder
+- Added copying 'HVS Launcher Test' files (not sure what this is)
+- Added two more buildable directories in "private\sdktools\factory"
+
+**Previous Updates**
 
 - Added 'xmakesamples.cmd' which builds the XDK Sample CD.
 - Added a WIP script to set off the XDK build *see XDK below*
 - Fixed %_BUILDVER% not being set on razzle-easybuild handover
 - Changed menu colours (I may change back depending on feedback)
-
-**Previous Updates**
 - Small update to some 'dirs' files that adds folders to the build process that can build successfully
 - Separated easybuild.cmd (mainmenu) to public/tools/ 
 - Added xcopybins.cmd (basic, needing love, has pauses to tell us what's going down)
