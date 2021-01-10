@@ -6,13 +6,15 @@
 
 A tool in testing for compiling xbox code. Easy to Update script.
 
-- Buildable Windows XP - 10 x86
+- Buildable on Windows XP - 10 x86
 
 - Fixed issues with mstools/idw folders incorrectly being set
 
 - Basic Options for compiling
 
 - 'Unofficial' binplace script 'xcopybins.cmd' to place some built files
+
+- Buildable XDK Samples and other isos (needs testing in xemu/xqemu/xbox)
 
 
 **How to use**
@@ -23,13 +25,14 @@ You will need access to the Xbox trunk and Team Complex's patch.
 - Setup the Xbox trunk in your Drive root as specified in easy-build-xinit (VHD users are already set up)
 - Let the script apply Team Complex patches (These allow the xbox trunk to be built)
 - Once that's done, follow onscreen instructions until Razzle loads
-- Type into razzle: easybuild
+- Type into razzle: easybuild     // To build chk type "easybuild chk" without quotes
 - You can now build from the Easy-Build mainmenu
 - Built binaries will be in %DriveRoot%\xbox\xboxbuilds\fre\{dump}
 
 *Any issues or suggestions please open an issue ticket so I can look into it*
 
 **What's Updated?**
+- Build chk is now supported
 - Postbuild scripts now have 'basic' logs in the %_NT386TREE% folder
 - Added copying 'HVS Launcher Test' files (not sure what this is)
 - Added two more buildable directories in "private\sdktools\factory"
