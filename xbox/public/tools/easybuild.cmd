@@ -6,6 +6,9 @@ set COMPLEX=1
 set NODEVKIT=
 set FOCUS=1
 if /i "%_BINPLACE_SUBDIR%" == "" call setfre.cmd
+if /i "%1" == "" call setfre.cmd
+if /i "%1" == "free" call setfre.cmd
+if /i "%1" == "chk" call setchk.cmd
 :eb-xbox-mainmenu
 cls
 set ebdrive=%_NTDrive%
@@ -24,7 +27,7 @@ echo ---------------------------------------------------------------------------
 echo - Release Type: %ebxbtype%  - NT Tree: XBOX %BUILD_PRODUCT% %BUILD_PRODUCT_VER% - Xbox Ver: %_BUILDVER%
 echo --------------------------------------------------------------------------------------------
 echo  Here you can start the build for the XBOX source (with Team Complex's source patch). 
-echo (Very limited features currently, WIP.. Suggestions are needed, type 'env' to see set variables)
+echo (Very limited features currently, WIP.. Suggestions are needed)
 echo.
 echo ------------------------------------------------------------------------------
 echo  options) Modify Some Build Options.
@@ -56,7 +59,7 @@ if /i "%NTMMENU%"=="5" goto XDKSampleCD
 if /i "%NTMMENU%"=="6" goto XBRecovery
 if /i "%NTMMENU%"=="7" goto HVSLaunchtest
 if /i "%NTMMENU%"=="r" exit /b
-if /i "%NTMMENU%"=="set" set && pause
+if /i "%NTMMENU%"=="var" set && pause
 if /i "%NTMMENU%"=="options" goto BuildOptions
 goto eb-xbox-mainmenu
 
