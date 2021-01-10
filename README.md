@@ -16,6 +16,9 @@ A tool in testing for compiling xbox code. Easy to Update script.
 
 - Buildable XDK Samples and other isos (needs testing in xemu/xqemu/xbox)
 
+*More info at the Wiki:*
+https://github.com/Empyreal96/easy-build-xbox/wiki
+
 
 **How to use**
 You will need access to the Xbox trunk and Team Complex's patch.
