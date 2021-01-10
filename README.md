@@ -25,7 +25,8 @@ You will need access to the Xbox trunk and Team Complex's patch.
 - Setup the Xbox trunk in your Drive root as specified in easy-build-xinit (VHD users are already set up)
 - Let the script apply Team Complex patches (These allow the xbox trunk to be built)
 - Once that's done, follow onscreen instructions until Razzle loads
-- Type into razzle: easybuild     // To build chk type "easybuild chk" without quotes
+- Type into razzle: easybuild
+- (To build chk type "easybuild chk" without quotes)
 - You can now build from the Easy-Build mainmenu
 - Built binaries will be in %DriveRoot%\xbox\xboxbuilds\fre\{dump}
 
