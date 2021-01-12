@@ -122,6 +122,7 @@ cd /d %~d0\XBOX\PRIVATE\DEVELOPR\TEMPLATE\
 goto xbox-initrazzle
 
 :ebcpxxupd
+if exist "%~dp0\xbox\public\tools\cpxxupd_done.txt" goto eb-xbox-mainmenu-init
 REM Contents of 'xbox\CPXXUPD\CPXXUPD.cmd' adapted for Easy-Build
 cd /d %~d0\xbox\CPXXUPD
 setlocal
@@ -142,7 +143,7 @@ xcopy /f /s /y public\*.* %_location_%\public\
 if exist "%_location_%\public\lib-mar02\d3d8i.lib" (
     copy "%_location_%\public\lib-mar02\d3d8i.lib" "%_location_%\public\lib"
 )
-
+echo Complex Patches applied! >> %~dp0\xbox\public\tools\cpxxupd_done.txt
 endlocal
 goto eb-setup-profile
 
@@ -209,6 +210,7 @@ if exist %_NTDrive%%_NTRoot%\public\idw (
 if exist %_NTDrive%%_NTRoot%\public\tools (
     set PATH=%PATH%;%_NTDrive%%_NTRoot%\public\tools
 )
+set NTDEBUG=release
 goto ebhandover
 
 :ebhandover
@@ -219,7 +221,9 @@ cls
 echo.
 echo Razzle will now start.
 echo. 
-echo Please type "easybuild" without quotes when Razzle has loaded your profile
+echo Please type "easybuild" without quotes when Razzle has loaded.
+echo.
+echo If you wish to build CHK type: "easybuild chk" without quotes.
 echo.
 echo NOTE: Easy-Build will always set the default build variables (for now)
 echo To change some of the build options type Options into "easybuild"

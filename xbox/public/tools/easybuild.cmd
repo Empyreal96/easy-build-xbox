@@ -32,16 +32,16 @@ echo.
 echo ------------------------------------------------------------------------------
 echo  options) Modify Some Build Options.
 echo --------------------------------------------------------------------------------------------
-echo  1) Clean Build (Full err path, delete object files, no checks)
+echo  1) Clean Build (Full err path, delete object files)
 echo  2) 'Dirty' Build (Full err path, no checks)
 echo  3) Build Specific Directory Only
 echo  b/w) Open Build Error or Warning Logs
 echo --------------------------------------------------------------------------------------------
-echo  4) Binplace built files to %ebxbbins%\release (VERY WIP)
-echo  5) Build XDK Samples CD
-echo  6) Build Recovery ISO
-echo  7) Place 'HVS Launcher' and it's tests
-echo  r) Drop to Razzle Prompt
+echo  4) Binplace Kernel files       # 8) Build XDK (Needs help)
+echo  5) Build XDK Samples CD        # 9) 'Retail' Recovery ISO
+echo  6) Build HWT Recovery ISO      # 10) Attempt Bios Build (ADV.) 
+echo  7) Place 'HVS Launcher'        # )
+echo  r) Drop to Razzle Prompt       #
 echo.
 echo ____________________________________________________________________________________________
 set /p NTMMENU=Select:
@@ -58,8 +58,11 @@ if /i "%NTMMENU%"=="w" notepad %_NTPOSTBLD%\build_logs\postbuild.wrn & goto eb-x
 if /i "%NTMMENU%"=="5" goto XDKSampleCD
 if /i "%NTMMENU%"=="6" goto XBRecovery
 if /i "%NTMMENU%"=="7" goto HVSLaunchtest
+if /i "%NTMMENU%"=="8" goto SetupSDK
+if /i "%NTMMENU%"=="9" goto RecoveryImage
+if /i "%NTMMENU%"=="10" goto BuildBiosImage
 if /i "%NTMMENU%"=="r" exit /b
-if /i "%NTMMENU%"=="var" set && pause
+if /i "%NTMMENU%"=="var" set && pause && goto eb-xbox-mainmenu
 if /i "%NTMMENU%"=="options" goto BuildOptions
 goto eb-xbox-mainmenu
 
@@ -94,6 +97,70 @@ echo Location: %ebxbbins%\xboxtest
 echo.
 pause
 cmd /c %ebntroot%\private\test\hvs\createdirs.cmd | tee %_NT386TREE%\HVTestBinplace.log&& pause && goto eb-xbox-mainmenu
+
+:RecoveryImage
+cls
+cd /d %ebntroot%
+echo xupdrec (Originally updrec.cmd)
+echo.
+echo This will run a modified script to setup a 'Recovery' ISO
+echo This may not be perfect, some files that were on a server share
+echo have been directed to the built ones. dvdkey1d.bin didn't exist
+echo but dvdkey1.bin did get build, so we use this for now
+echo NOTE: It's likely this wont work, as some files may be different
+echo from files originally copied (dvdkey1d.bin, dashboard.xbe from srv share
+echo XBOXROM_QT.bin doesn't build either so it's been commented out.
+echo.
+echo Location: %ebxbbins%\Recovery.iso
+echo.
+pause
+cmd /c xupdrec | tee %_NT386TREE%\xupdrec.log&& pause && goto eb-xbox-mainmenu
+
+
+:SetupSDK
+cls
+echo XSDKBuild (Originally SDKBuild.cmd)
+echo This will start a modified script to build the XSDK.
+echo (A work in progress, need help with getting this working)
+echo.
+echo YOU NEED INSTALLSHIELD PROFESSIONAL 6.2 installed to:
+echo "%programfiles%\InstallShield\InstallShield Professional 6.2\"
+echo.
+echo Currently if fails at finding "Language Independant Intel 32 Files"
+echo when building the Setup.
+echo A folder will be created at "%_NTDRIVE%\SDKScratch\"
+pause
+cmd /c %_NTDrive%%_NTROOT%\private\SDK\setup\xsdkbuild.bat | tee %_NT386TREE%\SDKBuild.log&& pause && goto eb-xbox-mainmenu
+
+:BuildBiosImage
+cls
+echo This will try to use 'rombld' to build the Xbox BIOS image.
+echo.
+echo THIS WILL MOST LIKELY NOT BE BOOTABLE, I HAVE INCLUDED THIS JUST
+echo AS A TEST AND EXAMPLE, TO EDIT WHAT SETTINGS ARE USED HERE, EDIT
+echo 'EASYBUILD.CMD', GOTO LINE 135 TO CHANGE OPTIONS THERE.
+echo.
+echo This will be targeted as an XDK Xbox bios, retail 'XM3' Bioses fails
+echo to build due to incorrect 'preloader' size currently.
+echo.
+echo From what I know built Bios roms from source aren't bootable, 
+echo if this is bootable please let me know!
+echo. 
+pause
+if not exist "%_NT386TREE%\boot\xboxbldr.bin" set ebromerror=xboxbldr.bin && goto RombldError
+if not exist "%_NT386TREE%\boot\xpreldr.bin" set ebromerror=xpreldr.bin && goto RombldError
+if not exist "%_NT386TREE%\xboxkrnl.exe" set ebromerror=xboxkrnl.exe && goto RombldError
+if not exist "%_NT386TREE%\boot\inittbl_ret.bin" set ebromerror=inittbl_ret.bin && goto RombldError
+if not exist "%_NT386TREE%\boot\romdec32.bin" set ebromerror=romdec32.bin && goto RombldError
+if exist "%_NT386TREE%\xboxbios_xdk.bin" rename %_NT386TREE%\xboxbios_xdk.bin xboxbios_xdk_old.bin
+
+rombld.exe /OUT:%_NT386TREE%\xboxbios_xdk.bin /BLDR:%_NT386TREE%\boot\xboxbldr.bin /PRELDR:%_NT386TREE%\boot\xpreldr.bin /KERNEL:%_NT386TREE%\xboxkrnl.exe /INITTBL:%_NT386TREE%\boot\inittbl_ret.bin /SYS:XDK /ROMDEC:%_NT386TREE%\boot\romdec32.bin | tee %_NT386TREE%\rombld.log
+echo.
+if NOT exist "%_NT386TREE%\xboxbios_xdk.bin" echo Failed!
+if exist "%_NT386TREE%\xboxbios_xdk.bin" echo File created at "%_NT386TREE%\xboxbios_xdk.bin"
+pause
+goto eb-xbox-mainmenu
+
 
 :SpecificBLD
 cls

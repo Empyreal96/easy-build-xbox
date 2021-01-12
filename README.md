@@ -36,13 +36,17 @@ You will need access to the Xbox trunk and Team Complex's patch.
 *Any issues or suggestions please open an issue ticket so I can look into it*
 
 **What's Updated?**
+- Linked in-testing SDK Build script to the menu. (Advanced users, see *XDK Building* below)
+- Added *VERY* in-testing of building bios rom (Advanced users, has issues described in the Easy-Build main menu)
+- Added checks to see if CPXXUPD has already been applied on making new profile
+- Added note on Easy-Build-xinit.cmd menu about loading CHK builds
+
+**Previous Updates**
+
 - Build chk is now supported
 - Postbuild scripts now have 'basic' logs in the %_NT386TREE% folder
 - Added copying 'HVS Launcher Test' files (not sure what this is)
 - Added two more buildable directories in "private\sdktools\factory"
-
-**Previous Updates**
-
 - Added 'xmakesamples.cmd' which builds the XDK Sample CD.
 - Added a WIP script to set off the XDK build *see XDK below*
 - Fixed %_BUILDVER% not being set on razzle-easybuild handover
