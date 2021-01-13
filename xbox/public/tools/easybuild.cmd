@@ -1,10 +1,10 @@
 @echo off
 cls
-rem Here we set some variables that are not set by Easy-build-xbox.cmd/razzle during load, so we just load them
+rem Here we set some variables that are not set by Easy-build.cmd/razzle during load, so we just load them
 set _BUILDVER=4400
-set COMPLEX=1 
+if /i "%COMPLEX%" == "" set COMPLEX=1 
 set NODEVKIT=
-set FOCUS=1
+if /i "%FOCUS%" == "" set FOCUS=1
 if /i "%_BINPLACE_SUBDIR%" == "" call setfre.cmd
 if /i "%1" == "" call setfre.cmd
 if /i "%1" == "free" call setfre.cmd
@@ -29,7 +29,7 @@ echo ---------------------------------------------------------------------------
 echo  Here you can start the build for the XBOX source (with Team Complex's source patch). 
 echo (Very limited features currently, WIP.. Suggestions are needed)
 echo.
-echo ------------------------------------------------------------------------------
+echo --------------------------------------------------------------------------------------------
 echo  options) Modify Some Build Options.
 echo --------------------------------------------------------------------------------------------
 echo  1) Clean Build (Full err path, delete object files)
@@ -75,11 +75,17 @@ goto eb-xbox-mainmenu
 cls
 cd /d %ebntroot%\private
 build -bcDeFZP
+REM Rebuild private\ntos to ensure bios ROM files get built (mainly xpreldr.bin)
+cd /d %ebntroot%\private\ntos
+build -bcDeFZP
 pause
 goto eb-xbox-mainmenu
 :DirtyBuild
 cls
 cd /d %ebntroot%\private
+build -bDeFZP
+REM Rebuild private\ntos to ensure bios ROM files get built (mainly xpreldr.bin)
+cd /d %ebntroot%\private\ntos
 build -bDeFZP
 pause
 goto eb-xbox-mainmenu
@@ -143,6 +149,8 @@ echo.
 echo This will be targeted as an XDK Xbox bios, retail 'XM3' Bioses fails
 echo to build due to incorrect 'preloader' size currently.
 echo.
+echo NOTE: If xpreldr.bin is missing, clean build %_NTROOT%\private\ntos
+echo.
 echo From what I know built Bios roms from source aren't bootable, 
 echo if this is bootable please let me know!
 echo. 
@@ -163,7 +171,7 @@ goto eb-xbox-mainmenu
 
 :RombldError
 echo.
-echo %ebromerror% is missing..
+echo %ebromerror% is missing.. Rebuild NTOS
 pause
 goto eb-xbox-mainmenu
 
