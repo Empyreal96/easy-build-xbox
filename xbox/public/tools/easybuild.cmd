@@ -161,6 +161,12 @@ if exist "%_NT386TREE%\xboxbios_xdk.bin" echo File created at "%_NT386TREE%\xbox
 pause
 goto eb-xbox-mainmenu
 
+:RombldError
+echo.
+echo %ebromerror% is missing..
+pause
+goto eb-xbox-mainmenu
+
 
 :SpecificBLD
 cls
