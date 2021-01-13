@@ -144,7 +144,7 @@ echo This will try to use 'rombld' to build the Xbox BIOS image.
 echo.
 echo THIS WILL MOST LIKELY NOT BE BOOTABLE, I HAVE INCLUDED THIS JUST
 echo AS A TEST AND EXAMPLE, TO EDIT WHAT SETTINGS ARE USED HERE, EDIT
-echo 'EASYBUILD.CMD', GOTO LINE 135 TO CHANGE OPTIONS THERE.
+echo 'EASYBUILD.CMD', GOTO LINE 141 TO CHANGE OPTIONS THERE.
 echo.
 echo This will be targeted as an XDK Xbox bios, retail 'XM3' Bioses fails
 echo to build due to incorrect 'preloader' size currently.
@@ -262,8 +262,8 @@ echo ----------------------------------------------------------------------
 echo back) Return
 echo.
 set /p bldopt=:
-if /i "%bldopt%"=="devkit" set NODEVKIT=""
-if /i "%bldopt%"=="retail" set NODEVKIT="1"
+if /i "%bldopt%"=="devkit" set NODEVKIT=
+if /i "%bldopt%"=="retail" set NODEVKIT=1 && goto BuildOptions
 if /i "%bldopt%"=="fre" SETFRE && goto BuildOptions
 if /i "%bldopt%"=="chk" SETCHK && goto BuildOptions
 if /i "%bldopt%"=="con" CPXON && goto BuildOptions

@@ -210,7 +210,6 @@ if exist %_NTDrive%%_NTRoot%\public\idw (
 if exist %_NTDrive%%_NTRoot%\public\tools (
     set PATH=%PATH%;%_NTDrive%%_NTRoot%\public\tools
 )
-set NTDEBUG=release
 goto ebhandover
 
 :ebhandover

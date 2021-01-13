@@ -33,6 +33,7 @@ REM ------------
 
 REM using the xbcp command in the source, we copy the required files that would be placed to an Xbox, from the %_NT386TREE% dir, into %_NT386TREE%\Release
 rem
+@echo on
 xbcp -f -q -y %_NT386TREE%\boot\xboxrom_dvt4.bin %_NT386TREE%\release\c\xboxrom.bin
 if not "0" == "%errorlevel%" goto end
 xbcp -f -q -y %_NT386TREE%\devkit\xbdm.dll %_NT386TREE%\release\c\
@@ -46,6 +47,7 @@ REM Adapted from copytest.cmd
 xbcp -q -y %_XBOXMACHINE% %_NT386TREE%\dump\harness.xbe %_NT386TREE%\release\c\devkit
 xbcp -q -y %_XBOXMACHINE% %_NT386TREE%\dump\hwtest.xbe %_NT386TREE%\release\c\devkit
 xbcp -q -y %_XBOXMACHINE% %_NT386TREE%\xboxtest\testini.ini %_NT386TREE%\release\c\tdata\a7049955
+@echo off
 REM 
 echo.
 echo Files have been copied to %_NT386TREE%\release in the layout of Xbox partitions
