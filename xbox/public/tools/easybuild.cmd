@@ -42,8 +42,8 @@ echo ---------------------------------------------------------------------------
 echo  4) Binplace Kernel files       # 8) Build XDK (Needs help)
 echo  5) Build XDK Samples CD        # 9) 'Retail' Recovery ISO
 echo  6) Build HWT Recovery ISO      # 10) Attempt Bios Build (ADV.) 
-echo  7) Place 'HVS Launcher'        # )
-echo  r) Drop to Razzle Prompt       #
+echo  7) Place 'HVS Launcher'        # 11) Binplace Debugging Symbols
+echo  r) Drop to Razzle Prompt       # x) Extras (Not so important)
 echo.
 echo ____________________________________________________________________________________________
 set /p NTMMENU=Select:
@@ -63,11 +63,31 @@ if /i "%NTMMENU%"=="7" goto HVSLaunchtest
 if /i "%NTMMENU%"=="8" goto SetupSDK
 if /i "%NTMMENU%"=="9" goto RecoveryImage
 if /i "%NTMMENU%"=="10" goto BuildBiosImage
+if /i "%NTMMENU%"=="11" goto DebugCopySym
+if /i "%NTMMENU%"=="x" goto eb-extras-menu
 if /i "%NTMMENU%"=="r" exit /b
 if /i "%NTMMENU%"=="var" set && pause && goto eb-xbox-mainmenu
 if /i "%NTMMENU%"=="options" goto BuildOptions
 goto eb-xbox-mainmenu
 
+:eb-extras-menu
+cls
+echo --------------------------------------------------------------------------------------------
+echo  Empyreal's Easy-Build for XBOX ORIGINAL (Very limited features currently, WIP)
+echo --------------------------------------------------------------------------------------------
+echo.
+echo Here are the options that are I feel aren't priority, but could still be worth building.
+echo.
+echo --------------------------------------------------------------------------------------------
+echo 1) Build Xbox Shell Extension for Windows Setup
+echo b) Main Menu
+echo.
+echo ____________________________________________________________________________________________
+set /p EXNTMMENU=Select:
+echo ____________________________________________________________________________________________
+if /i "%EXNTMMENU%"=="1" goto xbsebuild
+if /i "%EXNTMMENU%"=="b" goto eb-xbox-mainmenu
+goto eb-extras-menu
 
 :BuildInfo
 echo still working this out..
@@ -140,18 +160,25 @@ echo A folder will be created at "%_NTDRIVE%\SDKScratch\"
 pause
 cmd /c %_NTDrive%%_NTROOT%\private\SDK\setup\xsdkbuild.bat | tee %_NT386TREE%\SDKBuild.log&& pause && goto eb-xbox-mainmenu
 
+:DebugCopySym
+echo.
+echo.
+cmd /c %_NTDrive%%_NTROOT%\public\tools\xdbgsym.cmd | tee %_NT386TREE%\xdbgsym.log
+pause
+goto eb-xbox-mainmenu
+
 :BuildBiosImage
 cls
 echo This will try to use 'rombld' to build the Xbox BIOS image.
 echo.
 echo THIS WILL MOST LIKELY NOT BE BOOTABLE, I HAVE INCLUDED THIS JUST
 echo AS A TEST AND EXAMPLE, TO EDIT WHAT SETTINGS ARE USED HERE, EDIT
-echo 'EASYBUILD.CMD', GOTO LINE 141 TO CHANGE OPTIONS THERE.
+echo 'EASYBUILD.CMD', GOTO LABLE :BuildBiosImage TO CHANGE OPTIONS THERE.
 echo.
 echo This will be targeted as an XDK Xbox bios, retail 'XM3' Bioses fails
 echo to build due to incorrect 'preloader' size currently.
 echo.
-echo NOTE: If xpreldr.bin is missing, clean build %_NTROOT%\private\ntos
+echo NOTE: If xpreldr.bin is missing, clean build %_NTROOT%\private\ntos\bootx
 echo.
 echo From what I know built Bios roms from source aren't bootable, 
 echo if this is bootable please let me know!
@@ -234,6 +261,12 @@ start hwtrec -all | tee %_NT386TREE%\hwtrec.log
 echo Done you can find the output in %_NT386TREE%\rec_hwtest.iso
 pause
 goto eb-xbox-mainmenu
+
+:xbsebuild
+cls
+cmd /c xbsebuild.bat
+pause
+goto eb-extras-menu
 
 :BuildOptions
 
