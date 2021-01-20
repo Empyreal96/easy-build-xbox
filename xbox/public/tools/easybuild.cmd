@@ -3,7 +3,9 @@ cls
 rem Here we set some variables that are not set by Easy-build.cmd/razzle during load, so we just load them
 set _BUILDVER=4400
 if /i "%COMPLEX%" == "" set COMPLEX=1 
-set NODEVKIT=
+if "%2" == "devkit" set NODEVKIT=
+if "%2" == "nodevkit" set NODEVKIT=1
+if "%2" == "" set NODEVKIT=1
 if /i "%FOCUS%" == "" set FOCUS=1
 if /i "%_BINPLACE_SUBDIR%" == "" call setfre.cmd
 if /i "%1" == "" call setfre.cmd
@@ -76,7 +78,7 @@ cls
 cd /d %ebntroot%\private
 build -bcDeFZP
 REM Rebuild private\ntos to ensure bios ROM files get built (mainly xpreldr.bin)
-cd /d %ebntroot%\private\ntos
+cd /d %ebntroot%\private\ntos\bootx
 build -bcDeFZP
 pause
 goto eb-xbox-mainmenu
@@ -85,7 +87,7 @@ cls
 cd /d %ebntroot%\private
 build -bDeFZP
 REM Rebuild private\ntos to ensure bios ROM files get built (mainly xpreldr.bin)
-cd /d %ebntroot%\private\ntos
+cd /d %ebntroot%\private\ntos\bootx
 build -bDeFZP
 pause
 goto eb-xbox-mainmenu
@@ -171,7 +173,7 @@ goto eb-xbox-mainmenu
 
 :RombldError
 echo.
-echo %ebromerror% is missing.. Rebuild NTOS
+echo %ebromerror% is missing.. Rebuild NTOS\BOOTX
 pause
 goto eb-xbox-mainmenu
 

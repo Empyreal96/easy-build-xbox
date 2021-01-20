@@ -36,12 +36,16 @@ You will need access to the Xbox trunk and Team Complex's patch.
 *Any issues or suggestions please open an issue ticket so I can look into it*
 
 **What's Updated?**
+- Added 'timeout.exe' from Windows Server 2003 because some versions of XP don't have 'timeout' (It's used in easybuild to make timed pauses)
+- Fixed wrong folder being built when dealing with xpreldr32.bin error
+- Small option to set the 'NODEVKIT/DEVKIT' option upon load (i.e:  easybuild chk devkit)
+
+**Previous Updates**
+
 - Linked in-testing SDK Build script to the menu. (Advanced users, see *XDK Building* below)
 - Added *VERY* in-testing of building bios rom (Advanced users, has issues described in the Easy-Build main menu)
 - Added checks to see if CPXXUPD has already been applied on making new profile
 - Added note on Easy-Build-xinit.cmd menu about loading CHK builds
-
-**Previous Updates**
 
 - Build chk is now supported
 - Postbuild scripts now have 'basic' logs in the %_NT386TREE% folder
@@ -56,6 +60,7 @@ You will need access to the Xbox trunk and Team Complex's patch.
 - Added xcopybins.cmd (basic, needing love, has pauses to tell us what's going down)
 - Actual easybuild.cmd shows correct Razzle Tool Path now, starts xcopybins.cmd as postbuild
   
+
 **XDK Building**
 **InstallShield Professional 6.2 is required for this**
 I have included my currently in progress script to try and build the Xbox SDK. Currently it fails compiling the InstallShield specific XDK Setup scripts.. 
@@ -63,10 +68,11 @@ I have included my currently in progress script to try and build the Xbox SDK. C
 - To run the script, load Easy-Build, drop to Razzle prompt and type **"private\SDK\setup\xsdkbuild.cmd"**
 
   
+
 **If you want to help the development of Easy-Build, have some issues join the Matrix chat!**
 
   https://matrix.to/#/!febkSwamiedCsfevDe:matrix.org?via=matrix.org
-  
+
 **For a VHD image with the SRC set up ready go here:**
 
   https://gofile.io/d/PZngu0
@@ -75,5 +81,5 @@ I have included my currently in progress script to try and build the Xbox SDK. C
 
 
   **NOTE: This is the first release, It is lacking in many features that Easy-Build-NT5 has.. If I get time I will eventually figure out more of the build system**
-  
+
   ![Menu](https://github.com/Empyreal96/easy-build-xbox/raw/main/menu.png)
