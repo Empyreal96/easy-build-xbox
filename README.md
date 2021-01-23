@@ -38,7 +38,8 @@ You will need access to the Xbox trunk and Team Complex's patch.
 **What's Updated?**
 - Added 'timeout.exe' from Windows Server 2003 because some versions of XP don't have 'timeout' (It's used in easybuild to make timed pauses)
 - Fixed wrong folder being built when dealing with xpreldr32.bin error
-- Small option to set the 'NODEVKIT/DEVKIT' option upon load (i.e:  easybuild chk devkit)
+
+  
 
 **Previous Updates**
 

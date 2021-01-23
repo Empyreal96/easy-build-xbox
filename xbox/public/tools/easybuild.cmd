@@ -3,9 +3,6 @@ cls
 rem Here we set some variables that are not set by Easy-build.cmd/razzle during load, so we just load them
 set _BUILDVER=4400
 if /i "%COMPLEX%" == "" set COMPLEX=1 
-if "%2" == "devkit" set NODEVKIT=
-if "%2" == "nodevkit" set NODEVKIT=1
-if "%2" == "" set NODEVKIT=1
 if /i "%FOCUS%" == "" set FOCUS=1
 if /i "%_BINPLACE_SUBDIR%" == "" call setfre.cmd
 if /i "%1" == "" call setfre.cmd
