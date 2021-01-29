@@ -6,15 +6,15 @@
 
 A tool in testing for compiling xbox code. Easy to Update script.
 
-- Buildable on Windows XP - 10 x86
+- Buildable on Windows XP - 10 x86.
 
-- Fixed issues with mstools/idw folders incorrectly being set
+- Fixed issues with mstools/idw folders incorrectly being set.
 
-- Basic Options for compiling
+- Basic Options for compiling.
 
-- 'Unofficial' binplace script 'xcopybins.cmd' to place some built files
+- 'Unofficial' binplace scripts for built files, samples and tools.
 
-- Buildable XDK Samples and other isos (needs testing in xemu/xqemu/xbox)
+- Buildable XDK Samples and other isos (needs testing in xemu/xqemu/xbox).
 
 *More info at the Wiki:*
 https://github.com/Empyreal96/easy-build-xbox/wiki
@@ -36,12 +36,47 @@ You will need access to the Xbox trunk and Team Complex's patch.
 *Any issues or suggestions please open an issue ticket so I can look into it*
 
 **What's Updated?**
-- Added 'timeout.exe' from Windows Server 2003 because some versions of XP don't have 'timeout' (It's used in easybuild to make timed pauses)
-- Fixed wrong folder being built when dealing with xpreldr32.bin error
 
-  
+- Added a 'First Run' check.. so after the initial welcome screen, you won't see it again
+
+- Allowed 'RETAIMXM3' to be defined through easybuild 'easybuild free XM3'
+- Added Directory to be built for the tool KeyDump
+-  Added a line to ntos\bootx\bldr32\sources that seems present in barnabus but not in 4400 (ours)
+- Set %COMPUTERNAME% to XBuilds as it affects part of the postbuild and possibly build.
+- Tweaked Rom build section to use source built version.
+- Fixed an issue with xcopybins on Windows 10 x86 *I think* 
+
+  (*Previous updated at bottom of ReadMe*)
+
+**XDK Building**
+**InstallShield Professional 6.2 is required for this**
+I have included my currently in progress script to try and build the Xbox SDK. Currently it fails compiling the InstallShield specific XDK Setup scripts.. 
+
+- To run the script, load Easy-Build, drop to Razzle prompt and type **"private\SDK\setup\xsdkbuild.cmd"**
+
+You may encounter issues with **"language Independent Intel 32 Files"** during build, I haven't gotten round to looking at this so if anyone does make progress let me know!
+
+**If you want to help the development of Easy-Build, have some issues join the Matrix chat!**
+
+  https://matrix.to/#/!febkSwamiedCsfevDe:matrix.org?via=matrix.org
+
+**For a VHD image with the SRC set up ready go here (Let me know if link dies):**
+
+  https://gofile.io/d/PZngu0
+
+**NOTE** The version of Easy-Build in the VHD is the initial version, **UPDATE EASY-BUILD** simply by dropping the updated files here in place.
+
+
+  **NOTE: Some Features may not work as expected, whether it be from Source or implemented options, either way please let me know** 
+
+  ![Menu](https://github.com/Empyreal96/easy-build-xbox/raw/main/menu.png)
+
+
 
 **Previous Updates**
+
+- Added 'timeout.exe' from Windows Server 2003 because some versions of XP don't have 'timeout' (It's used in easybuild to make timed pauses)
+- Fixed wrong folder being built when dealing with xpreldr32.bin error
 
 - Linked in-testing SDK Build script to the menu. (Advanced users, see *XDK Building* below)
 - Added *VERY* in-testing of building bios rom (Advanced users, has issues described in the Easy-Build main menu)
@@ -60,27 +95,3 @@ You will need access to the Xbox trunk and Team Complex's patch.
 - Separated easybuild.cmd (mainmenu) to public/tools/ 
 - Added xcopybins.cmd (basic, needing love, has pauses to tell us what's going down)
 - Actual easybuild.cmd shows correct Razzle Tool Path now, starts xcopybins.cmd as postbuild
-  
-
-**XDK Building**
-**InstallShield Professional 6.2 is required for this**
-I have included my currently in progress script to try and build the Xbox SDK. Currently it fails compiling the InstallShield specific XDK Setup scripts.. 
-
-- To run the script, load Easy-Build, drop to Razzle prompt and type **"private\SDK\setup\xsdkbuild.cmd"**
-
-  
-
-**If you want to help the development of Easy-Build, have some issues join the Matrix chat!**
-
-  https://matrix.to/#/!febkSwamiedCsfevDe:matrix.org?via=matrix.org
-
-**For a VHD image with the SRC set up ready go here:**
-
-  https://gofile.io/d/PZngu0
-
-**NOTE** The version of Easy-Build in the VHD is the initial version, **UPDATE EASY-BUILD** simply by dropping the updated files here in place.
-
-
-  **NOTE: This is the first release, It is lacking in many features that Easy-Build-NT5 has.. If I get time I will eventually figure out more of the build system**
-
-  ![Menu](https://github.com/Empyreal96/easy-build-xbox/raw/main/menu.png)

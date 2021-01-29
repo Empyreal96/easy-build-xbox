@@ -48,6 +48,10 @@ REM
  setlocal & cd /d %~dp0
  if '%1'=='ELEV' (del "%vbsGetPrivileges%" 1>nul 2>nul  &  shift /1)
 
+:ebinit
+if NOT exist "%~dp0\easy-build_1strun.complete" goto eb-start
+if exist "%~dp0\easy-build_1strun.complete" goto eb-xbox-checks
+
 :eb-start
 cd /d %~dp0
 Title Easy-Build Environment for Xbox
@@ -78,6 +82,7 @@ echo Layout as above and unmodified in the structure above
 echo.
 echo If you are using the VHD image, this will already be setup for you..
 pause
+echo First run complete! delete this file to show 'First Run' screen >> %~dp0\easy-build_1strun.complete
 goto eb-xbox-checks
 
 :eb-xbox-checks

@@ -2,18 +2,25 @@
 cls
 rem Here we set some variables that are not set by Easy-build.cmd/razzle during load, so we just load them
 set _BUILDVER=4400
+set COMPUTERNAME=XBuilds
+if /i "%NTDEBUG%" == "" set NTDEBUG=ntsdnodbg
 if /i "%COMPLEX%" == "" set COMPLEX=1 
 if /i "%FOCUS%" == "" set FOCUS=1
 if /i "%_BINPLACE_SUBDIR%" == "" call setfre.cmd
 if /i "%1" == "" call setfre.cmd
 if /i "%1" == "free" call setfre.cmd
 if /i "%1" == "chk" call setchk.cmd
+if /i "%2" == "XM3" set RETAILXM3=1
+if NOT exist "%_NTDRIVE%%_NTROOT%\private\ntos\inc\nv_ref_2a.h" cp "%_NTDRIVE%%_NTROOT%\private\ntos\av\nv_ref_2a.h" "%_NTDRIVE%%_NTROOT%\private\ntos\inc\"
 :eb-xbox-mainmenu
 cls
+
+set ebbuildoptions=%Build_Default%
 set ebdrive=%_NTDrive%
 set ebntroot=%_NTBINDIR%
 set ebxbbins=%_BINPLACE_DIR%
 set ebxbtype=%_BINPLACE_SUBDIR%
+if /i "%2" == "XM3" set ebxm3build=RETAILXM3 Defined
 cd /d %ebntroot%
 color 2F
 echo --------------------------------------------------------------------------------------------
@@ -23,7 +30,7 @@ echo  Build User: %_NTUSER%	Build Machine: %COMPUTERNAME%
 echo  Build Root: %ebntroot% 	Razzle Tool Path: %ebntroot%\public\tools
 echo  Postbuild Dir: %ebxbbins%
 echo --------------------------------------------------------------------------------------------
-echo - Release Type: %ebxbtype%  - NT Tree: XBOX %BUILD_PRODUCT% %BUILD_PRODUCT_VER% - Xbox Ver: %_BUILDVER%
+echo - Release Type: %ebxbtype%  -  NT Tree: XBOX %BUILD_PRODUCT% %BUILD_PRODUCT_VER%  -  Xbox Ver: %_BUILDVER%  -  %ebxm3build%
 echo --------------------------------------------------------------------------------------------
 echo  Here you can start the build for the XBOX source (with Team Complex's source patch). 
 echo (Very limited features currently, WIP.. Suggestions are needed)
@@ -38,7 +45,7 @@ echo  b/w) Open Build Error or Warning Logs
 echo --------------------------------------------------------------------------------------------
 echo  4) Binplace Kernel files       # 8) Build XDK (Needs help)
 echo  5) Build XDK Samples CD        # 9) 'Retail' Recovery ISO
-echo  6) Build HWT Recovery ISO      # 10) Attempt Bios Build (ADV.) 
+echo  6) Build HWT Recovery ISO      # 10) Attempt Bios Build (ADV.. NOT WORKING YET) 
 echo  7) Place 'HVS Launcher'        # 11) Binplace Debugging Symbols
 echo  r) Drop to Razzle Prompt       # x) Extras (Not so important)
 echo.
@@ -160,6 +167,7 @@ cmd /c %_NTDrive%%_NTROOT%\private\SDK\setup\xsdkbuild.bat | tee %_NT386TREE%\SD
 :DebugCopySym
 echo.
 echo.
+cls
 cmd /c %_NTDrive%%_NTROOT%\public\tools\xdbgsym.cmd | tee %_NT386TREE%\xdbgsym.log
 pause
 goto eb-xbox-mainmenu
@@ -188,10 +196,10 @@ if not exist "%_NT386TREE%\boot\inittbl_ret.bin" set ebromerror=inittbl_ret.bin 
 if not exist "%_NT386TREE%\boot\romdec32.bin" set ebromerror=romdec32.bin && goto RombldError
 if exist "%_NT386TREE%\xboxbios_xdk.bin" rename %_NT386TREE%\xboxbios_xdk.bin xboxbios_xdk_old.bin
 
-rombld.exe /OUT:%_NT386TREE%\xboxbios_xdk.bin /BLDR:%_NT386TREE%\boot\xboxbldr.bin /PRELDR:%_NT386TREE%\boot\xpreldr.bin /KERNEL:%_NT386TREE%\xboxkrnl.exe /INITTBL:%_NT386TREE%\boot\inittbl_ret.bin /SYS:XDK /ROMDEC:%_NT386TREE%\boot\romdec32.bin | tee %_NT386TREE%\rombld.log
+cmd /c %_NTDrive%%_NTROOT%\private\sdktools\rombld\obj\i386\rombld.exe /OUT:%_NT386TREE%\xboxbios_eb.bin /BLDR:%_NT386TREE%\boot\xboxbldr.bin /PRELDR:%_NT386TREE%\boot\xpreldr.bin /KERNEL:%_NT386TREE%\xboxkrnl.exe /INITTBL:%_NT386TREE%\boot\inittbl_ret.bin /SYS:XDK /ROMDEC:%_NT386TREE%\boot\romdec32.bin | tee %_NT386TREE%\rombld.log
 echo.
-if NOT exist "%_NT386TREE%\xboxbios_xdk.bin" echo Failed!
-if exist "%_NT386TREE%\xboxbios_xdk.bin" echo File created at "%_NT386TREE%\xboxbios_xdk.bin"
+if NOT exist "%_NT386TREE%\xboxbios_eb.bin" echo Failed!
+if exist "%_NT386TREE%\xboxbios_eb.bin" echo File created at "%_NT386TREE%\xboxbios_eb.bin"
 pause
 goto eb-xbox-mainmenu
 

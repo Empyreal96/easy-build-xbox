@@ -1,0 +1,93 @@
+!IF 0
+
+Copyright (c) 1989  Microsoft Corporation
+
+Module Name:
+
+    sources.
+
+Abstract:
+
+    This file specifies the target component being built and the list of
+    sources files needed to build that component.  Also specifies optional
+    compiler switches and libraries that are unique for the component being
+    built.
+
+
+Author:
+
+    Steve Wood (stevewo) 12-Apr-1990
+
+NOTE:   Commented description of this file is in \nt\bak\bin\sources.tpl
+
+!ENDIF
+
+TARGETNAME=bldr32
+TARGETPATH=obj
+TARGETTYPE=PROGRAM
+
+XNOLIBS=1
+
+SUBSYSTEM=native,1.00
+UMENTRYABS=BldrStartup
+
+MSC_WARNING_LEVEL=/W4 /WX
+
+C_DEFINES=$(C_DEFINES) -D_NTSYSTEM_
+!ifdef RETAILXM3
+!ifdef RETAILXM3P
+C_DEFINES=$(C_DEFINES) -DMCP_C03XM3
+ASM_DEFINES=$(ASM_DEFINES) -DMCP_C03XM3
+!else
+C_DEFINES=$(C_DEFINES) -DMCP_B02XM3
+ASM_DEFINES=$(ASM_DEFINES) -DMCP_B02XM3
+!endif
+!endif
+
+INCLUDES=$(BASEDIR)\private\ntos\inc;$(BASEDIR)\private\inc\crypto; \
+         $(BASEDIR)\private\windows\directx\dxg\d3d8\se \
+		 $(BASEDIR)\private\ntos\av
+USE_LIBCNTPR=1
+
+LINKLIBS=..\..\rtl\obj\*\bldrrtl.lib
+
+TARGETLIBS= $(BASEDIR)\private\lib\*\rsa32k.lib \
+            $(BASEDIR)\private\lib\*\ldi.lib    \
+            $(SDK_LIB_PATH)\libcntpr.lib
+
+            
+LINKER_FLAGS=$(LINKER_FLAGS) /map
+
+#
+# Simplify the life of BLDRBLD by merge all of the sections into .text.
+#
+LINKER_FLAGS=$(LINKER_FLAGS) -merge:.data=.text -merge:PAGER32C=.text
+
+#
+# Link with -DRIVER so that the final image still has the relocations in it.
+#
+LINKER_FLAGS=$(LINKER_FLAGS) -driver -align:0x20
+
+#
+# The default for TARGETTYPE=PROGRAM is to mark the image as Terminal Server
+# aware.  This causes a linker warning when -driver is specified, so disable it.
+#
+NOT_TERMINAL_SERVER_AWARE=1
+
+#
+# This image is never directly used, so keep BINPLACE from whining about the
+# image not having a version stamp.
+#
+NO_BINPLACE=1
+
+SOURCES=..\bldr32.c    \
+        ..\debug.c     \
+        ..\romcpy.c    \
+        ..\drvslw.c    \
+        ..\startup.asm \
+        ..\superio.asm \
+        ..\smbus.asm
+
+NTTARGETFILES=$(BASEDIR)\private\ntos\obj\i386\xboxbldr.bin
+
+NODEBUGINFO=1

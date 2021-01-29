@@ -51,11 +51,12 @@ xbcp -q -y %_XBOXMACHINE% %_NT386TREE%\xboxtest\testini.ini %_NT386TREE%\release
 REM 
 echo.
 echo Files have been copied to %_NT386TREE%\release in the layout of Xbox partitions
-timeout /t 5
+rem timeout /t 5
 cls
 echo Finished Opening %_NT386TREE%
-pause 
+
 explorer %_NT386TREE%
+pause 
 goto end
 
 :usage

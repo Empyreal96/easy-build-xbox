@@ -39,4 +39,5 @@ DIRS= \
     mapdiff	\
     bldrbld	\
     rdbld	\
+    content     \
     objref
