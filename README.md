@@ -21,7 +21,7 @@ https://github.com/Empyreal96/easy-build-xbox/wiki
 
 
 **How to use**
-You will need access to the Xbox trunk and Team Complex's patch.
+You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and CPXXUPD) you can grab the .VHD at the bottom of the page if you want a 'set up' environment
 
 - Have easy-build-xinit.cmd on the ROOT of a drive e.g: D:\easy-build-xinit.cmd
 - Open easy-build-xinit.cmd
