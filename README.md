@@ -37,16 +37,19 @@ You will need access to the Xbox trunk and Team Complex's patch.
 
 **What's Updated?**
 
-- Added a 'First Run' check.. so after the initial welcome screen, you won't see it again
+```
+- Added BIOSPack from the Barnabus Kernel leak as it allows building of a *working* BIOS ROM
 
-- Allowed 'RETAIMXM3' to be defined through easybuild 'easybuild free XM3'
-- Added Directory to be built for the tool KeyDump
--  Added a line to ntos\bootx\bldr32\sources that seems present in barnabus but not in 4400 (ours)
-- Set %COMPUTERNAME% to XBuilds as it affects part of the postbuild and possibly build.
-- Tweaked Rom build section to use source built version.
-- Fixed an issue with xcopybins on Windows 10 x86 *I think* 
+- Added EEPROM Building options
 
-  (*Previous updated at bottom of ReadMe*)
+- Better definitions for building Retai (XM3(
+
+- Written from scratch a new script for copying Debugging Symbols
+
+- Adjusted Main menu with a sub-menu for building ISOs
+```
+
+(*Previous updated at bottom of ReadMe*)
 
 **XDK Building**
 **InstallShield Professional 6.2 is required for this**
@@ -75,14 +78,20 @@ You may encounter issues with **"language Independent Intel 32 Files"** during b
 
 **Previous Updates**
 
+```
+- Added a 'First Run' check.. so after the initial welcome screen, you won't see it again
+- Allowed 'RETAIMXM3' to be defined through easybuild 'easybuild free XM3'
+- Added Directory to be built for the tool KeyDump
+- Added a line to ntos\bootx\bldr32\sources that seems present in barnabus but not in 4400 (ours)
+- Set %COMPUTERNAME% to XBuilds as it affects part of the postbuild and possibly build.
+- Tweaked Rom build section to use source built version.
+- Fixed an issue with xcopybins on Windows 10 x86 *I think* 
 - Added 'timeout.exe' from Windows Server 2003 because some versions of XP don't have 'timeout' (It's used in easybuild to make timed pauses)
 - Fixed wrong folder being built when dealing with xpreldr32.bin error
-
 - Linked in-testing SDK Build script to the menu. (Advanced users, see *XDK Building* below)
 - Added *VERY* in-testing of building bios rom (Advanced users, has issues described in the Easy-Build main menu)
 - Added checks to see if CPXXUPD has already been applied on making new profile
 - Added note on Easy-Build-xinit.cmd menu about loading CHK builds
-
 - Build chk is now supported
 - Postbuild scripts now have 'basic' logs in the %_NT386TREE% folder
 - Added copying 'HVS Launcher Test' files (not sure what this is)
@@ -95,3 +104,5 @@ You may encounter issues with **"language Independent Intel 32 Files"** during b
 - Separated easybuild.cmd (mainmenu) to public/tools/ 
 - Added xcopybins.cmd (basic, needing love, has pauses to tell us what's going down)
 - Actual easybuild.cmd shows correct Razzle Tool Path now, starts xcopybins.cmd as postbuild
+```
+
