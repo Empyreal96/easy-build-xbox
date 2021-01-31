@@ -38,6 +38,8 @@ You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and 
 **What's Updated?**
 
 ```
+- Updated link for the .vhd as it was down
+
 - Added BIOSPack from the Barnabus Kernel leak as it allows building of a *working* BIOS ROM
 
 - Added EEPROM Building options
@@ -65,7 +67,7 @@ You may encounter issues with **"language Independent Intel 32 Files"** during b
 
 **For a VHD image with the SRC set up ready go here (Let me know if link dies):**
 
-  https://gofile.io/d/PZngu0
+  https://mega.nz/file/DlQ1CChY#3C0kPSwfUTCRgFiLS2qYpN0Y8c5n6UMCvLf-u82w8sw
 
 **NOTE** The version of Easy-Build in the VHD is the initial version, **UPDATE EASY-BUILD** simply by dropping the updated files here in place.
 
