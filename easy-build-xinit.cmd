@@ -228,6 +228,7 @@ echo.
 echo Please type "easybuild" without quotes when Razzle has loaded.
 echo.
 echo If you wish to build CHK type: "easybuild chk" without quotes.
+echo To target Retail: easybuild XM3 \ easybuild chk XM3
 echo.
 echo NOTE: Easy-Build will always set the default build variables (for now)
 echo To change some of the build options type Options into "easybuild"

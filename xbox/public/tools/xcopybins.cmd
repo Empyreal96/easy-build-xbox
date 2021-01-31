@@ -14,7 +14,7 @@ echo.
 echo Backing up old files to "%_NT386TREE%\release_old"
 echo This will remove any current "%_NT386TREE%\release_old" that exists
 echo (Save the folder now if you want to, then continue)
-pause
+echo.
 REM A very ugly way to Remove old postbuilds, backup the current and set fresh 'release' folder
 cd /d %_NT386TREE%
 if exist "%_NT386TREE%\release_old" rmdir /Q /S "%_NT386TREE%\release_old"

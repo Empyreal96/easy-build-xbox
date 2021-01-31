@@ -10,7 +10,16 @@ if /i "%_BINPLACE_SUBDIR%" == "" call setfre.cmd
 if /i "%1" == "" call setfre.cmd
 if /i "%1" == "free" call setfre.cmd
 if /i "%1" == "chk" call setchk.cmd
+if /i "%1" == "XM3" call setfre.cmd
+if /i "%1" == "XM3P" call setfre.cmd
+if /i "%1" == "XM3" set RETAILXM3=1
+if /i "%1" == "XM3" set OFFICIAL_BUILD=1
+if /i "%1" == "XM3P" set RETAILXM3P=1
+if /i "%1" == "XM3P" set OFFICIAL_BUILD=1
 if /i "%2" == "XM3" set RETAILXM3=1
+if /i "%2" == "XM3" set OFFICIAL_BUILD=1
+if /i "%2" == "XM3P" set RETAILXM3P=1
+if /i "%2" == "XM3P" set OFFICIAL_BUILD=1
 if NOT exist "%_NTDRIVE%%_NTROOT%\private\ntos\inc\nv_ref_2a.h" cp "%_NTDRIVE%%_NTROOT%\private\ntos\av\nv_ref_2a.h" "%_NTDRIVE%%_NTROOT%\private\ntos\inc\"
 :eb-xbox-mainmenu
 cls
@@ -20,7 +29,10 @@ set ebdrive=%_NTDrive%
 set ebntroot=%_NTBINDIR%
 set ebxbbins=%_BINPLACE_DIR%
 set ebxbtype=%_BINPLACE_SUBDIR%
+if /i "%1" == "XM3" set ebxm3build=RETAILXM3 Defined
+if /i "%1" == "XM3P" set ebxm3build=RETAILXM3P Defined
 if /i "%2" == "XM3" set ebxm3build=RETAILXM3 Defined
+if /i "%2" == "XM3P" set ebxm3build=RETAILXM3P Defined
 cd /d %ebntroot%
 color 2F
 echo --------------------------------------------------------------------------------------------
@@ -44,9 +56,9 @@ echo  3) Build Specific Directory Only
 echo  b/w) Open Build Error or Warning Logs
 echo --------------------------------------------------------------------------------------------
 echo  4) Binplace Kernel files       # 8) Build XDK (Needs help)
-echo  5) Build XDK Samples CD        # 9) 'Retail' Recovery ISO
-echo  6) Build HWT Recovery ISO      # 10) Attempt Bios Build (ADV.. NOT WORKING YET) 
-echo  7) Place 'HVS Launcher'        # 11) Binplace Debugging Symbols
+echo  5) Build BIOS ROM              # 9) Place 'HVS Launcher'
+echo  6) Build EEPROM                # 10) ISO Building Menu
+echo  7) Binplace Debugging Symbols  # 11) 
 echo  r) Drop to Razzle Prompt       # x) Extras (Not so important)
 echo.
 echo ____________________________________________________________________________________________
@@ -61,18 +73,44 @@ if /i "%NTMMENU%"=="3" goto SpecificBLD
 if /i "%NTMMENU%"=="4" goto postbuild-placeholder
 if /i "%NTMMENU%"=="p" notepad %_NTPOSTBLD%\build_logs\postbuild.err & goto eb-xbox-mainmenu
 if /i "%NTMMENU%"=="w" notepad %_NTPOSTBLD%\build_logs\postbuild.wrn & goto eb-xbox-mainmenu
-if /i "%NTMMENU%"=="5" goto XDKSampleCD
-if /i "%NTMMENU%"=="6" goto XBRecovery
-if /i "%NTMMENU%"=="7" goto HVSLaunchtest
+if /i "%NTMMENU%"=="5" goto BIOSPack_Barnabus
+if /i "%NTMMENU%"=="6" goto EEPROMmenu
+if /i "%NTMMENU%"=="7" goto DebugCopySym
 if /i "%NTMMENU%"=="8" goto SetupSDK
-if /i "%NTMMENU%"=="9" goto RecoveryImage
-if /i "%NTMMENU%"=="10" goto BuildBiosImage
-if /i "%NTMMENU%"=="11" goto DebugCopySym
+if /i "%NTMMENU%"=="9" goto HVSLaunchtest
+if /i "%NTMMENU%"=="10" goto eb-ISO-menu
+if /i "%NTMMENU%"=="11" goto eb-xbox-mainmenu REM COMMING SOON
 if /i "%NTMMENU%"=="x" goto eb-extras-menu
 if /i "%NTMMENU%"=="r" exit /b
 if /i "%NTMMENU%"=="var" set && pause && goto eb-xbox-mainmenu
 if /i "%NTMMENU%"=="options" goto BuildOptions
 goto eb-xbox-mainmenu
+
+:eb-ISO-menu
+cls
+echo --------------------------------------------------------------------------------------------
+echo  Empyreal's Easy-Build for XBOX ORIGINAL (Very limited features currently, WIP)
+echo --------------------------------------------------------------------------------------------
+echo.
+echo Here are a list of various ISO Images you can create.
+echo NOTE: I personally havent tested these yet in an XBOX or XEMU
+echo.
+echo --------------------------------------------------------------------------------------------
+echo 1) XDK Sample CD
+echo 2) Hardware Test Recovery ISO
+echo 3) 'Retail' Recvery ISO 
+echo b) Main Menu
+echo.
+echo ____________________________________________________________________________________________
+set /p ISONTMMENU=Select:
+echo ____________________________________________________________________________________________
+if /i "%ISONTMMENU%"=="1" goto XDKSampleCD
+if /i "%ISONTMMENU%"=="2" goto XBRecovery
+if /i "%ISONTMMENU%"=="3" goto RecoveryImage
+if /i "%ISONTMMENU%"=="2" goto
+if /i "%ISONTMMENU%"=="b" goto eb-xbox-mainmenu
+goto eb-extras-menu
+
 
 :eb-extras-menu
 cls
@@ -84,12 +122,14 @@ echo Here are the options that are I feel aren't priority, but could still be wo
 echo.
 echo --------------------------------------------------------------------------------------------
 echo 1) Build Xbox Shell Extension for Windows Setup
+echo 2) Attempt Bios Build Using ROMBLD (ADV.. NOT WORKING YET) 
 echo b) Main Menu
 echo.
 echo ____________________________________________________________________________________________
 set /p EXNTMMENU=Select:
 echo ____________________________________________________________________________________________
 if /i "%EXNTMMENU%"=="1" goto xbsebuild
+if /i "%EXNTMMENU%"=="2" goto BuildBiosImage
 if /i "%EXNTMMENU%"=="b" goto eb-xbox-mainmenu
 goto eb-extras-menu
 
@@ -146,7 +186,7 @@ echo.
 echo Location: %ebxbbins%\Recovery.iso
 echo.
 pause
-cmd /c xupdrec | tee %_NT386TREE%\xupdrec.log&& pause && goto eb-xbox-mainmenu
+cmd /c xupdrec | tee %_NT386TREE%\xupdrec.log&& pause && goto eb-ISO-menu
 
 
 :SetupSDK
@@ -172,6 +212,95 @@ cmd /c %_NTDrive%%_NTROOT%\public\tools\xdbgsym.cmd | tee %_NT386TREE%\xdbgsym.l
 pause
 goto eb-xbox-mainmenu
 
+:BIOSPack_Barnabus
+cls
+echo.
+echo  BIOSpack - From Barnabus Kernel Repack
+echo.
+echo  This is the tool included with the 'Barnabus' Xbox Kernel Repack.
+echo  It uses an already made 'Remainder.img' and '2bl.img'
+echo.
+echo  This method isn't 'Official' as it doesn't pack the bios the same way ROMBLD does
+echo  yet for now, This is the only method to produce a 'working' BIOS ROM.
+echo.
+echo  This will use the built Kernel from %_NT386TREE%\xboxkrnl.exe
+pause
+echo.
+if NOT exist "%_NT386TREE%\xboxkrnl.exe" echo KERNEL NOT FOUND! && pause && goto eb-xbox-mainmenu
+if exist "%IDW_DIR%\biospack\boot\xboxkrnl.img" del "%IDW_DIR%\biospack\boot\xboxkrnl.img"
+if NOT exist "%IDW_DIR%\biospack\boot\xboxkrnl.img" copy "%_NT386TREE%\xboxkrnl.exe" "%IDW_DIR%\biospack\boot\xboxkrnl.img"
+cmd.exe /c %IDW_DIR%\biospack\biospack.exe -t multi -i %IDW_DIR%\biospack\boot\ -o %_NT386TREE%\xboxbios_eb.bin
+if exist "%_NT386TREE%\xboxbios_eb.bin" (echo Finished! %_NT386TREE%\xboxbios_eb.bin) else (echo Failed!)
+pause
+goto eb-xbox-mainmenu
+
+
+:EEPROMmenu
+If NOT exist "%_NTDrive%%_NTROOT%\private\sdktools\mkeeprom\obj\i386\mkeeprom.exe" cd /d "%_NTDrive%%_NTROOT%\private\sdktools\mkeeprom" && build -bcZP
+if NOT exist "%IDW_DIR%\mkeeprom.exe" copy "%_NTDrive%%_NTROOT%\private\sdktools\mkeeprom\obj\i386\mkeeprom.exe" "%IDW_DIR%" 
+cls
+echo.
+echo  mkEEPROM
+echo.
+echo  Here you can create an EEPROM that can, in theory, be flashed to an Xbox or used for emulation.
+echo  various options are available for testing.. SELECT THE OPTIONS AND TYPE 'BUILD' WHEN DONE.
+echo  NOTE I have only tested the 'Rest of World + Zero HDD Key' EEPROM in XEMU
+echo.
+echo   Origin:
+echo   NA) North America     JP) Japan     ROW) Rest of the World
+echo.
+echo   HDD Status:
+echo   ZKey) Zero HDD Key     SqeKey) Sequential HDD Key     DevKey) DevKit HDD Key
+echo.
+echo   Currently Selected: %eb-eeprom-origin%      %eb-eeprom-hddstatus% 
+set /p eb-eeprom-userinput=Select:
+echo.
+if /i "%eb-eeprom-userinput%" == "na" goto EEPROMSetNA
+if /i "%eb-eeprom-userinput%" == "jp" goto EEPROMSetJP
+if /i "%eb-eeprom-userinput%" == "row" goto EEPROMSetROW
+if /i "%eb-eeprom-userinput%" == "ZKey" goto EEPROMSetHDD
+if /i "%eb-eeprom-userinput%" == "SeqKey" goto EEPROMSetHDDS
+if /i "%eb-eeprom-userinput%" == "DevKey" goto EEPROMSetHDDD
+if /i "%eb-eeprom-userinput%" == "build" goto EEPROMBuild
+if /i "%eb-eeprom-userinput%" == "b" goto eb-xbox-mainmenu
+goto EEPROMmenu
+
+:EEPROMBuild
+if /i "%eb-eeprom-origin%" == "north america" set eepromflag1=-na
+if /i "%eb-eeprom-origin%" == "japan" set eepromflag1=-ja
+if /i "%eb-eeprom-origin%" == "global" set eepromflag1=-row
+if /i "%eb-eeprom-origin%" == "" echo Region not set! && pause && goto EEPROMmenu
+if /i "%eb-eeprom-hddstatus%" == "Sequential HDD Key" set eepromflag2=-lockhd
+if /i "%eb-eeprom-hddstatus%" == "Zero HDD Key" set eepromflag2=-lockhdz
+if /i "%eb-eeprom-hddstatus%" == "Devkit HDD Key" set eepromflag2=-defkey
+if /i "%eb-eeprom-hddstatus%" == "" echo Key Type not set! && pause && goto EEPROMmenu
+echo.
+cmd /c %IDW_DIR%\mkeeprom.exe %eepromflag1% %eepromflag2% %_NT386TREE%\boot\eeprom_eb.bin
+if NOT exist "%_NT386TREE%\boot\eeprom_eb.bin" echo Build Failed && pause && goto eb-xbox-mainmenu
+if exist "%_NT386TREE%\boot\eeprom_eb.bin" echo Build Succeeded at %_NT386TREE%\boot\eeprom_eb.bin && pause
+goto eb-xbox-mainmenu
+
+:EEPROMSetNA
+set eb-eeprom-origin=North America
+goto EEPROMmenu
+:EEPROMSetJP
+set eb-eeprom-origin=Japan
+goto EEPROMmenu
+:EEPROMSetROW
+set eb-eeprom-origin=Global
+goto EEPROMmenu
+:EEPROMSetHDD
+set eb-eeprom-hddstatus= Zero HDD key
+goto EEPROMmenu
+:EEPROMSetHDDS
+set eb-eeprom-hddstatus=Sequential HDD Key
+goto EEPROMmenu
+:EEPROMSetHDDD
+set eb-eeprom-hddstatus=DevKit HDD Key
+goto EEPROMmenu
+
+
+
 :BuildBiosImage
 cls
 echo This will try to use 'rombld' to build the Xbox BIOS image.
@@ -194,12 +323,12 @@ if not exist "%_NT386TREE%\boot\xpreldr.bin" set ebromerror=xpreldr.bin && goto 
 if not exist "%_NT386TREE%\xboxkrnl.exe" set ebromerror=xboxkrnl.exe && goto RombldError
 if not exist "%_NT386TREE%\boot\inittbl_ret.bin" set ebromerror=inittbl_ret.bin && goto RombldError
 if not exist "%_NT386TREE%\boot\romdec32.bin" set ebromerror=romdec32.bin && goto RombldError
-if exist "%_NT386TREE%\xboxbios_xdk.bin" rename %_NT386TREE%\xboxbios_xdk.bin xboxbios_xdk_old.bin
+if exist "%_NT386TREE%\xboxbios_eb-rombld.bin" rename %_NT386TREE%\xboxbios_eb-rombld.bin xboxbios_eb-rombld-old.bin
 
-cmd /c %_NTDrive%%_NTROOT%\private\sdktools\rombld\obj\i386\rombld.exe /OUT:%_NT386TREE%\xboxbios_eb.bin /BLDR:%_NT386TREE%\boot\xboxbldr.bin /PRELDR:%_NT386TREE%\boot\xpreldr.bin /KERNEL:%_NT386TREE%\xboxkrnl.exe /INITTBL:%_NT386TREE%\boot\inittbl_ret.bin /SYS:XDK /ROMDEC:%_NT386TREE%\boot\romdec32.bin | tee %_NT386TREE%\rombld.log
+cmd /c %_NTDrive%%_NTROOT%\private\sdktools\rombld\obj\i386\rombld.exe /OUT:%_NT386TREE%\xboxbios_eb-rombld.bin /BLDR:%_NT386TREE%\boot\xboxbldr.bin /PRELDR:%_NT386TREE%\boot\xpreldr.bin /KERNEL:%_NT386TREE%\xboxkrnl.exe /INITTBL:%_NT386TREE%\boot\inittbl_ret.bin /SYS:XDK /ROMDEC:%_NT386TREE%\boot\romdec32.bin | tee %_NT386TREE%\rombld.log
 echo.
-if NOT exist "%_NT386TREE%\xboxbios_eb.bin" echo Failed!
-if exist "%_NT386TREE%\xboxbios_eb.bin" echo File created at "%_NT386TREE%\xboxbios_eb.bin"
+if NOT exist "%_NT386TREE%\xboxbios_eb-rombld.bin" echo Failed!
+if exist "%_NT386TREE%\xboxbios_eb-rombld.bin" echo File created at "%_NT386TREE%\xboxbios_eb-rombld.bin"
 pause
 goto eb-xbox-mainmenu
 
