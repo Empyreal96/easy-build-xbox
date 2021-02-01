@@ -63,9 +63,8 @@ echo Currently the build methods are based off my knowledge
 echo on NT 5.1/2 and the CPXXUPD readme.. 
 echo There may be other methods so please let me know!
 echo.
-echo I recieve 1 error: 'bldrtl.lib' currently,
-echo I haven't looked into patching that, also CHK builds
-echo are likely to have more errors.
+echo This tool was created off the '4chan repack' Xbox Tree..
+echo It is the same as 'xbox trunk.rar' with 'CPXXUPD.RAR'
 echo. 
 echo I am unsure of the Xbox 'postbuild' method.
 echo --------------------------------------------------------
@@ -77,7 +76,7 @@ echo 	\public\
 echo 	\CPXXUPD\
 echo.
 echo Requirements:
-echo Freshly extracted source (xbox_leak_may_2020.7z)
+echo Freshly extracted source (xbox_leak_may_2020.7z/xbox trunk.rar + CPXXUPD.rar))
 echo Layout as above and unmodified in the structure above 
 echo.
 echo If you are using the VHD image, this will already be setup for you..
@@ -215,6 +214,9 @@ if exist %_NTDrive%%_NTRoot%\public\idw (
 if exist %_NTDrive%%_NTRoot%\public\tools (
     set PATH=%PATH%;%_NTDrive%%_NTRoot%\public\tools
 )
+REM This adds the Barnabus Repack's BIOSpack to the PATH variable so it can be called easy
+if exist %_NTDrive%%_NTRoot%\public\idw\biospack set PATH=%PATH%;%_NTDrive%%_NTRoot%\public\idw\biospack
+
 goto ebhandover
 
 :ebhandover
@@ -227,8 +229,8 @@ echo Razzle will now start.
 echo. 
 echo Please type "easybuild" without quotes or type:
 echo.
-echo - easybuild free        //For FREE Devkit Build
-echo - easybuild free xm3    //For FREE Retail Build
+echo - easybuild free        //For FREE Devkit build
+echo - easybuild free xm3    //For FREE Retail build
 echo - easybuild chk         //For CHK DevKit Build
 echo - easybuild chk xm3     //For CHK Retail Build
 echo.

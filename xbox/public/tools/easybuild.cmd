@@ -59,7 +59,7 @@ echo  Build User: %_NTUSER%	Build Machine: %COMPUTERNAME%
 echo  Build Root: %ebntroot% 	Razzle Tool Path: %ebntroot%\public\tools
 echo  Postbuild Dir: %ebxbbins%
 echo --------------------------------------------------------------------------------------------
-echo - Release Type: %ebxbtype%  -  NT Tree: XBOX %BUILD_PRODUCT% %BUILD_PRODUCT_VER%  -  Xbox Ver: %_BUILDVER%  -  %ebxm3build%
+echo  Release Type: %ebxbtype%  -  NT Ver: XBOX %BUILD_PRODUCT% %BUILD_PRODUCT_VER%  -  Xbox Ver: %_BUILDVER%  -  %ebxm3build%
 echo --------------------------------------------------------------------------------------------
 echo  Here you can start the build for the XBOX source (with Team Complex's source patch). 
 echo (Very limited features currently, WIP.. Suggestions are needed)
@@ -88,8 +88,6 @@ if /i "%NTMMENU%"=="b" cmd.exe /c notepad %ErrorLogsEB%
 if /i "%NTMMENU%"=="w" cmd.exe /c notepad %WarningLogsEB%
 if /i "%NTMMENU%"=="3" goto SpecificBLD
 if /i "%NTMMENU%"=="4" goto postbuild-placeholder
-if /i "%NTMMENU%"=="p" notepad %_NTPOSTBLD%\build_logs\postbuild.err & goto eb-xbox-mainmenu
-if /i "%NTMMENU%"=="w" notepad %_NTPOSTBLD%\build_logs\postbuild.wrn & goto eb-xbox-mainmenu
 if /i "%NTMMENU%"=="5" goto BIOSPack_Barnabus
 if /i "%NTMMENU%"=="6" goto EEPROMmenu
 if /i "%NTMMENU%"=="7" goto DebugCopySym
@@ -249,8 +247,8 @@ echo.
 if NOT exist "%_NT386TREE%\xboxkrnl.exe" echo KERNEL NOT FOUND! && pause && goto eb-xbox-mainmenu
 if exist "%IDW_DIR%\biospack\boot\xboxkrnl.img" del "%IDW_DIR%\biospack\boot\xboxkrnl.img"
 if NOT exist "%IDW_DIR%\biospack\boot\xboxkrnl.img" copy "%_NT386TREE%\xboxkrnl.exe" "%IDW_DIR%\biospack\boot\xboxkrnl.img"
-cmd.exe /c %IDW_DIR%\biospack\biospack.exe -t multi -i %IDW_DIR%\biospack\boot\ -o %_NT386TREE%\xboxbios_eb.bin
-if exist "%_NT386TREE%\xboxbios_eb.bin" (echo Finished! %_NT386TREE%\xboxbios_eb.bin) else (echo Failed!)
+cmd.exe /c %IDW_DIR%\biospack\biospack.exe -t multi -i %IDW_DIR%\biospack\boot\ -o %_NT386TREE%\xboxbios_%ebxbtype%.bin
+if exist "%_NT386TREE%\xboxbios_%ebxbtype%.bin" (echo Finished! %_NT386TREE%\xboxbios_%ebxbtype%.bin) else (echo Failed!)
 pause
 goto eb-xbox-mainmenu
 
@@ -264,7 +262,7 @@ echo.
 echo  mkEEPROM
 echo.
 echo  Here you can create an EEPROM that can, in theory, be flashed to an Xbox or used for emulation.
-echo  various options are available for testing.. SELECT THE OPTIONS AND TYPE 'BUILD' WHEN DONE.
+echo  various options are available for testing.. 
 echo  NOTE I have only tested the 'Rest of World + Zero HDD Key' EEPROM in XEMU
 echo.
 echo   Origin:
@@ -274,6 +272,7 @@ echo   HDD Status:
 echo   ZKey) Zero HDD Key     SeqKey) Sequential HDD Key     DevKey) DevKit HDD Key
 echo.
 echo   Type to make EEPROM: Build
+echo.
 echo   Currently Selected: %eb-eeprom-origin%      %eb-eeprom-hddstatus% 
 set /p eb-eeprom-userinput=Select:
 echo.
@@ -297,9 +296,9 @@ if /i "%eb-eeprom-hddstatus%" == "Zero HDD Key" set eepromflag2=-lockhdz
 if /i "%eb-eeprom-hddstatus%" == "Devkit HDD Key" set eepromflag2=-defkey
 if /i "%eb-eeprom-hddstatus%" == "" echo Key Type not set! && pause && goto EEPROMmenu
 echo.
-cmd /c %IDW_DIR%\mkeeprom.exe %eepromflag1% %eepromflag2% %_NT386TREE%\boot\eeprom_eb.bin
-if NOT exist "%_NT386TREE%\boot\eeprom_eb.bin" echo Build Failed && pause && goto eb-xbox-mainmenu
-if exist "%_NT386TREE%\boot\eeprom_eb.bin" echo Build Succeeded at %_NT386TREE%\boot\eeprom_eb.bin && pause
+cmd /c %IDW_DIR%\mkeeprom.exe %eepromflag1% %eepromflag2% %_NT386TREE%\boot\eeprom_%ebxbtype%.bin
+if NOT exist "%_NT386TREE%\boot\eeprom_%ebxbtype%.bin" echo Build Failed && pause && goto eb-xbox-mainmenu
+if exist "%_NT386TREE%\boot\eeprom_%ebxbtype%.bin" echo Build Succeeded at %_NT386TREE%\boot\eeprom_%ebxbtype%.bin && pause
 goto eb-xbox-mainmenu
 
 :EEPROMSetNA
@@ -348,10 +347,10 @@ if not exist "%_NT386TREE%\boot\inittbl_ret.bin" set ebromerror=inittbl_ret.bin 
 if not exist "%_NT386TREE%\boot\romdec32.bin" set ebromerror=romdec32.bin && goto RombldError
 if exist "%_NT386TREE%\xboxbios_eb-rombld.bin" rename %_NT386TREE%\xboxbios_eb-rombld.bin xboxbios_eb-rombld-old.bin
 
-cmd /c %_NTDrive%%_NTROOT%\private\sdktools\rombld\obj\i386\rombld.exe /OUT:%_NT386TREE%\xboxbios_eb-rombld.bin /BLDR:%_NT386TREE%\boot\xboxbldr.bin /PRELDR:%_NT386TREE%\boot\xpreldr.bin /KERNEL:%_NT386TREE%\xboxkrnl.exe /INITTBL:%_NT386TREE%\boot\inittbl_ret.bin /SYS:XDK /ROMDEC:%_NT386TREE%\boot\romdec32.bin | tee %_NT386TREE%\rombld.log
+cmd /c %_NTDrive%%_NTROOT%\private\sdktools\rombld\obj\i386\rombld.exe /OUT:%_NT386TREE%\xboxbios_%ebxbtype%-rombld.bin /BLDR:%_NT386TREE%\boot\xboxbldr.bin /PRELDR:%_NT386TREE%\boot\xpreldr.bin /KERNEL:%_NT386TREE%\xboxkrnl.exe /INITTBL:%_NT386TREE%\boot\inittbl_ret.bin /SYS:XDK /ROMDEC:%_NT386TREE%\boot\romdec32.bin | tee %_NT386TREE%\rombld.log
 echo.
-if NOT exist "%_NT386TREE%\xboxbios_eb-rombld.bin" echo Failed!
-if exist "%_NT386TREE%\xboxbios_eb-rombld.bin" echo File created at "%_NT386TREE%\xboxbios_eb-rombld.bin"
+if NOT exist "%_NT386TREE%\xboxbios_%ebxbtype%-rombld.bin" echo Failed!
+if exist "%_NT386TREE%\xboxbios_%ebxbtype%-rombld.bin" echo File created at "%_NT386TREE%\xboxbios_%ebxbtype%-rombld.bin"
 pause
 goto eb-xbox-mainmenu
 
