@@ -225,13 +225,17 @@ cls
 echo.
 echo Razzle will now start.
 echo. 
-echo Please type "easybuild" without quotes when Razzle has loaded.
+echo Please type "easybuild" without quotes or type:
 echo.
-echo If you wish to build CHK type: "easybuild chk" without quotes.
-echo To target Retail: easybuild XM3 \ easybuild chk XM3
+echo - easybuild free        //For FREE Devkit Build
+echo - easybuild free xm3    //For FREE Retail Build
+echo - easybuild chk         //For CHK DevKit Build
+echo - easybuild chk xm3     //For CHK Retail Build
 echo.
-echo NOTE: Easy-Build will always set the default build variables (for now)
-echo To change some of the build options type Options into "easybuild"
+echo NOTE: You need to build FREE before CHK
+echo.
+echo NOTE: Easy-Build will always set the default build to:
+echo FREE DEVKIT if no options specified
 echo.
 pause
 goto INVOKEIT

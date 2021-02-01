@@ -38,17 +38,21 @@ You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and 
 **What's Updated?**
 
 ```
-- Updated link for the .vhd as it was down
+- Added more Information to easy-build-xinit
 
-- Added BIOSPack from the Barnabus Kernel leak as it allows building of a *working* BIOS ROM
+- Removed CHK builds dependancy on building to 'objd', now builds to 'obj' to avoid errors 
 
-- Added EEPROM Building options
+- Some FREE .libs are used as wevhave no suitable CHK versions that don't cause unresolved externals
 
-- Better definitions for building Retai (XM3(
+- Made Easy-Build backup old Makefile.def before applying the CHK compatible one.
 
-- Written from scratch a new script for copying Debugging Symbols
+- Fixed incorrect error logs being opened on CHK
 
-- Adjusted Main menu with a sub-menu for building ISOs
+- Fixed 'bldrldr.lib' error finally
+
+- Moved rebuilding 'ntos\bootx' to Rombld section , will now attempt to rebuild if files are missing
+
+- Fixed spelling error in EEPROM menu
 ```
 
 (*Previous updated at bottom of ReadMe*)
@@ -81,6 +85,12 @@ You may encounter issues with **"language Independent Intel 32 Files"** during b
 **Previous Updates**
 
 ```
+- Updated link for the .vhd as it was down
+- Added BIOSPack from the Barnabus Kernel leak as it allows building of a *working* BIOS ROM
+- Added EEPROM Building options
+- Better definitions for building Retai (XM3)
+- Written from scratch a new script for copying Debugging Symbols
+- Adjusted Main menu with a sub-menu for building ISOs
 - Added a 'First Run' check.. so after the initial welcome screen, you won't see it again
 - Allowed 'RETAIMXM3' to be defined through easybuild 'easybuild free XM3'
 - Added Directory to be built for the tool KeyDump

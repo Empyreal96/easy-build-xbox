@@ -1,0 +1,4085 @@
+!IF 0
+
+Copyright (c) 1989-1996  Microsoft Corporation
+
+Module Name:
+
+    makefile.def
+
+Abstract:
+
+    This is the standard makefile for the components of the NT project.
+    It includes the following files:
+
+        .\sources.      - developer supplies this file.  It defines the
+                          required TARGETNAME, TARGETPATH, TARGETTYPE and
+                          SOURCES as well as optional macros that control
+                          the behavior of the compiler and linker:
+
+        obj\_objects.mac  - built by BUILD.EXE from .\sources.
+
+
+Targets:
+
+    all       - Builds all targets in this make file
+
+    clean     - Erase all targets that can be produced by this make
+                file, ignoring errors.  Also rebuilds the depend target.
+
+    depend    - Rebuilts source file dependencies, using BUILD.EXE tool
+
+
+Useful Variables Set:
+
+    CPUTYPE={I386|AXP64|ALPHA|MPPC|IA64}
+
+Optional Controls Variables (partial list), these are environment variables,
+remember they can be set with env=value on the command line as well:
+
+NOTE:  xxx_... is {MSC|386|axp64|alpha|MPPC|ia64} where MSC_ applies to the C8 compiler
+       independent of the cpu type.  Specific cpu_ will take precedence
+       over the equivalent MSC_ variable.
+
+EXAMPLE:  To compile with codeview symbols for windbg:
+
+          set NTDEBUG=ntsd
+          set NTDEBUGTYPE=windbg
+          set MSC_OPTIMIZATION=/Od
+
+
+    nttest=filename
+
+    umtest=filename
+
+    umappl=filename
+
+    NT_UP
+            Define as 0 in environment to turn on MP.
+            If undefined or equal to 1, you get UP.
+
+    xxx_warning_level
+
+    xxx_optimization
+
+    xxx_STDCALL = 1 use _stdcall calling convention
+                  0 use _cdecl calling convention
+
+    ntdebug
+
+    browser_info
+
+    xxx_cppflags
+
+    ntcppflags
+
+    NT_INST - set to turn on instrumentation
+
+    BASEDIR - \nt or \ntrel (default \nt)
+
+    PRECOMPILED_CXX=1 - do precompiled headers for CXX instead of C files
+                        note: precompiled headers can not be used on both
+                        c and cxx files in a single directory.
+!ENDIF
+
+!if 0
+! message You must use nmake version 1.30 or greater...
+!endif
+
+# A couple of overrides
+
+! ifndef UMTYPE
+UMTYPE=xbox
+! endif
+
+!ifndef USE_VC7
+USE_VC7=1
+!endif
+
+!ifndef SDK_INC_PATH
+SDK_INC_PATH = $(BASEDIR)\public\sdk\inc
+!endif
+
+!ifndef SDK_LIB_PATH
+SDK_LIB_PATH = $(BASEDIR)\public\sdk\lib\*
+!endif
+
+!ifndef XDK_INC_PATH
+XDK_INC_PATH = $(BASEDIR)\public\xdk\inc
+!endif
+
+!ifndef XDK_LIB_PATH
+XDK_LIB_PATH = $(BASEDIR)\public\xdk\lib
+!endif
+
+!ifndef WSDK_INC_PATH
+WSDK_INC_PATH = $(BASEDIR)\public\wsdk\inc
+!endif
+
+!ifndef WSDK_LIB_PATH
+WSDK_LIB_PATH = $(BASEDIR)\public\wsdk\lib
+!endif
+
+!ifndef SDK_LIB_DEST
+SDK_LIB_DEST = $(BASEDIR)\public\sdk\lib
+!endif
+
+!ifndef DDK_INC_PATH
+DDK_INC_PATH = $(BASEDIR)\public\ddk\inc
+!endif
+
+!ifndef WDM_INC_PATH
+WDM_INC_PATH = $(DDK_INC_PATH)\wdm
+!endif
+
+!ifndef DDK_LIB_PATH
+DDK_LIB_PATH = $(BASEDIR)\public\sdk\lib\*
+!endif
+
+!ifndef DDK_LIB_DEST
+DDK_LIB_DEST = $(BASEDIR)\public\sdk\lib
+!endif
+
+!ifndef CRT_INC_PATH
+CRT_INC_PATH = $(BASEDIR)\public\sdk\inc\crt
+!endif
+
+!ifndef CRT_LIB_PATH
+CRT_LIB_PATH = $(BASEDIR)\public\sdk\lib\*
+!endif
+
+!ifndef OAK_INC_PATH
+OAK_INC_PATH = $(BASEDIR)\public\oak\inc
+!endif
+
+!ifndef PRIVATE_INC_PATH
+PRIVATE_INC_PATH = $(BASEDIR)\private\inc
+!endif
+
+!ifndef MASTER_VERSION_FILE
+MASTER_VERSION_FILE = $(SDK_INC_PATH)\ntverp.h
+DEFAULT_VERSION_FILE=1
+!endif
+
+
+#
+# Select build target and set platform specific variables.
+#
+
+!INCLUDE makefile.plt
+
+
+#
+#  IDL/RDL/TDL build rules.
+#
+
+!ifdef IDL_RULES
+IDL_OUT_DIR =.
+IDL_HDR_OUT_DIR =.
+RDL_OUT_DIR =.
+RDL_HDR_OUT_DIR =.
+
+! ifndef MIDL_INCS
+MIDL_INCS = $(_OBJ_DIR)\$(TARGET_DIRECTORY)
+! endif
+
+! ifndef MC_OUT_DIR
+MC_OUT_DIR = $(_OBJ_DIR)\$(TARGET_DIRECTORY)
+! endif
+!endif
+
+!ifndef LANGUAGE
+LANGUAGE=usa
+!endif
+
+# define a simple macro that can be used for the object subdir in makefile.inc/sources files
+
+O = $(_OBJ_DIR)\$(TARGET_DIRECTORY)
+
+#
+# Include the developer supplied file that defines the TARGETNAME, TARGETPATH,
+# TARGETTYPE and SOURCES macros.  Make sure it defines them.
+#
+
+!if defined(USE_ICECAP) || defined(USE_ICECAP4) || defined(USE_DLP)
+! ifdef USE_ICECAP
+PERFFLAGS=-Gh
+PERFLIBS=$(SDK_LIB_PATH)\icap.lib
+! else
+!  ifdef USE_ICECAP4
+PERFFLAGS=/fastcap
+PERFLIBS=$(SDK_LIB_PATH)\icecap.lib
+!  else # USE_DLP
+PERFFLAGS=/dlp
+PERFLIBS=$(SDK_LIB_PATH)\icecap.lib
+!  endif
+! endif
+! if $(FREEBUILD)
+NTDEBUG=ntsdnodbg
+! else
+NTDEBUG=ntsd
+! endif
+NTDEBUGTYPE=windbg
+NTBBT=1
+!endif
+
+SUBSYSTEM_VERSION_CURRENT=4.10
+
+LATEST_WIN32_IE_VERSION=0x0501
+LATEST_WIN32_WINNT_VERSION=0x0500
+LATEST_WIN32_WIN95_VERSION=0x0400
+
+!INCLUDE .\sources.
+SOURCES_USED=$(SOURCES_USED) .\sources
+
+!IF EXIST(.\$(TARGET_DIRECTORY)\sources.)
+! INCLUDE .\$(TARGET_DIRECTORY)\sources.
+SOURCES_USED=$(SOURCES_USED) .\$(TARGET_DIRECTORY)\sources.
+!ENDIF
+
+#
+# Attempt to include the sources file from the parent target subdirectory.
+#
+
+!IF EXIST(..\$(TARGET_DIRECTORY)\sources.)
+! INCLUDE ..\$(TARGET_DIRECTORY)\sources.
+SOURCES_USED=$(SOURCES_USED) ..\$(TARGET_DIRECTORY)\sources.
+!ENDIF
+
+!if defined(LOCALIZED_RESOURCES) && !defined(RCCODEPAGE)
+! if "$(LANGUAGE)" == "JPN" || "$(LANGUAGE)" == "jpn"
+RCCODEPAGE=932
+! elseif "$(LANGUAGE)" == "KOR" || "$(LANGUAGE)" == "kor"
+RCCODEPAGE=949
+! elseif "$(LANGUAGE)" == "CHS" || "$(LANGUAGE)" == "chs"
+RCCODEPAGE=936
+! elseif "$(LANGUAGE)" == "CHP" || "$(LANGUAGE)" == "chp"
+RCCODEPAGE=936
+! elseif "$(LANGUAGE)" == "CHT" || "$(LANGUAGE)" == "cht"
+RCCODEPAGE=950
+! endif
+!endif
+
+#
+# Attempt to include the sources file from the target subdirectory.
+#
+
+!if !defined(NODEVKIT)
+#
+# Define dev kit builds for now.  Someday this will live somewhere logical
+#
+C_DEFINES=$(C_DEFINES) -DDEVKIT
+ASM_DEFINES=$(ASM_DEFINES) -DDEVKIT
+
+#
+# Enable profiling support only if _XBOX_ENABLE_PROFILING variable is set
+#
+!if defined(_XBOX_ENABLE_PROFILING)
+C_DEFINES=$(C_DEFINES) -D_XBOX_ENABLE_PROFILING
+ASM_DEFINES=$(ASM_DEFINES) -D_XBOX_ENABLE_PROFILING
+!endif
+
+!else
+#
+# Retail builds.  Further control with RETAILXM3 environment variable
+#
+!if defined(RETAILXM3)
+C_DEFINES=$(C_DEFINES) -DRETAILXM3
+ASM_DEFINES=$(ASM_DEFINES) -DRETAILXM3
+!endif
+!if defined(RETAILXM3P)
+C_DEFINES=$(C_DEFINES) -DRETAILXM3P
+ASM_DEFINES=$(ASM_DEFINES) -DRETAILXM3P
+!endif
+
+!endif
+
+#
+# Build using COMPLEX's hacks.
+#
+!if defined(COMPLEX)
+C_DEFINES=$(C_DEFINES) -DCOMPLEX
+ASM_DEFINES=$(ASM_DEFINES) -DCOMPLEX
+!endif
+
+#
+# Build for the focus TV encoder instead of the default 871.
+#
+!if defined(FOCUS)
+C_DEFINES=$(C_DEFINES) -DFOCUS
+ASM_DEFINES=$(ASM_DEFINES) -DFOCUS
+!endif
+
+#
+# Set far east specific defines based on the project
+#
+DO_FE_SB=0
+
+!if "$(ALT_PROJECT)" == "FE"  || \
+    "$(ALT_PROJECT)" == "CHT" || \
+    "$(ALT_PROJECT)" == "CHS" || \
+    "$(ALT_PROJECT)" == "CHP" || \
+    "$(ALT_PROJECT)" == "JPN" || \
+    "$(ALT_PROJECT)" == "KOR" || \
+    "$(ALT_PROJECT)" == "NEC_98"
+C_DEFINES=$(C_DEFINES) -DDBCS -DKKBUGFIX
+ASM_DEFINES=$(ASM_DEFINES) -DDBCS -DKKBUGFIX
+DO_FE_SB=1
+!endif
+
+!if "$(ALT_PROJECT)" == "CHT"
+C_DEFINES=$(C_DEFINES) -DTAIWAN
+ASM_DEFINES=$(ASM_DEFINES) -DTAIWAN
+!elseif "$(ALT_PROJECT)" == "CHS" || "$(ALT_PROJECT)" == "CHP"
+C_DEFINES=$(C_DEFINES) -DPRC
+ASM_DEFINES=$(ASM_DEFINES) -DPRC
+!elseif "$(ALT_PROJECT)" == "JPN"
+C_DEFINES=$(C_DEFINES) -DJAPAN
+ASM_DEFINES=$(ASM_DEFINES) -DJAPAN
+!elseif "$(ALT_PROJECT)" == "KOR"
+C_DEFINES=$(C_DEFINES) -DKOREA
+ASM_DEFINES=$(ASM_DEFINES) -DKOREA
+!elseif "$(ALT_PROJECT)" == "NEC_98"
+C_DEFINES=$(C_DEFINES) -DJAPAN -DNEC_98
+ASM_DEFINES=$(ASM_DEFINES) -DJAPAN -DNEC_98
+!elseif "$(ALT_PROJECT)" != ""
+C_DEFINES=$(C_DEFINES) -D_$(ALT_PROJECT)_
+!endif
+
+!IF "$(ALT_PROJECT)" == "HYDRA"
+ASM_DEFINES=$(ASM_DEFINES) -D_HYDRA_
+HYDRA=1
+!ENDIF
+
+!IF "$(ALT_PROJECT)" == "JANUS"
+ASM_DEFINES=$(ASM_DEFINES) -D_JANUS_
+C_DEFINES=$(C_DEFINES) -D_JANUS_
+JANUS=1
+!ENDIF
+
+!IF ("$(NO_W32_SB)" == "" && "$(W32_SB)" == "1")
+DO_FE_SB=1
+! ENDIF
+
+!IF "$(DO_FE_SB)" == "1"
+C_DEFINES=$(C_DEFINES) -DFE_SB -DFE_IME
+ASM_DEFINES=$(ASM_DEFINES) -DFE_SB
+!ENDIF
+
+!IF "$(ALT_PROJECT)" == "DS"
+# Nothing, just -D_DS_ from above
+!ENDIF
+
+!IF "$(DSLIBRARY)" == ""
+DSLIBRARY=$(BASEDIR)\public\sdk\lib
+!ENDIF
+
+!ifdef RESOURCE_ONLY_DLL
+# Resource only DLL's have no exports, no entrypoint, no code, no data, no debug symbolic.
+NTDEBUGTYPE=
+NTDEBUG=
+LINKER_DBG_SECTION=-debug:NONE
+!undef NTBBT
+!undef DLLENTRY
+LINK_NO_RELEASE=1
+MAKEDLL=1
+TARGETLIBS=
+LINKLIBS=
+USE_NOLIBS=1
+NO_NTDLL=1
+!else
+LINKER_DBG_SECTION=-debug:FULL
+!endif
+
+!ifdef DEFAULT_VERSION_FILE
+# ! if "$(C_DEFINES)" != "$(C_DEFINES:DNASHVILLE=)"
+# MASTER_VERSION_FILE=$(MASTER_VERSION_FILE) $(SDK_INC_PATH)\ieverp.h
+# ! endif
+!endif
+
+!IFNDEF TARGETPATH
+! ERROR Your .\sources. file must define the TARGETPATH= macro
+!ENDIF
+
+!if "$(TARGETPATH)" == "obj" || "$(TARGETPATH)" == "OBJ"
+TARGETPATH=$(_OBJ_DIR)
+!endif
+
+!ifdef TARGETPATHLIB
+! if ("$(TARGETTYPE)" == "DYNLINK") || ("$(TARGETTYPE)" == "EXPORT_DRIVER")
+!  if "$(MAKEDLL)" == ""
+# Pass 1 of a two pass build.  Make sure TargetPath is the same as targetpathlib.
+NO_BROWSER_FILE=1
+TARGETPATH=$(TARGETPATHLIB)
+!  endif
+! endif
+!else
+TARGETPATHLIB=$(TARGETPATH)
+!endif
+
+!IF ("$(TARGETPATH)" == "$(BASEDIR)\lib") || ("$(TARGETPATH)" == "$(BASEDIR)\LIB")
+!  ERROR Setting TARGETPATH= $(BASEDIR)\lib in .\sources is not valid - please use obj.
+!ENDIF
+
+!IFNDEF TARGETTYPE
+! ERROR Your .\sources. file must define the TARGETTYPE= macro
+!ENDIF
+
+!IFNDEF TARGETNAME
+! IF "$(TARGETTYPE)" != "NOTARGET"
+!  ERROR Your .\sources. file must define the TARGETNAME= macro
+! ELSE
+TARGETNAME=
+! ENDIF
+!ENDIF
+
+!IFNDEF SOURCES
+! ERROR Your .\sources. file must define the SOURCES= macro
+!ENDIF
+
+!if ("$(BUILD_ALT_DIR)" != "" && "$(BUILD_ALT_DIR)" != "d")
+! if ("$(UMAPPL:*=X)" != "$(UMAPPL)")
+!  error Can't use multiple UMAPPL with Alternate Directories (other than "d")
+! elseif ("$(UMTEST:*=X)" != "$(UMTEST)")
+!  error Can't use multiple UMTEST with Alternate Directories (other than "d")
+! endif
+!endif
+
+!ifndef COFFBASE_TXT_FILE
+COFFBASE_TXT_FILE = $(SDK_LIB_DEST)\coffbase.txt
+!endif
+
+# Debug libraries are named with a d suffix
+!if $(FREEBUILD)
+D =
+!else
+D = d
+DEBUG_CRTS=1
+!endif
+
+# Secure libraries are named with an s suffix
+
+!if ("$(SECUREBUILD)" == "1")
+S = s
+!else
+S =
+!endif
+
+!IF "$(UMTYPE)" == "windows" || "$(UMTYPE)" == "console"
+! IFNDEF UMBASE
+!  IFDEF COFFBASE
+UMBASE=@$(COFFBASE_TXT_FILE),$(COFFBASE)
+!  ELSE
+UMBASE=@$(COFFBASE_TXT_FILE),usermode
+!  ENDIF
+! ENDIF
+!ENDIF
+
+LINKLIBS=$(LINKLIBS) $(PERFLIBS)
+
+!ifdef USE_VS70_RULES
+
+!if defined(USE_MFC) || defined(USE_MFC_UNICODE)
+! if $(MFC_VER) >= 70
+USE_STATIC_ATL=1
+! endif
+!endif
+
+!ifndef ATL_VER
+ATL_VER=21
+!endif
+
+!ifndef ATL_INC_PATH
+ATL_INC_PATH=$(CRT_INC_PATH)\atl
+!endif
+
+!ifndef ATL_LIB_PATH
+ATL_LIB_PATH=$(CRT_LIB_PATH)
+!endif
+
+!if defined(USE_ATL)
+ATL_INCLUDES=$(ATL_INC_PATH)
+ATL_FLAGS=/D_ATL_DISABLE_DEPRECATED
+! if "$(ATL_VER)" == "10"
+ATL_LIBS=
+! else
+ATL_LIBS=$(ATL_LIB_PATH)\atl.lib
+!  if "$(ATL_VER)" == "70"
+!   ifdef DEBUG_CRTS
+ATL_LIBS=$(ATL_LIBS) $(ATL_LIB_PATH)\atlsd.lib 
+!   else
+ATL_LIBS=$(ATL_LIBS) $(ATL_LIB_PATH)\atls.lib
+!   endif
+!  endif
+! endif
+!elseif defined(USE_STATIC_ATL)
+ATL_INCLUDES=$(ATL_INC_PATH)
+ATL_LIBS=
+ATL_FLAGS=/D_ATL_STATIC_REGISTRY /D_ATL_DISABLE_DEPRECATED
+! if "$(ATL_VER)" == "70"
+!  ifdef DEBUG_CRTS
+ATL_LIBS=$(ATL_LIBS) $(ATL_LIB_PATH)\atlsd.lib 
+!  else
+ATL_LIBS=$(ATL_LIBS) $(ATL_LIB_PATH)\atls.lib
+!  endif
+! endif
+!endif
+
+ATL_FLAGS=$(ATL_FLAGS) /DATL_NO_LEAN_AND_MEAN
+
+
+!else # USE_VS70_RULES
+
+!ifndef ATL_VER
+ATL_VER=21
+!endif
+
+!if defined(USE_ATL)
+ATL_INCLUDES=$(SDK_INC_PATH)\atl$(ATL_VER)
+ATL_DEFINES=/D_ATL_DLL
+! if "$(ATL_VER)" == "10" || "$(ATL_VER)" == "30"
+ATL_LIBS=
+! else
+ATL_LIBS=$(SDK_LIB_PATH)\atl.lib $(ADDITIONAL_ATL_LIBS)
+! endif
+!elseif defined(USE_STATIC_ATL)
+ATL_INCLUDES=$(SDK_INC_PATH)\atl$(ATL_VER)
+ATL_LIBS=$(ADDITIONAL_ATL_LIBS)
+ATL_DEFINES=/D_ATL_STATIC_REGISTRY
+!endif
+
+!endif # USE_VS70_RULES
+
+!IF DEFINED(USE_MFC) || DEFINED(USE_MFCUNICODE)
+
+#!ifdef USE_LATEST_MFC
+#PLATFORM_MFC_VER=0x0600
+#!endif
+!if "$(PLATFORM_MFC_VER)" != "0x0600"
+# MFC versions before 6.0 need NT4/Win95 values.  Override at your own risk.
+!ifndef WIN32_WINNT_VERSION
+WIN32_WINNT_VERSION=0x0400
+!endif
+!ifndef WIN32_IE_VERSION
+WIN32_IE_VERSION=0x0300
+!endif
+!else   # MFC post 6x defaults to the current version of IE/Win2k.
+!ifndef WIN32_WINNT_VERSION
+WIN32_WINNT_VERSION=$(LATEST_WIN32_WINNT_VERSION)
+!endif
+!ifndef WIN32_IE_VERSION
+WIN32_IE_VERSION=$(LATEST_WIN32_IE_VERSION)
+!endif
+!endif
+
+!ifndef WIN32_WIN95_VERSION
+WIN32_WIN95_VERSION=0x0400
+!endif
+
+#---------------------------------------------------------#
+# this set of defines establishes the "correct" build     #
+# environment for an app that needs to use MFC.  the      #
+# app's sources file only needs to specify USE_MFC=1      #
+# and this makefile will set the enviroment up correctly. #
+#---------------------------------------------------------#
+
+! ifndef UMENTRY
+!  ifdef USE_MFCUNICODE
+UMENTRY=wwinmain
+!  else
+UMENTRY=winmain
+!  endif
+! endif
+
+! if "$(TARGETTYPE)" == "DYNLINK"
+!  ifndef DLLENTRY
+DLLENTRY=_DllMainCRTStartup
+!  endif
+! endif
+
+UMENTRYABS=
+
+# Allow other MFC's.
+#  To do so, you need to:
+#    1. Define MFC_INCLUDES to point to your MFC headers.
+#    2. Define MFC_LIBS to point to your MFC libraries (specifically, the dll
+#       library)
+#    3. Define USE_MSVCRT=1 if you don't want to link with the NT CRT DLL.
+#
+#  Note:
+#     There is only one type of build (_AFXDLL or MFC in a DLL linking to the
+#     CRT in a dll).
+#     You should disable the alternate MFC's if compiling for RISC platforms.
+#     You need to handle specifying the correct libs for Check/Free and
+#     Ansi/Unicode.
+
+! if !defined(USE_MSVCRT) && !defined(USE_NOLIBS) && !defined(USE_MSVCRT40)
+!  if defined(USE_STATIC_MFC)
+USE_LIBCMT=1
+!  else
+USE_CRTDLL=1
+!  endif
+! endif
+
+# Add MFC_FLAGS in just in case there's old sources files that use it.
+
+MFC_DEFINES=$(MFC_DEFINES) $(MFC_FLAGS) -D_AFX_NOFORCE_LIBS -D_MFC_VER=$(PLATFORM_MFC_VER)
+
+! ifdef DEBUG_CRTS
+MFC_DEFINES=$(MFC_DEFINES) -D_AFX_ENABLE_INLINES
+! endif
+
+! IFDEF USE_MFCUNICODE
+UNICODE=1
+MFC_DEFINES=$(MFC_DEFINES) -DUNICODE -D_UNICODE
+! ENDIF
+
+# Assume Latest MFC (4.0 for now)
+
+! ifndef USE_STATIC_MFC
+MFC_DEFINES=$(MFC_DEFINES) -D_AFXDLL
+LINKER_FLAGS = $(LINKER_FLAGS) /include:__afxForceSTDAFX
+! endif
+! ifdef MFC_USRDLL
+MFC_DEFINES=$(MFC_DEFINES) -D_USRDLL
+LINKER_FLAGS = $(LINKER_FLAGS) /include:__afxForceUSRDLL
+! endif
+
+# MFC 4 uses Native EH only
+
+USE_NATIVE_EH=1
+USE_RTTI=1
+
+# UNICODE must use the UNICODE entrypoint
+
+! ifdef USE_MFCUNICODE
+!  if "$(UMENTRY)" == "winmain"
+UMENTRY = wwinmain
+!  else if "$(UMENTRY)" == "main"
+UMENTRY = wmain
+!  endif
+! endif
+
+! ifndef MFC_VER
+MFC_VER=42
+! else if "$(MFC_VER)" == "40" && !defined(USE_STATIC_MFC)
+!undef USE_MSVCRT
+!undef USE_CRTDLL
+USE_MSVCRT40=1
+! endif
+
+! ifndef MFC_DAO_INC
+MFC_DAO_INC=$(BASEDIR)\public\sdk\inc\dao350
+! endif
+
+! ifdef USE_VS70_RULES
+
+!  ifndef MFC_INC_PATH
+MFC_INC_PATH=$(CRT_INC_PATH)\mfc;$(MFC_DAO_INC)
+!   ifdef MFC_LANGUAGE
+MFC_INC_PATH=$(CRT_INC_PATH)\mfc\l.$(MFC_LANGUAGE);$(MFC_INC_PATH)
+!   endif
+!  endif
+
+!  ifndef MFC_LIB_PATH
+MFC_LIB_PATH = $(BASEDIR)\public\sdk\lib\*
+!  endif
+
+
+!  ifndef MFC_INCLUDES
+MFC_INCLUDES=$(MFC_INC_PATH)\mfc$(MFC_VER);$(MFC_DAO_INC)
+!   ifdef MFC_LANGUAGE
+MFC_INCLUDES=$(MFC_INC_PATH)\mfc$(MFC_VER)\l.$(MFC_LANGUAGE);$(MFC_INCLUDES)
+!   endif
+!  endif
+
+!  ifndef MFC_LIBS
+!   ifdef USE_STATIC_MFC
+
+!    ifdef DEBUG_CRTS
+!     ifdef USE_MFCUNICODE
+MFC_STATIC_LIB =
+MFC_LIBS=$(MFC_LIB_PATH)\uafxcwd.lib
+!     else
+MFC_STATIC_LIB =
+MFC_LIBS=$(MFC_LIB_PATH)\nafxcwd.lib
+!     endif
+!    else
+!     ifdef USE_MFCUNICODE
+MFC_STATIC_LIB =
+MFC_LIBS=$(MFC_LIB_PATH)\uafxcw.lib
+!     else
+MFC_STATIC_LIB =
+MFC_LIBS=$(MFC_LIB_PATH)\nafxcw.lib
+!     endif
+!    endif
+
+!   else               # USE_STATIC_MFC
+
+!    ifdef DEBUG_CRTS
+!     ifdef USE_MFCUNICODE
+MFC_STATIC_LIB = $(MFC_LIB_PATH)\mfcs$(MFC_VER)ud.lib
+MFC_LIBS=$(MFC_LIB_PATH)\mfc$(MFC_VER)ud.lib  \
+         $(MFC_LIB_PATH)\mfcd$(MFC_VER)ud.lib \
+         $(MFC_LIB_PATH)\mfcn$(MFC_VER)ud.lib \
+         $(MFC_LIB_PATH)\mfco$(MFC_VER)ud.lib
+!     else
+MFC_STATIC_LIB = $(MFC_LIB_PATH)\mfcs$(MFC_VER)d.lib
+MFC_LIBS=$(MFC_LIB_PATH)\mfc$(MFC_VER)d.lib
+!      if $(MFC_VER) < 70
+MFC_LIBS=$(MFC_LIBS) \
+         $(MFC_LIB_PATH)\mfcd$(MFC_VER)d.lib \
+         $(MFC_LIB_PATH)\mfcn$(MFC_VER)d.lib \
+         $(MFC_LIB_PATH)\mfco$(MFC_VER)d.lib
+!      endif
+!     endif
+!    else
+!     ifdef USE_MFCUNICODE
+MFC_STATIC_LIB = $(MFC_LIB_PATH)\mfcs$(MFC_VER)u.lib
+MFC_LIBS=$(MFC_LIB_PATH)\mfc$(MFC_VER)u.lib
+!     else
+MFC_STATIC_LIB = $(SDK_LIB_PATH)\mfcs$(MFC_VER).lib
+MFC_LIBS=$(MFC_LIB_PATH)\mfc$(MFC_VER).lib
+!     endif
+!    endif
+MFC_LIBS=$(MFC_STATIC_LIB) $(MFC_LIBS)
+
+!   endif              # USE_STATIC_MFC
+!  endif               # MFC_LIBS
+
+! else                 # USE_VS70_RULES 
+
+!  ifndef MFC_INCLUDES
+MFC_INCLUDES=$(SDK_INC_PATH)\mfc$(MFC_VER);$(MFC_DAO_INC)
+!   ifdef MFC_LANGUAGE
+MFC_INCLUDES=$(SDK_INC_PATH)\mfc$(MFC_VER)\l.$(MFC_LANGUAGE);$(MFC_INCLUDES)
+!   endif
+!  endif
+
+!  ifndef MFC_LIBS
+!   ifdef USE_STATIC_MFC
+
+!    ifdef DEBUG_CRTS
+!     ifdef USE_MFCUNICODE
+MFC_STATIC_LIB =
+MFC_LIBS=$(SDK_LIB_PATH)\uafxcwd.lib
+!     else
+MFC_STATIC_LIB =
+MFC_LIBS=$(SDK_LIB_PATH)\nafxcwd.lib
+!     endif
+!    else
+!     ifdef USE_MFCUNICODE
+MFC_STATIC_LIB =
+MFC_LIBS=$(SDK_LIB_PATH)\uafxcw.lib
+!     else
+MFC_STATIC_LIB =
+MFC_LIBS=$(SDK_LIB_PATH)\nafxcw.lib
+!     endif
+!    endif
+
+!   else               # USE_STATIC_MFC
+
+!    ifdef DEBUG_CRTS
+!     ifdef USE_MFCUNICODE
+MFC_STATIC_LIB = $(SDK_LIB_PATH)\mfcs$(MFC_VER)ud.lib
+MFC_LIBS=$(SDK_LIB_PATH)\mfc$(MFC_VER)ud.lib  \
+         $(SDK_LIB_PATH)\mfcd$(MFC_VER)ud.lib \
+         $(SDK_LIB_PATH)\mfcn$(MFC_VER)ud.lib \
+         $(SDK_LIB_PATH)\mfco$(MFC_VER)ud.lib
+!     else
+MFC_STATIC_LIB = $(SDK_LIB_PATH)\mfcs$(MFC_VER)d.lib
+MFC_LIBS=$(SDK_LIB_PATH)\mfc$(MFC_VER)d.lib  \
+         $(SDK_LIB_PATH)\mfcd$(MFC_VER)d.lib \
+         $(SDK_LIB_PATH)\mfcn$(MFC_VER)d.lib \
+         $(SDK_LIB_PATH)\mfco$(MFC_VER)d.lib
+!     endif
+!    else
+!     ifdef USE_MFCUNICODE
+MFC_STATIC_LIB = $(SDK_LIB_PATH)\mfcs$(MFC_VER)u.lib
+MFC_LIBS=$(SDK_LIB_PATH)\mfc$(MFC_VER)u.lib
+!     else
+MFC_STATIC_LIB = $(SDK_LIB_PATH)\mfcs$(MFC_VER).lib
+MFC_LIBS=$(SDK_LIB_PATH)\mfc$(MFC_VER).lib
+!     endif
+!    endif
+MFC_LIBS=$(MFC_STATIC_LIB) $(MFC_LIBS)
+
+!   endif              # USE_STATIC_MFC
+!  endif               # MFC_LIBS
+
+!endif                 # USE_VS70_RULES
+
+!endif                 # USE_MFC
+
+!IFNDEF UMTYPE
+!if "$(TARGETTYPE)" == "DYNLINK"
+UMTYPE=console
+!ifndef SUBSYSTEM_VERSION
+SUBSYSTEM_VERSION=$(SUBSYSTEM_VERSION_CURRENT)
+!endif
+!else
+UMTYPE=nt
+!endif
+!ENDIF
+
+!ifdef USE_MFC30
+LIBC_DEFINES=
+!else
+! ifdef DEBUG_CRTS
+DCRT=d
+!if !defined(LIBC_DEFINES)
+LIBC_DEFINES = -D_DEBUG
+!endif
+! else
+DCRT=
+!if !defined(LIBC_DEFINES)
+LIBC_DEFINES = -DNDEBUG
+!endif
+! endif
+!endif
+
+# For all but X86, MSVCRT20==MSVCRT40==CRTDLL==MSVCRT
+!if "$(TARGET_DIRECTORY)" != "i386"
+! if defined(USE_MSVCRT20)
+USE_MSVCRT=1
+!  undef USE_MSVCRT20
+! elseif defined(USE_MSVCRT40)
+USE_MSVCRT=1
+!  undef USE_MSVCRT40
+! elseif defined(USE_CRTDLL)
+USE_MSVCRT=1
+!  undef USE_CRTDLL
+! endif
+!endif
+
+!if "$(UMTYPE)" == "windows" || "$(UMTYPE)" == "console"
+! ifdef USE_VS70_RULES
+
+# we expect CRT_LIB_PATH to be passed in from vsenv.inc
+
+! else
+!  ifdef USE_VC7_WINDOWS
+CRT_LIB_PATH = $(WSDK_LIB_PATH)\crt70
+!  else
+CRT_LIB_PATH = $(WSDK_LIB_PATH)
+!  endif
+!  ifndef USE_VC7_WINDOWS
+USE_VC7=0
+!  endif
+! endif
+!elseif "$(UMTYPE)" == "xboxapp" || "$(UMTYPE)" == "xboxdll"
+CRT_LIB_PATH = $(XDK_LIB_PATH)
+CRT_INC_PATH = $(XDK_INC_PATH)
+!endif
+
+!if !$(USE_VC7)
+VC_PATH=$(BASEDIR)\public\mstools\vc60^\
+!endif
+
+!if defined(USE_CRTDLL) || defined(USE_MSVCRT)
+
+! if !$(MPPC)
+LIBC_LIB=$(CRT_LIB_PATH)\msvcrt$(DCRT).lib
+!  if defined(USE_IOSTREAM)
+LIBC_LIB=$(LIBC_LIB) $(CRT_LIB_PATH)\msvcirt$(DCRT).lib
+!  endif
+!  if defined(USE_STL)
+LIBC_LIB=$(LIBC_LIB) $(CRT_LIB_PATH)\msvcprt$(DCRT).lib
+!  endif
+LIBC_DEFINES=$(LIBC_DEFINES) -D_DLL=1 -D_MT=1
+! endif
+
+!elseif defined(USE_IERT)
+
+LIBC_LIB=$(CRT_LIB_PATH)\iert.lib
+LIBC_DEFINES=$(LIBC_DEFINES) -D_MT=1
+
+!elseif defined(USE_LIBCMT)
+
+LIBC_LIB=$(CRT_LIB_PATH)\libcmt$(DCRT).lib
+! if defined(USE_IOSTREAM)
+LIBC_LIB=$(LIBC_LIB) $(CRT_LIB_PATH)\libcimt$(DCRT).lib
+! endif
+! if defined(USE_STL)
+LIBC_LIB=$(LIBC_LIB) $(CRT_LIB_PATH)\libcpmt$(DCRT).lib
+! endif
+LIBC_DEFINES=$(LIBC_DEFINES) -D_MT=1
+
+!elseif defined(USE_LIBCNTPR)
+
+LIBC_LIB=$(SDK_LIB_PATH)\libcntpr.lib
+
+!elseif (defined(USE_NTDLL) || \
+       "$(TARGETTYPE)" == "DRIVER" || \
+       "$(TARGETTYPE)" == "EXPORT_DRIVER" || \
+       defined(USE_SYSDLL) )
+
+LIBC_DEFINES=$(LIBC_DEFINES) -D_DLL=1
+LIBC_LIB=
+
+!elseif defined(USE_NOLIBS) || \
+       "$(TARGETTYPE)" == "HAL" || \
+       "$(TARGETTYPE)" == "GDI_DRIVER"
+
+NO_NTDLL=1
+LIBC_LIB=
+
+!elseif defined(USE_MSVCRT20)
+
+LIBC_LIB=$(CRT_LIB_PATH)\msvcrt2$(DCRT).lib
+LIBC_DEFINES=$(LIBC_DEFINES) -D_DLL=1 -D_MT=1
+
+!elseif defined(USE_MSVCRT40)
+
+LIBC_LIB=$(CRT_LIB_PATH)\msvcrt4$(DCRT).lib
+LIBC_DEFINES=$(LIBC_DEFINES) -D_DLL=1 -D_MT=1
+
+!else
+
+LIBC_LIB=$(CRT_LIB_PATH)\libc$(DCRT).lib
+! if defined(USE_IOSTREAM)
+LIBC_LIB=$(LIBC_LIB) $(CRT_LIB_PATH)\libci$(DCRT).lib
+! endif
+! if defined(USE_STL)
+LIBC_LIB=$(LIBC_LIB) $(CRT_LIB_PATH)\libcp$(DCRT).lib
+! endif
+
+!endif
+
+!if defined(USE_VCCOM)
+LIBC_LIB = $(LIBC_LIB) $(SDK_LIB_PATH)\vccomsup.lib
+!endif
+
+!IFNDEF GPSIZE
+GPSIZE= 0
+!ENDIF
+
+!ifdef NTLIBPATH
+LIBRARY_PATH = $(NTLIBPATH)\*\lib
+!else
+!if (("$(UMTYPE)" == "windows") || ("$(UMTYPE)" == "console"))
+LIBRARY_PATH = $(WSDK_LIB_PATH)
+!elseif (("$(UMTYPE)" == "xboxapp") || ("$(UMTYPE)" == "xboxdll"))
+LIBRARY_PATH = $(XDK_LIB_PATH)
+!else
+LIBRARY_PATH = $(SDK_LIB_PATH)
+!endif
+!endif
+
+!if defined(USE_MFC) ||  defined(USE_MFCUNICODE)
+LIBC_LIB = $(MFC_LIBS) $(LIBC_LIB)
+!endif
+
+!if defined(USE_ATL) || defined(USE_STATIC_ATL)
+LIBC_LIB = $(LIBC_LIB) $(ATL_LIBS)
+# Piggy back on MFC_DEFINES for now.
+MFC_DEFINES = $(MFC_DEFINES) $(ATL_DEFINES)
+!endif
+
+NT_LIBS=$(LIBRARY_PATH)\ntdll.lib
+GUI32_LIBS=$(LIBRARY_PATH)\gdi32.lib \
+           $(LIBRARY_PATH)\user32.lib
+
+NT_CRT=$(LIBRARY_PATH)\nt.lib
+WIN32_LIBS=$(LIBC_LIB) \
+           $(LIBRARY_PATH)\advapi32.lib \
+           $(LIBRARY_PATH)\kernel32.lib
+
+!if defined(XNOLIBS)
+XBOX_LIBS=
+!else
+XBOX_LIBS=$(LIBRARY_PATH)\xapilib$(D).lib \
+          $(LIBC_LIB) \
+          $(LIBRARY_PATH)\xboxkrnl.lib
+!endif
+
+NTSS_LIBS=$(NT_LIBS) $(NT_CRT) $(SDK_LIB_PATH)\smdll.lib
+
+OS2_LIBS=$(NT_LIBS)  $(SDK_LIB_PATH)\os2dll.lib
+
+POSIX_LIBS=$(NT_LIBS) $(SDK_LIB_PATH)\libcpsx.lib \
+                      $(SDK_LIB_PATH)\psxdll.lib \
+                      $(SDK_LIB_PATH)\psxrtl.lib
+
+
+!if "$(DRIVERTYPE)" == "wdm" || "$(DRIVERTYPE)" == "WDM"
+# Building a WDM driver.  Default the subsystem version to the DDK version # (currently 1.0)
+! ifndef SUBSYSTEM_VERSION
+SUBSYSTEM_VERSION=1.10
+! endif
+!endif
+
+!ifndef SUBSYSTEM_VERSION
+! ifndef EXPECTED_WINVER
+SUBSYSTEM_WINVER   = ,4.00
+! else
+SUBSYSTEM_WINVER   = ,$(EXPECTED_WINVER)
+! endif
+SUBSYSTEM_CONVER   = ,4.00
+SUBSYSTEM_OS2VER   =
+SUBSYSTEM_POSIXVER =
+SUBSYSTEM_NATVER   = ,5.00
+SUBSYSTEM_XBOXVER  =
+!else
+SUBSYSTEM_WINVER   = ,$(SUBSYSTEM_VERSION)
+SUBSYSTEM_CONVER   = ,$(SUBSYSTEM_VERSION)
+SUBSYSTEM_OS2VER   = ,$(SUBSYSTEM_VERSION)
+SUBSYSTEM_POSIXVER = ,$(SUBSYSTEM_VERSION)
+SUBSYSTEM_NATVER   = ,$(SUBSYSTEM_VERSION)
+SUBSYSTEM_XBOXVER  = ,$(SUBSYSTEM_VERSION)
+
+# Set the appropriate default WIN32_xxxxx values
+
+! if "$(SUBSYSTEM_VERSION)" == "4.00"
+!  ifndef WIN32_WINNT_VERSION
+WIN32_WINNT_VERSION=0x0400
+!  endif
+!  ifndef WIN32_WINNT_VERSION
+WIN32_WIN95_VERSION=0x0400
+!  endif
+!  ifndef WIN32_IE_VERSION
+WIN32_IE_VERSION=0x0300
+!  endif
+! elseif "$(SUBSYSTEM_VERSION)" == "3.51"
+!  ifndef WIN32_WINNT_VERSION
+WIN32_WINNT_VERSION=0x0351
+!  endif
+!  ifndef WIN32_WIN95_VERSION
+WIN32_WIN95_VERSION=0x0300
+!  endif
+!  ifndef WIN32_IE_VERSION
+WIN32_IE_VERSION=0x0200
+!  endif
+!  ifndef WINVER_VERSION
+WINVER_VERSION=0x0400            # Special case - WINVER was 4.00 for NT 3.51
+!  endif
+! elseif "$(SUBSYSTEM_VERSION)" == "3.50"
+!  ifndef WIN32_WINNT_VERSION
+WIN32_WINNT_VERSION=0x0350
+!  endif
+!  ifndef WIN32_WIN95_VERSION
+WIN32_WIN95_VERSION=0x0300
+!  endif
+!  ifndef WIN32_IE_VERSION
+WIN32_IE_VERSION=0x0100
+!  endif
+!  ifndef WINVER_VERSION
+WINVER_VERSION=0x0400            # Special case - WINVER was 4.00 for NT 3.50
+!  endif
+! endif
+!endif
+
+# enable link-time optimization by default for free vc7 builds
+# !if $(FREEBUILD) && $(USE_VC7) && !defined(ENABLE_LINK_TIME_CODE_GENERATION)
+# ENABLE_LINK_TIME_CODE_GENERATION=1
+# !endif
+!ifndef ENABLE_LINK_TIME_CODE_GENERATION
+ENABLE_LINK_TIME_CODE_GENERATION=0
+!endif
+
+!IF "$(UMTYPE)" == "nt"
+
+SUBSYSTEM=native$(SUBSYSTEM_NATVER)
+UMINCL=$(CRT_INC_PATH)
+
+STD_CALL_ENTRY=1
+UMENTRY=-entry:NtProcessStartup
+
+UMLIBS=$(UMLIBS) $(NT_LIBS) $(NT_CRT)
+NOT_TERMINAL_SERVER_AWARE=1
+
+!ELSEIF "$(UMTYPE)" == "windows"
+
+SUBSYSTEM=windows$(SUBSYSTEM_WINVER)
+
+!ifdef USE_VS70_RULES
+UMINCL=$(CRT_INC_PATH)
+!else
+UMINCL=$(WSDK_INC_PATH)
+!endif
+
+!  IF "$(UMENTRY)" == "winmain"
+UMENTRY=-entry:WinMainCRTStartup
+!  ELSEIF "$(UMENTRY)" == "wwinmain"
+UMENTRY=-entry:wWinMainCRTStartup
+!  ELSEIF "$(UMENTRY)" == "wmain"
+UMENTRY=-entry:wmainCRTStartup
+!  ELSEIF "$(UMENTRYABS)" == ""
+UMENTRY=-entry:mainCRTStartup
+!  ELSE
+UMENTRY=-entry:$(UMENTRYABS)
+!  ENDIF
+
+UMLIBS=$(UMLIBS) $(WIN32_LIBS) $(GUI32_LIBS)
+
+!ELSEIF "$(UMTYPE)" == "xbox" || "$(UMTYPE)" == "xboxapp"
+SUBSYSTEM=xbox$(SUBSYSTEM_XBOXVER)
+LINKER_FLAGS=$(LINKER_FLAGS) -fixed:no
+! IFNDEF NOT_UNICODE
+C_DEFINES=$(C_DEFINES) -DUNICODE -D_UNICODE
+! ENDIF
+X86_CPU_OPTIMIZATION=/G6
+LINKER_STACKSIZE=-STACK:65536,65536
+
+!IF $(USE_VC7) && $(ENABLE_LINK_TIME_CODE_GENERATION)
+X86_CPU_OPTIMIZATION=$(X86_CPU_OPTIMIZATION) /GL
+LINKER_FLAGS=$(LINKER_FLAGS) /LTCG
+!ENDIF
+
+! IF "$(UMTYPE)" == "xbox"
+UMINCL=$(OAK_INC_PATH);$(SDK_INC_PATH);$(CRT_INC_PATH)
+
+!  IF "$(UMENTRY)" == "winmain"
+UMENTRY=-entry:WinMain
+!  ELSEIF "$(UMENTRYABS)" != ""
+UMENTRY=-entry:$(UMENTRYABS)
+!  ELSE
+UMENTRY=-entry:$(UMENTRY)
+!  ENDIF
+
+! ENDIF
+
+! IF "$(UMTYPE)" == "xboxapp"
+UMINCL=$(XDK_INC_PATH)
+NTBUILDXE=1
+UMENTRY=
+! ENDIF
+
+XE_FLAGS=$(XE_FLAGS) /NOLIBWARN
+
+! IF defined(XNOHARDDISK)
+XE_FLAGS=$(XE_FLAGS) /NOSETUPHD /INITFLAGS:0x00000000
+! ENDIF
+
+! IF defined(LINK_DSSTDFX)
+LINK_DSPIMAGE=dsstdfx
+! ENDIF
+
+! IF defined(LINK_DSPIMAGE)
+XE_FLAGS=$(XE_FLAGS) /INSERTFILE:$(_NT386TREE)\$(LINK_DSPIMAGE).bin,$(LINK_DSPIMAGE) /NOPRELOAD:$(LINK_DSPIMAGE)
+! ENDIF
+
+UMLIBS=$(UMLIBS) $(XBOX_LIBS)
+
+NOT_TERMINAL_SERVER_AWARE=1
+
+!ELSEIF "$(UMTYPE)" == "xboxdll"
+
+SUBSYSTEM=xbox$(SUBSYSTEM_XBOXVER)
+LINKER_FLAGS=$(LINKER_FLAGS) -driver -align:0x20
+! IFNDEF NOT_UNICODE
+C_DEFINES=$(C_DEFINES) -DUNICODE -D_UNICODE
+! ENDIF
+X86_CPU_OPTIMIZATION=/G6
+
+!IF $(USE_VC7) && $(ENABLE_LINK_TIME_CODE_GENERATION)
+X86_CPU_OPTIMIZATION=$(X86_CPU_OPTIMIZATION) /GL
+LINKER_FLAGS=$(LINKER_FLAGS) /LTCG
+!endif
+
+UMINCL=$(OAK_INC_PATH);$(SDK_INC_PATH);$(CRT_INC_PATH)
+
+NOT_TERMINAL_SERVER_AWARE=1
+
+!ELSEIF "$(UMTYPE)" == "console"
+
+SUBSYSTEM=console$(SUBSYSTEM_CONVER)
+UMINCL=$(WSDK_INC_PATH)
+
+! IF "$(UMENTRY)" == "winmain"
+UMENTRY=-entry:WinMainCRTStartup
+! ELSEIF "$(UMENTRY)" == "wwinmain"
+UMENTRY=-entry:wWinMainCRTStartup
+! ELSEIF "$(UMENTRY)" == "wmain"
+UMENTRY=-entry:wmainCRTStartup
+! ELSEIF "$(UMENTRYABS)" == ""
+UMENTRY=-entry:mainCRTStartup
+! ELSE
+UMENTRY=-entry:$(UMENTRYABS)
+! ENDIF
+
+!IF !$(MPPC)
+UMLIBS=$(UMLIBS) $(WIN32_LIBS)
+!ENDIF
+
+!ELSEIF "$(UMTYPE)" == "ntss"
+
+SUBSYSTEM=native$(SUBSYSTEM_NATVER)
+UMINCL=$(CRT_INC_PATH)
+
+STD_CALL_ENTRY=1
+UMENTRY=-entry:NtProcessStartup
+NOT_TERMINAL_SERVER_AWARE=1
+
+!IF !$(MPPC)
+UMLIBS=$(UMLIBS) $(NTSS_LIBS)
+!ENDIF
+
+!ELSEIF "$(UMTYPE)" == "os2"
+
+SUBSYSTEM=os2$(SUBSYSTEM_OS2VER)
+UMINCL=$(SDK_INC_PATH)\os2;$(CRT_INC_PATH)
+
+STD_CALL_ENTRY=1
+UMENTRY=-entry:NtProcessStartup
+
+UMLIBS=$(UMLIBS) $(OS2_LIBS)
+
+!ELSEIF "$(UMTYPE)" == "posix"
+
+SUBSYSTEM=posix$(SUBSYSTEM_POSIXVER)
+UMINCL=$(SDK_INC_PATH)\posix;$(CRT_INC_PATH)
+
+UMENTRY=-entry:__PosixProcessStartup
+
+UMLIBS=$(UMLIBS) $(POSIX_LIBS)
+
+!ELSE
+! ERROR Invalid UMTYPE value - $(UMTYPE)
+!ENDIF  # UMTYPE tests
+
+
+#
+# If you edit this line you need to modify $(BASEDIR)\private\sdktools\build\build.c
+#
+
+NTINCLUDES=
+
+#
+# Let drivers include files such as ntddk.h.
+# WDM drivers\libs can only include wdm.h type of files though ...
+# DDK_INC_PATH must be first for precedence.
+#
+!IF "$(DRIVERTYPE)" == "wdm" || "$(DRIVERTYPE)" == "WDM"
+NTINCLUDES=$(NTINCLUDES);$(WDM_INC_PATH)
+!ELSEIF "$(TARGETTYPE)" == "DRIVER"        || \
+        "$(TARGETTYPE)" == "EXPORT_DRIVER" || \
+        "$(TARGETTYPE)" == "MINIPORT"      || \
+        "$(TARGETTYPE)" == "DRIVER_LIBRARY"
+NTINCLUDES=$(NTINCLUDES);$(DDK_INC_PATH);$(WDM_INC_PATH)
+!ENDIF
+
+!IFNDEF CBSTRING
+! IF "$(TARGETTYPE)" == "DRIVER"         || \
+     "$(TARGETTYPE)" == "DRIVER_LIBRARY" || \
+     "$(TARGETTYPE)" == "GDI_DRIVER"     || \
+     "$(TARGETTYPE)" == "HAL"            || \
+     "$(TARGETTYPE)" == "EXPORT_DRIVER"  || \
+     "$(TARGETTYPE)" == "MINIPORT"
+CBSTRING= -cbstring
+! ELSE
+CBSTRING=
+! ENDIF
+!ENDIF
+
+
+!if "$(TARGETTYPE)" == "DRIVER_LIBRARY"
+TARGETTYPE=LIBRARY
+!endif
+
+#
+#  Add PRIVATE_INC_PATH to NTINCLUDES, if NO_PRIVATE_INC is not set
+#
+!IF "$(UMTYPE)" != "xboxapp"
+! IFNDEF NO_PRIVATE_INC
+NTINCLUDES= $(NTINCLUDES);$(PRIVATE_INC_PATH)
+! ENDIF
+!ENDIF
+
+!IFNDEF COMPILER_WARNINGS
+COMPILER_WARNINGS=-FI$(SDK_INC_PATH)\warning.h
+!ifdef USE_LINT
+LINT_FORCEDINCS=$(LINT_FORCEDINCS) -header($(SDK_INC_PATH)\warning.h)
+!endif
+!ENDIF
+
+# If you change this to 600, fix MIDL_OPTIMIZATION default below.
+!ifndef WIN32_WINNT_VERSION
+WIN32_WINNT_VERSION=$(LATEST_WIN32_WINNT_VERSION)
+!endif
+
+!ifndef WIN32_WIN95_VERSION
+WIN32_WIN95_VERSION=$(LATEST_WIN32_WIN95_VERSION)
+!endif
+
+!ifndef WIN32_IE_VERSION
+WIN32_IE_VERSION=$(LATEST_WIN32_IE_VERSION)
+!endif
+
+!ifndef WINVER_VERSION
+!ifdef CHICAGO_PRODUCT
+WINVER_VERSION=$(WIN32_WIN95_VERSION)
+!else
+WINVER_VERSION=$(WIN32_WINNT_VERSION)
+!endif
+!endif
+
+!IF defined(CHICAGO_PRODUCT)
+NO_NTDLL=1
+! IFNDEF WIN32_DEFINE
+WIN32_DEFINE=-DWIN32=200 -D_CHICAGO_=200 -D_WIN32_WINDOWS=$(WIN32_WIN95_VERSION) -DWINVER=$(WINVER_VERSION)
+! ENDIF
+!ELSEIF $(MPPC)
+
+! IFNDEF MAC_INCLUDES
+MAC_INCLUDES=$(BASEDIR)\private\macdcom\dll\src\inc;
+MAC_INCLUDES=$(MAC_INCLUDES); $(BASEDIR)\public\sdk\inc\mppc;
+MAC_INCLUDES=$(MAC_INCLUDES); $(_NTDRIVE)\nt\public\sdk\inc;
+MAC_INCLUDES=$(MAC_INCLUDES); $(BASEDIR)\public\sdk\inc\mppc\macos;
+MAC_INCLUDES=$(MAC_INCLUDES); $(BASEDIR)\public\sdk\inc\mppc\mrc;
+! ENDIF
+
+NTINCLUDES= $(MAC_INCLUDES);$(NTINCLUDES);
+
+NO_NTDLL=1
+WIN32_DEFINE=-DPOWERMAC=1
+
+!ELSE
+WIN32_DEFINE=-DWIN32=100 -D_NT1X_=100 -DWINNT=1 -D_WIN32_WINNT=$(WIN32_WINNT_VERSION) -DWINVER=$(WINVER_VERSION)
+!ENDIF
+
+WIN32_DEFINE = $(WIN32_DEFINE) -D_WIN32_IE=$(WIN32_IE_VERSION)
+
+!IF "$(UMTYPE)" != "windows" && "$(UMTYPE)" != "console"
+
+# '_XBOX' is the equivalent of 'WINNT' for Xbox.  
+# 'XBOX' has been replaced by '_XBOX' (the VC build defines '_XBOX' but not 'XBOX')
+
+WIN32_DEFINE = $(WIN32_DEFINE) -D_XBOX -DXBOX=1
+
+! IF DEFINED(SILVER)
+WIN32_DEFINE = $(WIN32_DEFINE) -DSILVER=1
+! ELSEIF DEFINED(DVTSNOOPBUG)
+WIN32_DEFINE = $(WIN32_DEFINE) -DDVTSNOOPBUG=1
+! ENDIF
+
+# Env. variable SLOWPUSHER=1 means frame buffer view push buffer
+! IF !DEFINED(SLOWPUSHER)
+WIN32_DEFINE = $(WIN32_DEFINE) -DFASTPUSHER=1
+! ENDIF
+
+!ENDIF
+
+INCLUDES     = $(INCLUDES: =)
+NTINCLUDES   = $(NTINCLUDES: =)
+UMINCL       = $(UMINCL: =)
+MFC_INCLUDES = $(MFC_INCLUDES: =)
+USER_INCLUDES =$(USER_INCLUDES: =)
+ATL_INCLUDES = $(ATL_INCLUDES: =)
+
+# MFC, ATL, and USER first
+
+INCPATH0=-I$(MFC_INCLUDES:;= -I) -I$(ATL_INCLUDES:;= -I) -I$(USER_INCLUDES:;= -I)
+INCPATH1=-I$(MFC_INCLUDES:;= -I) -I$(ATL_INCLUDES:;= -I) -I$(USER_INCLUDES:;= -I)
+
+# INCLUDES if set
+
+!ifdef INCLUDES
+INCPATH0 = $(INCPATH0) -I$(INCLUDES:;= -I)
+INCPATH1 = $(INCPATH1) -I$(INCLUDES:;= -I)
+!endif
+
+# Finally NT and UM
+
+INCPATH0=$(INCPATH0) -I$(NTINCLUDES:;= -I) -I$(UMINCL:;= -I)
+INCPATH1=$(INCPATH1) -I$(NTINCLUDES:;= -I) -I$(UMINCL:;= -I)
+
+# Last Includes - picked this up from VC
+!IFDEF LAST_INCLUDES
+INCPATH0 = $(INCPATH0) -I$(LAST_INCLUDES:;= -I)
+INCPATH1 = $(INCPATH1) -I$(LAST_INCLUDES:;= -I)
+!ENDIF
+
+# Remove empty "-I " settings (INCL/NTINCLUDES/UMINCL/MFC_INCLUDES macros may be empty above)
+
+INCPATH0=$(INCPATH0:-I =)
+INCPATH1=$(INCPATH1:-I =)
+!ifdef USE_LINT
+LINT_INCLUDES=-i$(TARGET_DIRECTORY)\ -i. $(LINT_PRECOMPPATH) $(INCPATH1:-I=-i)
+!endif
+
+!IFNDEF DLLENTRY
+DLLENTRY=-noentry
+!ELSE
+! if "$(DLLENTRY:-entry:=)" == "$(DLLENTRY)"
+DLLENTRY=-entry:$(DLLENTRY)
+! endif
+!ENDIF
+
+!IF $(MPPC)
+DLLENTRY=-noentry
+!ENDIF
+
+!IFNDEF DLLBASE
+! IFDEF COFFBASE
+DLLBASE=@$(COFFBASE_TXT_FILE),$(COFFBASE)
+! ELSE
+DLLBASE=@$(COFFBASE_TXT_FILE),$(TARGETNAME)
+! ENDIF
+!ENDIF
+
+!IFNDEF DLLDEF
+DLLDEF=$(@B).def
+!ENDIF
+
+!IFNDEF BOOTBASE
+! IFDEF FRAZZLE
+BOOTBASE=0xd0100000,0xd0104000
+! ELSE
+BOOTBASE=0xd0ff0000,0xd0ff4000
+! ENDIF
+!ENDIF
+
+!IFNDEF DRIVERBASE
+DRIVERBASE=0x10000
+!ENDIF
+
+!IFNDEF HALBASE
+HALBASE=0x80010000
+!ENDIF
+
+#
+# Map lower case to upper case for variables that can be specified from the
+# command line.
+#
+
+!IFDEF nttest
+NTTEST=$(nttest)
+!ENDIF
+
+!IFDEF makedll
+MAKEDLL=$(makedll)
+!ENDIF
+
+!IFDEF umtest
+UMTEST=$(umtest)
+!ENDIF
+
+
+#
+# Include the list of object files (defined as the OBJECTS macro) that was
+# built by BUILD program, using the SOURCES= macro defined in the sources.
+# file.  Use macro substitution to build the supported target objects.
+#
+
+!INCLUDE obj\_objects.mac
+
+!IF $(386)
+OBJECTS=$(386_OBJECTS)
+DLLLIBOBJECTS=$(DLLLIBOBJECTS) $(386_DLLLIBOBJECTS)
+!ELSEIF $(AXP64)
+OBJECTS=$(AXP64_OBJECTS)
+DLLLIBOBJECTS=$(DLLLIBOBJECTS) $(AXP64_DLLLIBOBJECTS)
+!ELSEIF $(ALPHA)
+OBJECTS=$(ALPHA_OBJECTS)
+DLLLIBOBJECTS=$(DLLLIBOBJECTS) $(ALPHA_DLLLIBOBJECTS)
+!ELSEIF $(MPPC)
+OBJECTS=$(MPPC_OBJECTS)
+DLLLIBOBJECTS=$(DLLLIBOBJECTS) $(MPPC_DLLLIBOBJECTS)
+!ELSEIF $(IA64)
+OBJECTS=$(IA64_OBJECTS)
+DLLLIBOBJECTS=$(DLLLIBOBJECTS) $(IA64_DLLLIBOBJECTS)
+!ENDIF
+
+!ifdef MAC_RESOURCE
+MAC_RESOURCE_OBJECT=$(_OBJ_DIR)\$(TARGET_DIRECTORY)\$(MAC_RESOURCE:.r=.rsc)
+OBJECTS=$(OBJECTS) $(MAC_RESOURCE_OBJECT)
+!endif
+
+#
+# BUILD.EXE defines the NOLINK variable to disable the building of any
+# test executables when it is recursing on a dirs. file to build components
+# in subdirectories.
+#
+
+!IF "$(BUILDMSG)" != "Stop."
+! IFDEF NOLINK
+!  UNDEF NTTEST
+!  UNDEF MAKEDLL
+! ELSE
+!  IFDEF nolink
+!   UNDEF NTTEST
+!   UNDEF MAKEDLL
+!  ENDIF
+! ENDIF # DEF NOLINK
+!ENDIF # BUILDMSG != "Stop."
+
+!ifdef USE_VS70_RULES
+
+DYNLINK_LIB=$(TARGETPATHLIB)\$(TARGETNAME).lib
+
+!IF !$(MPPC)
+DYNLINK_EXP=$(TARGETPATHLIB)\$(TARGETNAME).exp
+!ENDIF
+
+!else #  USE_VS70_RULES
+DYNLINK_LIB=$(TARGETPATHLIB)\$(TARGET_DIRECTORY)\$(TARGETNAME).lib
+
+!IF !$(MPPC)
+DYNLINK_EXP=$(TARGETPATHLIB)\$(TARGET_DIRECTORY)\$(TARGETNAME).exp
+!ENDIF
+
+!endif #  USE_VS70_RULES
+
+#
+# Determine type of target link we are doing
+#
+!IF "$(TARGETTYPE)" == "PROGLIB"
+TARGETEXT=exe
+TARGETLIB=
+!ELSEIF "$(TARGETTYPE)" == "PROGRAM"
+TARGETEXT=exe
+TARGETLIB=
+!ELSEIF "$(TARGETTYPE)" == "DYNLINK"
+
+! IF "$(MAKEDLL)" != ""
+!  IF "$(UMTYPE)" == "xapi"
+TARGETLIB=
+
+!  ELSEIF "$(UMTYPE)" == "xboxdll"
+TARGETLIB=$(XBOX_LIBS)
+
+!  ELSEIF "$(UMTYPE)" == "os2"
+TARGETLIB=$(SDK_LIB_PATH)\ntdll.lib
+
+!  ELSEIF "$(UMTYPE)" == "posix"
+TARGETLIB=$(SDK_LIB_PATH)\libcpsx.lib $(SDK_LIB_PATH)\ntdll.lib
+
+!  ELSEIF "$(TARGETNAME)" == "ntdll"
+TARGETLIB=
+
+!  ELSEIF defined (USE_NTDLL)           # USE_NTDLL never links with LIBC_LIB
+TARGETLIB=$(WIN32DLL_LIBS) $(LIBRARY_PATH)\ntdll.lib
+
+!  ELSEIF defined (USE_SYSDLL)          # USE_SYSDLL uses either kernel32 (Win95) or ntdll (NT) for CRT support
+!   if defined(CHICAGO_PRODUCT)
+TARGETLIB=$(WIN32DLL_LIBS) $(LIBRARY_PATH)\kernel32.lib
+!   else
+TARGETLIB=$(WIN32DLL_LIBS) $(LIBRARY_PATH)\ntdll.lib
+!   endif
+!  ELSEIF defined (NO_NTDLL)            # NO_NTDLL never links with ntdll
+TARGETLIB=$(WIN32DLL_LIBS) $(LIBC_LIB)
+
+!  ELSE                                 # Everything else uses ntdll after libc.
+TARGETLIB=$(WIN32DLL_LIBS) $(LIBC_LIB) $(LIBRARY_PATH)\ntdll.lib
+
+!  ENDIF
+!  IF "$(TARGETEXT)" == ""
+TARGETEXT=dll
+!  ENDIF
+! ELSE # "$(MAKEDLL)" != ""
+TARGETEXT=lib
+TARGETLIB=
+! ENDIF # "$(MAKEDLL)" != ""
+
+!ELSEIF "$(TARGETTYPE)" == "LIBRARY"
+TARGETEXT=lib
+TARGETLIB=
+
+!ELSEIF "$(TARGETTYPE)" == "DRIVER"
+TARGETEXT=sys
+!if "$(DRIVERTYPE)" == "wdm" || "$(DRIVERTYPE)" == "WDM"
+TARGETLIB=$(DDK_LIB_PATH)\wdm.lib
+!ELSE
+TARGETLIB=$(SDK_LIB_PATH)\xboxkrnl.lib
+!ENDIF
+
+!ELSEIF "$(TARGETTYPE)" == "EXPORT_DRIVER"
+! IF "$(MAKEDLL)" != ""
+TARGETEXT=sys
+!if "$(DRIVERTYPE)" == "wdm" || "$(DRIVERTYPE)" == "WDM"
+TARGETLIB=$(DDK_LIB_PATH)\wdm.lib
+!ELSE
+TARGETLIB=$(SDK_LIB_PATH)\xboxrknl.lib
+!ENDIF
+
+! ELSE
+TARGETEXT=lib
+TARGETLIB=
+! ENDIF
+
+!ELSEIF "$(TARGETTYPE)" == "HAL"
+! IF "$(MAKEDLL)" != ""
+TARGETEXT=dll
+TARGETLIB=$(SDK_LIB_PATH)\xboxkrnl.lib
+! ELSE
+TARGETEXT=lib
+TARGETLIB=
+! ENDIF
+
+!ELSEIF "$(TARGETTYPE)" == "BOOTPGM"
+TARGETEXT=sys
+
+!ELSEIF "$(TARGETTYPE)" == "MINIPORT"
+TARGETEXT=sys
+
+!ELSEIF "$(TARGETTYPE)" == "GDI_DRIVER"
+
+TARGETEXT=dll
+TARGETLIB=$(SDK_LIB_PATH)\xapilib$(D).lib
+!ifdef USE_LIBCNTPR_FOR_GDI_DRIVER_CRTS
+TARGETLIB=$(SDK_LIB_PATH)\libcntpr.lib $(TARGETLIB)
+!endif
+!ENDIF # TARGETTYPE
+
+TARGET=
+
+!IF "$(TARGETTYPE)" != "UMAPPL_NOLIB"
+
+!IFDEF USE_VS70_RULES
+
+!  IF "$(OBJECTS)" != ""
+TARGET=$(TARGETPATH)\$(TARGETNAME).$(TARGETEXT)
+!  ENDIF
+
+!ELSE # USE_VS70_RULES
+
+! IF "$(OBJECTS)" != ""
+TARGET=$(TARGETPATH)\*\$(TARGETNAME).$(TARGETEXT)
+! ELSEIF "$(OBJLIBFILES)" != "" && "$(TARGETTYPE)" == "LIBRARY"
+TARGET=$(TARGETPATH)\*\$(TARGETNAME).$(TARGETEXT)
+! ENDIF
+
+!ENDIF # USE_VS70_RULES
+
+!ENDIF # TARGETTYPE != UMAPPL_NOLIB
+
+!IFDEF NOTARGETLIB
+TARGETLIB=
+!ENDIF
+
+!IFNDEF MACHINE_TARGETLIBS
+MACHINE_TARGETLIBS=$(TARGETLIB) $(TARGETLIBS)
+!ENDIF
+
+
+TARGETOBJFILES=$(TARGETOBJFILES) $(OBJECTS)
+
+!IF "$(NOLINK)" == "" ||                                     \
+    ("$(NOLINK)" != "" && ("$(TARGETTYPE)"=="LIBRARY" ||     \
+                        (   ("$(TARGETTYPE)"=="DYNLINK" ||   \
+                         "$(TARGETTYPE)"=="PROGLIB" || \
+                         "$(TARGETTYPE)"=="EXPORT_DRIVER" || \
+                         "$(TARGETTYPE)"=="HAL")    &&       \
+                            "$(MAKEDLL)" == "")              \
+                           )                                 \
+    )
+
+
+! IF "$(NOLINK)" != "" && "$(TARGET)" != ""
+!  IFDEF USE_VS70_RULES
+TARGETLIBFILES=$(TARGETLIBFILES) $(TARGETPATH)\$(TARGETNAME).lib
+!  ELSE
+TARGETLIBFILES=$(TARGETLIBFILES) $(TARGETPATH)\*\$(TARGETNAME).lib
+!  ENDIF
+! ELSE
+TARGETEXEFILES=$(TARGETEXEFILES) $(TARGET)
+! ENDIF
+
+!ENDIF # NOLINK == "" || building .lib file for dll
+
+!IF "$(NTTEST)" != ""
+
+! IFNDEF NOLINK
+
+TARGETEXEFILES=$(TARGETEXEFILES) $O\$(NTTEST).exe
+
+! ENDIF # NDEF NOLINK
+!ENDIF # NTTEST != ""
+
+UMOBJFILES=
+UMEXEFILES=
+
+!IF "$(UMAPPLEXT)" == ""
+UMAPPLEXT=.exe
+!ENDIF
+
+!IF "$(UMAPPL)" != ""
+
+UMOBJFILES=obj\*\$(UMAPPL:*=.obj obj\*\).obj
+
+
+! IF "$(UMAPPLEXT)" == ".com"
+!  IFNDEF NOLINK
+
+UMEXEFILES=obj\*\$(UMAPPL:*=.com obj\*\).com
+!  ENDIF
+! ELSEIF "$(UMAPPLEXT)" == ".exe"
+!  IFNDEF NOLINK
+
+UMEXEFILES=obj\*\$(UMAPPL:*=.exe obj\*\).exe
+!  ENDIF
+! ELSEIF "$(UMAPPLEXT)" == ".scr"
+!  IFNDEF NOLINK
+
+UMEXEFILES=obj\*\$(UMAPPL:*=.scr obj\*\).scr
+!  ENDIF
+! ELSE
+!  ERROR Unsupport UMAPPLEXT = $(UMAPPLEXT)
+
+! ENDIF # UMAPPLEXT
+!ENDIF # UMAPPL != ""
+
+!IF "$(UMTEST)" != ""
+
+UMOBJFILES=$(UMOBJFILES) obj\*\$(UMTEST:*=.obj obj\*\).obj
+
+! IFNDEF NOLINK
+
+UMEXEFILES=$(UMEXEFILES) obj\*\$(UMTEST:*=.exe obj\*\).exe
+
+! ENDIF
+!ENDIF
+#
+# Edit for Easy-Build Environment #
+# This edit is because various folders error with expecting some files 'obj\i386'
+# and not 'objd\i386'.. This seems to fix it by removing the 'd' suffix (Only affects Debug\CHK builds) 
+#
+!if "$(BUILD_ALT_DIR)" == "d"
+UMOBJFILES=$(UMOBJFILES:obj\*\=obj\*\)
+UMEXEFILES=$(UMEXEFILES:obj\*\=obj\*\)
+!endif
+
+!IFDEF USE_LINT
+! IFNDEF LINT_OUTPUT
+LINT_OUTPUT=$(TARGETNAME)
+! ENDIF
+! IFNDEF LINT_EXT
+LINT_EXT=tmp
+! ENDIF
+! IF "$(LINT_TYPE)" == "all"
+TARGETLOBFILES1=
+TARGETLOBFILES2=$O\$(LINT_OUTPUT).$(LINT_EXT)
+! ELSEIF "$(LINT_TYPE)" == "lob"
+TARGETLOBFILES1=$(TARGETOBJFILES:.obj=.lob)
+TARGETLOBFILES2=
+! ELSE
+TARGETLOBFILES1=
+TARGETLOBFILES2=$(TARGETOBJFILES:.obj=.lob)
+! ENDIF
+!ELSE
+TARGETLOBFILES1=
+TARGETLOBFILES2=
+!ENDIF
+
+#
+# Define NT_UP as 0 in environment to turn on MP.
+# If undefined or equal to 1, you get UP.
+#
+
+!IFNDEF NT_UP
+NT_UP=1
+!ENDIF
+
+!IF "$(NT_UP)"=="0"
+NT_UP_DEFINES=
+!ELSE
+NT_UP_DEFINES=-DNT_UP=1
+!ENDIF
+
+!IFNDEF NT_INST
+NT_INST=0
+!ENDIF
+
+#
+# User defined variables (environment variables or command line).
+# A cpu specific definition will take precedence over the MSC definition.
+#
+# xxx_WARNING_LEVEL
+# xxx_OPTIMIZATION
+# xxx_CPPFLAGS
+#
+
+!IFNDEF MSC_WARNING_LEVEL
+MSC_WARNING_LEVEL=/W3
+!ENDIF
+
+DEFAULT_MSC_OPT = /Oxs
+
+#
+# End of user defined variables.
+#
+
+STD_DEFINES=-DCONDITION_HANDLING=1 $(NT_UP_DEFINES) \
+            -DNT_INST=$(NT_INST) $(WIN32_DEFINE) $(NT_PNP_POWER_DEFINES) \
+            $(NT_PNP_STUB_DEFINES)
+
+!IFNDEF NOT_LEAN_AND_MEAN
+STD_DEFINES = $(STD_DEFINES) -DWIN32_LEAN_AND_MEAN=1
+!ENDIF
+
+!IF "$(NTDEBUG)" == ""
+TARGET_DBG_DEFINES= -DDEVL=1
+DBGFLAGS=
+!ELSEIF "$(NTDEBUG)" == "ntsdnodbg"
+!IF $(USE_VC7)
+DBGFLAGS=/Zi /Zvc6
+!ELSE
+DBGFLAGS=/Zi
+!ENDIF
+TARGET_DBG_DEFINES= -DDEVL=1
+
+!ELSEIF "$(NTDEBUG)" == "ntsd" || "$(NTDEBUG)" == "cvp" || "$(NTDEBUG)" == "sym"
+!IF $(USE_VC7)
+DBGFLAGS=/Zi /Zvc6
+!ELSE
+DBGFLAGS=/Zi
+!ENDIF
+TARGET_DBG_DEFINES= -DDBG=1 -DDEVL=1
+XE_FLAGS=$(XE_FLAGS) /DEBUG
+! UNDEF NTBBT
+
+!ELSE
+! ERROR NTDEBUG macro can be either "ntsd", "cvp" or "sym" or "ntsdnodbg"
+!ENDIF
+
+!ifdef OFFICIAL_BUILD_MACHINE
+TARGET_DBG_DEFINES=$(TARGET_DBG_DEFINES) -DOFFICIAL_BUILD=1
+!endif
+
+!if $(USE_VC7)
+!ifdef BBTBUILD
+LINKER_DBG_TYPE=-debugtype:cv,vc6,fixup
+!else
+! ifdef USE_VS70_RULES
+LINKER_DBG_TYPE=
+! else
+LINKER_DBG_TYPE=-debugtype:vc6
+! endif
+!endif
+USE_PDB=1
+!else
+!if !$(COFF_SUPPORTED)
+LINKER_DBG_TYPE=-debugtype:cv
+USE_PDB=1
+!else
+!IF "$(NTDEBUGTYPE)" == "windbg"
+LINKER_DBG_TYPE = -debugtype:cv
+!if !defined(USE_CV)
+USE_PDB=1
+!endif
+!ELSEIF "$(NTDEBUGTYPE)" == "ntsd" || "$(NTDEBUGTYPE)" == "coff" || "$(NTDEBUGTYPE)" == ""
+LINKER_DBG_TYPE = -debugtype:coff
+COFF_OUTPUT_ONLY=1
+!ELSEIF "$(NTDEBUGTYPE)" == "both"
+LINKER_DBG_TYPE = -debugtype:both
+!if !defined(USE_CV)
+USE_PDB=1
+!endif
+!ELSE
+! ERROR NTDEBUGTYPE macro can one of "", "ntsd", "coff", "windbg" or "both"
+!ENDIF
+!endif      # COFF_SUPPORTED
+!endif
+
+!IF "$(PRECOMPILED_OPTION)" == ""
+! IF "$(PRECOMPILED_INCLUDE)" != ""
+!  IF "$(PRECOMPILED_INCLUDE)" != "$(PRECOMPILED_INCLUDE:.hxx=)"
+PRECOMPILED_CXX=1
+!  ENDIF
+!  IF "$(PRECOMPILED_INCLUDE)" != "$(PRECOMPILED_INCLUDE:.hpp=)"
+PRECOMPILED_CXX=1
+!  ENDIF
+!  IF "$(PRECOMPILED_INCLUDE)" != "$(PRECOMPILED_INCLUDE:.cxx=)"
+PRECOMPILED_CXX=1
+!  ENDIF
+!  IF "$(PRECOMPILED_INCLUDE)" != "$(PRECOMPILED_INCLUDE:.cpp=)"
+PRECOMPILED_CXX=1
+!  ENDIF
+!  IF "$(PRECOMPILED_PCH)" == ""
+PRECOMPILED_PCH=$(PRECOMPILED_INCLUDE:.hxx=.pch)
+PRECOMPILED_PCH=$(PRECOMPILED_PCH:.hpp=.pch)
+PRECOMPILED_PCH=$(PRECOMPILED_PCH:.h=.pch)
+PRECOMPILED_PCH=$(PRECOMPILED_PCH:.cxx=.pch)
+PRECOMPILED_PCH=$(PRECOMPILED_PCH:.cpp=.pch)
+PRECOMPILED_PCH=$(PRECOMPILED_PCH:.c=.pch)
+PRECOMPILED_PCH=$(PRECOMPILED_PCH:..\=)
+!  ENDIF
+!  IF "$(PRECOMPILED_OBJ)" == ""
+PRECOMPILED_OBJ=$(PRECOMPILED_PCH:.pch=.obj)
+!  ENDIF
+! ENDIF
+!ENDIF
+
+!IF "$(PRECOMPILED_OPTION)" == ""
+! IF "$(PRECOMPILED_INCLUDE)" != ""
+!  IF "$(PRECOMPILED_PCH)" != ""
+HEADERFILE=/Fp$O\$(PRECOMPILED_PCH)
+!  ENDIF
+!  IF "$(PRECOMPILED_OBJ)" != ""
+HEADEROBJNAME=$O\$(PRECOMPILED_OBJ)
+HEADEROBJ=/Fo"$(MAKEDIR)\$(HEADEROBJNAME)"
+!  ENDIF
+
+!  IF !$(MPPC)
+!   IF "$(PRECOMPILED_CXX)" == ""
+PRECOMPILED=/Yu$(PRECOMPILED_INCLUDE:..\=) $(HEADERFILE)
+PRECOMPILED_CXX=
+!   ELSE
+PRECOMPILED=
+PRECOMPILED_CXX=/Yu$(PRECOMPILED_INCLUDE:..\=) $(HEADERFILE)
+!   ENDIF
+!  ENDIF
+
+PRECOMPILED_TARGET=$O\$(PRECOMPILED_PCH)
+! ELSE
+!  IF "$(PRECOMPILED_INCLUDE)" != ""
+!   IF !$(MPPC)
+!    IF "$(PRECOMPILED_CXX)" == ""
+PRECOMPILED=/Yu$(PRECOMPILED_INCLUDE)
+PRECOMPILED_CXX=
+!    ELSE
+PRECOMPILED=
+PRECOMPILED_CXX=/Yu$(PRECOMPILED_INCLUDE)
+!    ENDIF
+!   ENDIF
+!  ENDIF
+! ENDIF
+!ELSE
+! IF "$(PRECOMPILED_CXX)" == ""
+PRECOMPILED=$(PRECOMPILED_OPTION)
+PRECOMPILED_CXX=
+! ELSE
+PRECOMPILED=
+PRECOMPILED_CXX=$(PRECOMPILED_OPTION)
+! ENDIF
+PRECOMPILED_TARGET=$(PRECOMPILED_TARGET)
+! IF "$(PRECOMPILED_TARGET)" != ""
+HEADERFILE=/Fp$(PRECOMPILED_TARGET)
+! ENDIF
+! IF "$(PRECOMPILED_OBJ)" != ""
+HEADEROBJNAME=$(PRECOMPILED_OBJ)
+HEADEROBJ=/Fo$(HEADEROBJNAME)
+! ENDIF
+!ENDIF
+
+!IF "$(NTNOPCH)" != ""
+# Need to do this conditionally.  If the pch obj exists, it's likely existing files
+# reference it (ie: this isn't a clean build).  Keep the file ref but delete the
+# pch stuff so links will work.
+!ifdef HEADEROBJNAME
+!if !exist($(HEADEROBJNAME))
+HEADEROBJNAME=
+HEADEROBJ=
+PRECOMPILED_OBJ=
+!endif
+!endif
+PRECOMPILED=
+PRECOMPILED_CXX=
+PRECOMPILED_INCLUDE=
+PRECOMPILED_TARGET=
+PRECOMPILED_PCH=
+!ENDIF
+
+
+USECXX_FLAG=$(USECXX_FLAG:p=P)
+
+!IF ("$(PRECOMPILED_CXX)" == "") && ("$(USECXX_FLAG)" == "")
+PRECOMPILED_FLAG=$(PRECOMPILED_FLAG) /Tc
+!ELSE
+PRECOMPILED_FLAG=$(PRECOMPILED_FLAG) /Tp
+!ENDIF
+
+#
+# Set linker options
+#
+
+#
+# Merge _PAGE with PAGE, _TEXT with .text, and make sure
+# INIT sections are discardable
+#
+
+!if !$(MPPC) && !$(IA64)
+!ifdef LINKER_NOREF
+LINK_REF_FLAG=-OPT:NOREF -OPT:NOICF
+!else
+! ifdef LINKER_NOICF
+LINK_REF_FLAG=-OPT:REF -OPT:NOICF
+! else
+LINK_REF_FLAG=-OPT:REF -OPT:ICF
+! endif
+!endif
+!endif
+
+!ifdef NOT_TERMINAL_SERVER_AWARE
+TSLINKER_FLAG=
+!else
+TSLINKER_FLAG=/tsaware
+!endif
+
+
+!ifdef LINKER_STACKSIZE
+LINKER_FLAGS = $(LINKER_FLAGS) $(LINKER_STACKSIZE)
+!else
+!ifdef LINKER_STACKCOMMITSIZE
+LINKER_FLAGS = $(LINKER_FLAGS) -STACK:262144,$(LINKER_STACKCOMMITSIZE)
+!else
+LINKER_FLAGS = $(LINKER_FLAGS) -STACK:262144,4096
+!endif
+!endif
+
+LINK_LIB_IGNORE_FLAG=-IGNORE:4001,4037,4039,4044,4065,4070,4078,4087,4089,4198
+!IF $(IA64)
+LINK_LIB_IGNORE_FLAG= $(LINK_LIB_IGNORE_FLAG),4108,4088
+!ENDIF
+
+# 4218: non-native module found; restarting link with /LTCG
+# 4235: /LTCG specified but no code generation required;
+#       remove /LTCG from the link command line to improve linker performance
+!IF $(USE_VC7) && $(ENABLE_LINK_TIME_CODE_GENERATION)
+LINK_LIB_IGNORE_FLAG= $(LINK_LIB_IGNORE_FLAG),4218,4235
+!ENDIF
+
+!ifdef LINK_NO_RELEASE
+LINK_RELEASE=
+!else
+LINK_RELEASE=/release
+!endif
+
+!ifdef USE_INCREMENTAL_LINKING
+USE_PDB=1                     # PDB's are required to use Incremental linking
+LINK_INCREMENTAL_FLAG = -OPT:NOREF \
+                        $(LINK_LIB_IGNORE_FLAG)
+!else
+!if $(USE_VC7)
+NOCOMMENT=
+!else
+NOCOMMENT=-NOCOMMENT
+!endif
+LINK_INCREMENTAL_FLAG = $(LINK_REF_FLAG) \
+                        $(LINK_LIB_IGNORE_FLAG) \
+                        -INCREMENTAL:NO \
+                        -FULLBUILD \
+                        -FORCE:MULTIPLE \
+                        $(NOCOMMENT) \
+                        $(LINK_RELEASE)
+!endif
+
+!ifdef BACKGROUND_USE
+LINKER_FLAGS = $(LINKER_FLAGS) -WS:aggressive
+!endif
+
+!if $(MPPC)
+LINKER_FLAGS =  $(LINKER_FLAGS) \
+                -SECTION:INIT,d \
+                $(LINK_INCREMENTAL_FLAG) \
+                -NODEFAULTLIB
+
+!else
+LINKER_FLAGS =  $(LINKER_FLAGS) \
+                -MERGE:_PAGE=PAGE \
+                -MERGE:_TEXT=.text \
+                $(LINK_INCREMENTAL_FLAG) \
+                -SECTION:INIT,d \
+                -NODEFAULTLIB
+
+#       -miscrdata
+
+!if !$(USE_VC7)
+!ifndef NO_OPTIDATA
+LINKER_OPTIDATA=-optidata
+!else
+LINKER_OPTIDATA=-nooptidata
+!endif
+!endif
+
+!endif
+
+LINK_OS_VERSIONS = -version:5.00 -osversion:5.00
+
+!ifdef NODEBUGINFO
+LINKER_DBG_TYPE=
+LINKER_DBG_SECTION=
+!endif
+
+!IF $(MPPC)
+
+#*****MacPPC linker flags
+
+TARGET_DIRECTORY=mppc
+UMLIBS=$(UMLIBS:*=mppc)
+LINKLIBS=$(LINKLIBS:*=mppc)
+DLLDEF=$(DLLDEF:*=mppc)
+PRECOMPILED_TARGET= $(PRECOMPILED_TARGET:*=mppc)
+PRECOMPILED_OBJ= $(PRECOMPILED_OBJ:*=mppc)
+PRECOMPILED_OPTION= $(PRECOMPILED_OPTION:*=mppc)
+
+#
+# Set the default creator and type.  If were building a dll then use
+# cfmg and shlb, for apps use ???? and APPL.
+#
+
+!ifndef MAC_CREATOR
+!if "$(TARGETTYPE)" == "DYNLINK"
+MAC_CREATOR=cfmg
+!else
+MAC_CREATOR=????
+!endif
+!endif
+
+!ifndef MAC_TYPE
+!if "$(TARGETTYPE)" == "DYNLINK"
+MAC_TYPE=shlb
+!else
+MAC_TYPE=APPL
+!endif
+!endif
+
+#
+# MAC_CREATOR and MAC_TYPE may contain embedded spaces.  To do this we need to
+# enclose their operand in quotes.  Now get rid of the quotes leaving the spaces
+#
+
+MAC_CREATOR=$(MAC_CREATOR:^"=)
+MAC_TYPE=$(MAC_TYPE:^"=)
+
+#
+# Setup for the linker
+#
+
+
+!if "$(TARGETTYPE)"=="DYNLINK"
+LINKER_FLAGS=$(LINKER_FLAGS) -mac:nobundle -dll -def:$(DLLDEF)
+LINKER_FLAGS=$(LINKER_FLAGS) -mac:MFILEPAD
+LINKER_FLAGS=$(LINKER_FLAGS) -mac:init="$(MAC_INITPROC)"
+LINKER_FLAGS=$(LINKER_FLAGS) -mac:term="$(MAC_TERMPROC)"
+!else
+LINKER_FLAGS=-mac:bundle
+!endif
+
+LINKER_FLAGS=$(LINKER_FLAGS) -mac:type="$(MAC_TYPE)"
+LINKER_FLAGS=$(LINKER_FLAGS) -mac:creator="$(MAC_CREATOR)"
+LINKER_FLAGS=$(LINKER_FLAGS) -debug:FULL
+LINKER_FLAGS=$(LINKER_FLAGS) -debugtype:both
+LINKER_FLAGS=$(LINKER_FLAGS) -NODEFAULTLIB
+
+#*****End Mac linker flags
+!ELSE
+LINKER_FLAGS = $(LINKER_FLAGS) $(LINKER_DBG_SECTION) $(LINKER_DBG_TYPE) $(LINK_OS_VERSIONS)
+!ENDIF
+
+!ifdef USE_OLDSTYLE_IMPLIB
+LIBRARIAN_FLAGS = $(LIBRARIAN_FLAGS) /link50compat
+!elseif !$(USE_VC7)
+LIBRARIAN_FLAGS = $(LIBRARIAN_FLAGS)
+!endif
+
+LIBRARIAN_FLAGS = $(LINK_LIB_IGNORE_FLAG) $(LIBRARIAN_FLAGS) -nodefaultlib
+
+!ifdef USE_VS70_RULES
+LIBRARIAN_FLAGS = $(LIBRARIAN_FLAGS) -machine:$(MACHINE_TYPE)
+!else
+LIBRARIAN_FLAGS = -debugtype:cv $(LIBRARIAN_FLAGS) -machine:$(MACHINE_TYPE)
+!endif
+
+!ifndef LIB_NAME
+LIB_NAME=$(VC_PATH)lib
+!endif
+
+LIBRARIAN=$(LIB_NAME) -out:$@ $(LIBRARIAN_FLAGS)
+
+!ifndef LINK_NAME
+LINK_NAME=$(VC_PATH)link
+!endif
+
+LINKER=$(LINK_NAME) -out:$@ -machine:$(MACHINE_TYPE)
+
+!if defined(NTPROFILEINPUT) && ("$(TARGETTYPE)" == "LIBRARY")
+! message NTPROFILEINPUT s/b removed in: $(MAKEDIR).
+!endif
+
+!IF defined(NTPROFILEINPUT) || defined(EXEPROFILEINPUT)
+ORDER=-order:@$(@B).prf
+!ENDIF
+
+!IFDEF DLLORDER
+ORDER=-order:@$(DLLORDER)
+!ENDIF
+
+!IFNDEF DRIVER_ALIGNMENT
+DRIVER_ALIGNMENT=0x20
+!ENDIF
+
+!ifndef HAL_ALIGNMENT
+HAL_ALIGNMENT=0x20
+!endif
+
+!ifndef KERNEL_ALIGNMENT
+KERNEL_ALIGNMENT=0x20
+!endif
+
+#
+# LINT section
+#
+# Main env. vars:
+# USE_LINT=1 to turn on PC-lint processing
+# LINT_TYPE={all,lob,<nothing>}
+#           all - processes all $(SOURCES) files at once
+#           lob - processes $(SOURCES) individually and then consolidates
+#           <nothing> - processes $(SOURCES) individually (like John Daly's tool)
+#
+# Other env. vars:
+# LINT_PATH=path to PC-lint directory (default=$(BASEDIR)\lint)
+# LINT_APP=name of PC-lint executable (default=lint-nt)
+# LINT_OUTPUT=base name of lint output file (default=$(TARGETNAME))
+# LINT_EXT=extension of output files (default=tmp)
+# LINT_FORCEDINCS=list of forced include files. same as in -FI compiler switch
+# LINT_OPTS=options passed to PC-lint (default=+v -zero)
+# LINT_PRECOMPPATH=paths that were used for precompiled header.
+#                  - some components generate a pch in
+#                    a separate step and use the pch amongst several
+#                    subdirs. This env. var. lets one specify the
+#                    include paths used for the pch.
+#
+!ifdef USE_LINT
+
+# Convert CDEFINES which may contain /DSYMBOL1, -DSYMBOL2 to
+# -dSYMBOL1 and -dSYMBOL2 which PC-Lint wants
+LINT_DEFS=$(CDEFINES:-D=-d)
+LINT_DEFINES=$(LINT_DEFS:/D=-d)
+
+! ifndef LINT_PATH
+LINT_PATH=$(BASEDIR)\lint
+! endif
+
+! ifndef LINT_APP
+LINT_APP=$(LINT_PATH)\lint-nt
+! endif
+
+!ifndef LINT_OPTS
+LINT_OPTS=+v -zero
+!endif
+
+
+! if "$(LINT_TYPE)" == "all"
+!  ifndef LINT_ALL_CMD
+LINT_ALL_CMD=$(LINT_APP) $(LINT_OPTS) $(LINT_INCLUDES) $(LINT_DEFINES) $(LINT_FORCEDINCS) -i$(LINT_PATH)\ std.lnt -os($O\$(LINT_OUTPUT).$(LINT_EXT))
+!  endif
+! else
+!  if "$(LINT_TYPE)" == "lob"
+!   ifndef LINT_CMD
+LINT_CMD=$(LINT_APP) -u $(LINT_OPTS) $(LINT_INCLUDES) $(LINT_DEFINES) $(LINT_FORCEDINCS) -i$(LINT_PATH)\ std.lnt +os($O\$(LINT_OUTPUT).$(LINT_EXT)) -oo($@)
+!   endif
+!   ifndef LINT_CMD2
+LINT_CMD2=$(LINT_APP) $(LINT_OPTS) -i$(LINT_PATH)\ std.lnt +os($O\$(LINT_OUTPUT).$(LINT_EXT)) $(O)\*.lob
+!   endif
+!  else
+!   ifndef LINT_CMD
+LINT_CMD=$(LINT_APP) $(LINT_OPTS) $(LINT_INCLUDES) $(LINT_DEFINES) $(LINT_FORCEDINCS) -i$(LINT_PATH)\ std.lnt +os($O\$(LINT_OUTPUT).$(LINT_EXT))
+!   endif
+!  endif
+! endif
+!else
+LINT_CMD2=
+!endif
+
+!ifndef LINT_CMD2
+LINT_CMD2=
+!endif
+
+#
+# Standard inference rules for C files that produce object files.
+#
+
+!ifdef USE_VS70_RULES
+.SUFFIXES: .cxx .cpp .c .f .rc .s .asm .obj .exe .res .p .tdl .odl .rcpp .thk .java .class .ctc .cmd .h .cto .cool
+!else
+.SUFFIXES: .cxx .cpp .c .f .rc .s .asm .obj .exe .res .p .tdl .odl .rcpp .thk .java .class
+!endif
+
+#
+# Processor specific control and options.
+#
+
+!include $(TARGET_DIRECTORY)mk.inc
+
+!if defined(USE_MAPSYM) && !defined(NO_MAPSYM)
+MAPSYM_CMD = mapsym -o $(@D)\$(@B).sym $(@D)\$(@B).map
+LINKER_FLAGS=$(LINKER_FLAGS) -map
+BINPLACE_FLAGS = $(BINPLACE_FLAGS) -w
+!else
+MAPSYM_CMD =
+!endif
+
+!if "$(UMTYPE)" == "windows" || "$(UMTYPE)" == "console"
+!if "$(BINPLACE_NO_VERSION_RESOURCE)" == ""
+BINPLACE_FLAGS = $(BINPLACE_FLAGS) -W
+!endif
+!endif
+
+!if "$(USE_PDB)" == ""
+LINKER_FLAGS = $(LINKER_FLAGS) -PDB:NONE
+!elseif ("$(PDB_ROOT)" != "")
+LINKER_FLAGS = $(LINKER_FLAGS) -PDB:$(PDB_ROOT)\$(TARGETEXT)^\
+PDB_ROOTUM = -PDB:$(PDB_ROOT)\$(UMAPPLEXT:.=)^\
+!endif
+
+LIBRARY_OBJS=$(IMPLIB_OBJS) $(MFC_STATIC_LIB) $(LINKLIBS) $(OBJECTS)
+
+!if "$(TARGETTYPE)" != "DRIVER" && \
+    "$(TARGETTYPE)" != "EXPORT_DRIVER" && \
+    "$(TARGETTYPE)" != "MINIPORT" && \
+    "$(TARGETTYPE)" != "GDI_DRIVER"
+LINKER_FLAGS = $(LINKER_FLAGS) -merge:.rdata=.text
+!endif
+
+!if $(DELAYLOAD_SUPPORTED)
+! if "$(DELAYLOAD)" != ""
+#!  if "$(DLOAD_ERROR_HANDLER)" != ""
+DELAYLOAD = $(DELAYLOAD: =)
+DELAYLOAD_FLAGS = /delayload:$(DELAYLOAD:;= /delayload:)
+LINKER_FLAGS = $(LINKER_FLAGS) $(DELAYLOAD_FLAGS)
+!if $(USE_VC7)
+CRTLIBS=$(CRTLIBS) $(LIBRARY_PATH)\delayimp.lib
+!else
+CRTLIBS=$(CRTLIBS) $(LIBRARY_PATH)\delayload.lib
+!endif
+C_DEFINES=$(C_DEFINES) /DDELAYLOAD_VERSION=$(DELAYLOAD_VERSION)
+#!  else
+#!   if "$(NOLINK)" == ""
+#! message BUILDMSG: DLOAD_ERROR_HANDLER not specified - Ignoring DELAYLOAD
+#!   endif
+#!  endif
+! endif
+!endif
+
+#
+# Clear the suffixes list so we can ensure only pass zero stuff will be built
+#
+!IFDEF PASS0ONLY
+.SUFFIXES:
+!ENDIF
+
+#
+# DDK does not allow signing of binaries
+#
+# @@BEGIN_DDKSPLIT
+!ifdef NT_SIGNCODE
+SIGNCODE_CMD=signcode -v $(_NTBINDIR)\public\tools\driver.pvk -spc $(_NTBINDIR)\public\tools\driver.spc -n "Microsoft Windows 2000 Test Signature" -i "http://ntbld"  -t http://timestamp.verisign.com/scripts/timstamp.dll $@
+!endif
+# @@END_DDKSPLIT
+
+!ifdef NO_BINPLACE
+BINPLACE_CMD=
+!else
+
+! ifndef BINPLACE_PLACEFILE
+!  if "$(BUILD_PRODUCT)" == "IE"
+BINPLACE_PLACEFILE = $(BASEDIR)\public\sdk\lib\ieplace.txt
+!  else
+BINPLACE_PLACEFILE = $(BASEDIR)\public\sdk\lib\placefil.txt
+!  endif
+! endif
+
+BINPLACE_FLAGS = -P $(BINPLACE_PLACEFILE) $(BINPLACE_FLAGS)
+
+! if "$(BUILD_PRODUCT)" == "NT" && !defined(COFF_OUTPUT_ONLY)
+BINPLACE_FLAGS = -j $(BINPLACE_FLAGS)
+! endif
+
+DRIVER_SWITCH = -driver
+
+!if "$(DRIVERTYPE)" == "wdm" || "$(DRIVERTYPE)" == "WDM"
+DRIVER_SWITCH = $(DRIVER_SWITCH) -driver:wdm
+!endif
+
+! IF "$(_NTTREE)" != ""
+!  IFDEF ALT_PROJECT_TARGET
+_NTTREE= $(_NTTREE)\$(ALT_PROJECT_TARGET)
+!   if "$(_NTTREE_NO_SPLIT)" != ""
+_NTTREE_NO_SPLIT= $(_NTTREE_NO_SPLIT)\$(ALT_PROJECT_TARGET)
+!   endif
+!  ENDIF
+
+# If NTDBGFILES is defined then use binplace to split the symbols.
+# Define BINPLACE flags as needed if separate .DBG file requested.
+
+!  IF defined(NTDBGFILES) && ("$(UMTYPE)" == "windows" || "$(UMTYPE)" == "console")
+BINPLACE_DBGFLAGS_NT = -S $(_NTTREE)\Symbols
+!  else
+BINPLACE_DBGFLAGS_NT=
+!  ENDIF
+
+!if "$(VERIFY_LC)" == "1"
+!  ifndef LC_PATH
+LC_PATH=.
+!  endif
+BINPLACE_LC_FLAGS = -G $(LC_PATH)\$(@F).lc
+BINPLACE_LC_MISCFLAGS = -G $(LC_PATH)\$(**F).lc
+!else
+BINPLACE_LC_FLAGS=
+BINPLACE_LC_MISCFLAGS=
+!endif
+
+BINPLACE_CMD_NT=binplace -R $(_NTTREE) $(BINPLACE_DBGFLAGS_NT) $(BINPLACE_FLAGS) $(BINPLACE_LC_FLAGS) $@
+BINPLACE_CMD_NS=binplace -R $(_NTTREE_NO_SPLIT) -Q $(BINPLACE_FLAGS) $@
+
+BINPLACE_CMD = $(BINPLACE_CMD_NT)
+
+!  if "$(_NTTREE_NO_SPLIT)" != ""
+BINPLACE_CMD = $(BINPLACE_CMD) & $(BINPLACE_CMD_NS)
+!  endif
+
+! ELSE
+BINPLACE_CMD=
+! ENDIF
+!endif
+
+BINPLACE_CMD=@$(BINPLACE_CMD)
+
+!ifdef NTDUMPAMAP
+MAPDUMP_CMD = link -dump -map $@ | sort /R /+62 > $(_NTDUMPAMAP)\$(@B).srt
+!else
+MAPDUMP_CMD =
+!endif
+
+!ifndef NOPEHEADER
+XE_FLAGS = $(XE_FLAGS) /PEHEADER
+!endif
+
+!if defined(NTBUILDXE) && "$(NTPREFIX)" != "1"
+BUILDXE_CMD = imagebld $(XE_FLAGS) /IN:$(O)\$(@B).exe /OUT:$(_NTTREE)\dump\$(@B).xbe
+!else
+BUILDXE_CMD =
+!endif
+
+#
+# Define this macro so including make files can supply a yes prompt
+# as appropriate.  Put the "yes." file in a visible place for OEM's
+# so they can make too.
+#
+
+!IFNDEF NOPASS0
+
+#
+# Pass Zero Inference Rules: IDL files (MIDL) and MC files
+#
+
+.SUFFIXES: .h .idl .mc .odl .tdl .asn .thk .mof
+
+! IF $(386)
+PASS0_OBJECTS=$(PASS0_386_OBJECTS)
+! ELSEIF $(AXP64)
+PASS0_OBJECTS=$(PASS0_AXP64_OBJECTS)
+! ELSEIF $(ALPHA)
+PASS0_OBJECTS=$(PASS0_ALPHA_OBJECTS)
+! ELSEIF $(MPPC)
+PASS0_OBJECTS=$(PASS0_MPPC_OBJECTS)
+! ELSEIF $(IA64)
+PASS0_OBJECTS=$(PASS0_IA64_OBJECTS)
+! ENDIF
+
+!ENDIF  # IFNDEF NOPASS0
+
+#
+#  MIDL BUILD RULES FROM THE VS7 TREE
+#
+
+#VS FULL_INCL_PATH NOT DEFINED ABOVE
+FULL_INCL_PATH=$(INCPATH1)
+
+!ifndef MIDL
+MIDL = midl
+!endif
+
+!ifndef MKTYPLIB
+MKTYPLIB = mktyplib
+!endif
+
+ASN = asn1
+
+!ifndef MC
+MC = mc
+!endif
+
+!IFDEF USE_OLE_MC
+MC = $(MC) -o
+!ENDIF
+MOFCOMP = mofcomp
+
+!IF "$(IDL_TYPE)" == "ole" || "$(IDL_TYPE)" == ""
+IDL_TYPE=OLE
+!ELSEIF "$(IDL_TYPE)" == "rpc"
+IDL_TYPE=RPC
+!ENDIF
+
+!IFNDEF PASS0_HEADERDIR
+PASS0_HEADERDIR=.
+!ENDIF
+
+!IF "$(WIN32_WINNT_VERSION)" != "0x0500"
+MIDL_OPTIMIZATION=$(MIDL_OPTIMIZATION_NT4)
+!ENDIF
+
+!IF DEFINED(MIDL_NO_ROBUST)
+MIDL_OPTIMIZATION=$(MIDL_OPTIMIZATION_NO_ROBUST)
+!ENDIF
+
+!IF DEFINED(MIDL_ALL_OS)
+MIDL_OPTIMIZATION=$(MIDL_OPTIMIZATION_ALLOS)
+!ENDIF
+
+!IF "$(IDL_TYPE)" == "OLE"
+
+! IF DEFINED(PASS0_CLIENTDIR) || DEFINED(PASS0_SERVERDIR)
+!  ERROR PASS0_CLIENTDIR and PASS0_SERVERDIR can only be used with IDL_TYPE=RPC!
+! ENDIF
+
+! IFNDEF PASS0_SOURCEDIR
+PASS0_SOURCEDIR=.
+! ENDIF
+
+! IFNDEF PASS0_UUIDDIR
+PASS0_UUIDDIR=$(PASS0_SOURCEDIR)
+! ENDIF
+
+! IFNDEF PASS0_TLBDIR
+PASS0_TLBDIR=$(PASS0_SOURCEDIR)
+! ENDIF
+
+! IFNDEF PASS0_DLLDATADIR
+PASS0_DLLDATADIR=$(PASS0_SOURCEDIR)
+! ENDIF
+
+! IFNDEF PASS0_PROXYDIR
+PASS0_PROXYDIR=$(PASS0_SOURCEDIR)
+! ENDIF
+
+! IFNDEF PASS0_LIBDIR
+PASS0_LIBDIR=$(PASS0_SOURCEDIR)
+! ENDIF
+
+! IFNDEF PACKING
+!if $(MPPC)
+PACKING= -Zp2
+!else
+PACKING= -Zp8
+!endif
+!endif
+
+!ifndef DLLDATA
+DLLDATA=$(<F:.idl=_d.c)
+!endif
+
+!message 34 MIDL_OPTIMIZATION is $(MIDL_OPTIMIZATION)
+
+MIDL_BUILD_CMD=$(MIDL) $(PACKING) $(FULL_INCL_PATH) -char unsigned -ms_ext -c_ext -client none -server none \
+    -header $(PASS0_HEADERDIR)\$(<F:.idl=.h) \
+    -iid $(PASS0_UUIDDIR)\$(<F:.idl=.c) \
+    -tlb $(PASS0_TLBDIR)\$(<F:.idl=.tlb) \
+    -proxy $(PASS0_PROXYDIR)\$(<F:.idl=_p.c) \
+    -dlldata $(PASS0_DLLDATADIR)\$(DLLDATA) \
+    -cpp_cmd $(TARGET_CPP) $(C_DEFINES) $(USER_C_DEFINES) $(MIDL_FLAGS) $(MIDL_OPTIMIZATION) $<
+
+! IFNDEF NO_PASS0_RULES
+.idl{$(PASS0_HEADERDIR)}.h:
+    @if not exist $(PASS0_UUIDDIR) mkdir $(PASS0_UUIDDIR)
+    @if not exist $(PASS0_TLBDIR) mkdir $(PASS0_TLBDIR)
+    @if not exist $(PASS0_PROXYDIR) mkdir $(PASS0_PROXYDIR)
+    @if not exist $(PASS0_DLLDATADIR) mkdir $(PASS0_DLLDATADIR)
+    @if not exist $(PASS0_HEADERDIR) mkdir $(PASS0_HEADERDIR)
+    @if not exist $(PASS0_LIBDIR) mkdir $(PASS0_LIBDIR)
+    $(MIDL_BUILD_CMD)
+
+{..\}.idl{$(PASS0_HEADERDIR)}.h:
+    @if not exist $(PASS0_UUIDDIR) mkdir $(PASS0_UUIDDIR)
+    @if not exist $(PASS0_TLBDIR) mkdir $(PASS0_TLBDIR)
+    @if not exist $(PASS0_PROXYDIR) mkdir $(PASS0_PROXYDIR)
+    @if not exist $(PASS0_DLLDATADIR) mkdir $(PASS0_DLLDATADIR)
+    @if not exist $(PASS0_HEADERDIR) mkdir $(PASS0_HEADERDIR)
+    @if not exist $(PASS0_LIBDIR) mkdir $(PASS0_LIBDIR)
+    $(MIDL_BUILD_CMD)
+
+{$(O)\}.idl{$(PASS0_HEADERDIR)}.h:
+    @if not exist $(PASS0_UUIDDIR) mkdir $(PASS0_UUIDDIR)
+    @if not exist $(PASS0_TLBDIR) mkdir $(PASS0_TLBDIR)
+    @if not exist $(PASS0_PROXYDIR) mkdir $(PASS0_PROXYDIR)
+    @if not exist $(PASS0_DLLDATADIR) mkdir $(PASS0_DLLDATADIR)
+    @if not exist $(PASS0_HEADERDIR) mkdir $(PASS0_HEADERDIR)
+    @if not exist $(PASS0_LIBDIR) mkdir $(PASS0_LIBDIR)
+    $(MIDL_BUILD_CMD)
+
+.idl{$(PASS0_UUIDDIR)}.c:
+    @if not exist $(PASS0_UUIDDIR) mkdir $(PASS0_UUIDDIR)
+    @if not exist $(PASS0_TLBDIR) mkdir $(PASS0_TLBDIR)
+    @if not exist $(PASS0_PROXYDIR) mkdir $(PASS0_PROXYDIR)
+    @if not exist $(PASS0_DLLDATADIR) mkdir $(PASS0_DLLDATADIR)
+    @if not exist $(PASS0_HEADERDIR) mkdir $(PASS0_HEADERDIR)
+    @if not exist $(PASS0_LIBDIR) mkdir $(PASS0_LIBDIR)
+    $(MIDL_BUILD_CMD)
+
+{..\}.idl{$(PASS0_UUIDDIR)}.c:
+    @if not exist $(PASS0_UUIDDIR) mkdir $(PASS0_UUIDDIR)
+    @if not exist $(PASS0_TLBDIR) mkdir $(PASS0_TLBDIR)
+    @if not exist $(PASS0_PROXYDIR) mkdir $(PASS0_PROXYDIR)
+    @if not exist $(PASS0_DLLDATADIR) mkdir $(PASS0_DLLDATADIR)
+    @if not exist $(PASS0_HEADERDIR) mkdir $(PASS0_HEADERDIR)
+    @if not exist $(PASS0_LIBDIR) mkdir $(PASS0_LIBDIR)
+    $(MIDL_BUILD_CMD)
+
+{$(O)\}.idl{$(PASS0_UUIDDIR)}.c:
+    @if not exist $(PASS0_UUIDDIR) mkdir $(PASS0_UUIDDIR)
+    @if not exist $(PASS0_TLBDIR) mkdir $(PASS0_TLBDIR)
+    @if not exist $(PASS0_PROXYDIR) mkdir $(PASS0_PROXYDIR)
+    @if not exist $(PASS0_DLLDATADIR) mkdir $(PASS0_DLLDATADIR)
+    @if not exist $(PASS0_HEADERDIR) mkdir $(PASS0_HEADERDIR)
+    @if not exist $(PASS0_LIBDIR) mkdir $(PASS0_LIBDIR)
+    $(MIDL_BUILD_CMD)
+! ENDIF
+
+!ELSEIF "$(IDL_TYPE)" == "RPC"
+
+! IF DEFINED(PASS0_SOURCEDIR) || DEFINED(PASS0_UUIDDIR)
+!  ERROR PASS0_SOURCEDIR and PASS0_UUIDDIR can only be used with IDL_TYPE=OLE!
+! ENDIF
+
+! IFNDEF PASS0_CLIENTDIR
+PASS0_CLIENTDIR=$(TARGETPATH)
+! ENDIF
+
+! IFNDEF PASS0_SERVERDIR
+PASS0_SERVERDIR=$(PASS0_CLIENTDIR)
+! ENDIF
+
+! IFNDEF PASS0_HEADERDIR
+PASS0_HEADERDIR=$(PASS0_CLIENTDIR)
+! ENDIF
+
+MIDL_BUILD_CMD=$(MIDL) $(PACKING) $(FULL_INCL_PATH) -char unsigned -ms_ext -c_ext \
+    -cstub $(PASS0_CLIENTDIR)\$(<F:.idl=_c.c) \
+    -sstub $(PASS0_SERVERDIR)\$(<F:.idl=_s.c) \
+    -header $(PASS0_HEADERDIR)\$(<F:.idl=.h) \
+    -cpp_cmd $(TARGET_CPP) $(C_DEFINES) $(USER_C_DEFINES) $(MIDL_FLAGS) $(MIDL_OPTIMIZATION) $<
+
+# this rule can be used in local makefile.inc files to satisfy dependencies
+MIDL_CLIENT_BUILD_CMD=$(MIDL) $(PACKING) $(FULL_INCL_PATH) -char unsigned -ms_ext -c_ext \
+    -cstub $(PASS0_CLIENTDIR)\$(@F) \
+    -sstub $(PASS0_SERVERDIR)\$(@F:_c.c=_s.c) \
+    -header $(PASS0_HEADERDIR)\$(@F:_c.c=.h) \
+    -cpp_cmd $(TARGET_CPP) $(C_DEFINES) $(USER_C_DEFINES) $(MIDL_FLAGS) $(MIDL_OPTIMIZATION) $**
+
+# this rule can be used in local makefile.inc files to satisfy dependencies
+MIDL_SERVER_BUILD_CMD=$(MIDL) $(PACKING) $(FULL_INCL_PATH) -char unsigned -ms_ext -c_ext \
+    -cstub $(PASS0_CLIENTDIR)\$(@F:_s.c=_c.c) \
+    -sstub $(PASS0_SERVERDIR)\$(@F) \
+    -header $(PASS0_HEADERDIR)\$(@F:_s.c=.h) \
+    -cpp_cmd $(TARGET_CPP) $(C_DEFINES) $(USER_C_DEFINES) $(MIDL_FLAGS) $(MIDL_OPTIMIZATION) $**
+
+! IFNDEF NO_PASS0_RULES
+.idl{$(PASS0_HEADERDIR)}.h:
+    @if not exist $(PASS0_CLIENTDIR) mkdir $(PASS0_CLIENTDIR)
+    @if not exist $(PASS0_SERVERDIR) mkdir $(PASS0_SERVERDIR)
+    @if not exist $(PASS0_HEADERDIR) mkdir $(PASS0_HEADERDIR)
+    $(MIDL_BUILD_CMD)
+
+{..\}.idl{$(PASS0_HEADERDIR)}.h:
+    @if not exist $(PASS0_CLIENTDIR) mkdir $(PASS0_CLIENTDIR)
+    @if not exist $(PASS0_SERVERDIR) mkdir $(PASS0_SERVERDIR)
+    @if not exist $(PASS0_HEADERDIR) mkdir $(PASS0_HEADERDIR)
+    $(MIDL_BUILD_CMD)
+
+! ENDIF
+
+!ELSE
+
+! ERROR Invalid IDL_TYPE value. Supported values: OLE and RPC.
+
+!ENDIF  # IDL_TYPE
+
+CPPXX = $(C_PREPROCESSOR_FLAGS:/Tc=)
+CPPXX = $(CPPXX:-Tc=)
+
+!IFNDEF NO_PASS0_RULES
+
+! IFDEF PASS0_SOURCEDIR
+MC_SOURCEDIR=$(PASS0_SOURCEDIR)
+! ELSE
+MC_SOURCEDIR=$(PASS0_CLIENTDIR)
+! ENDIF
+
+{..\}.mc{$(PASS0_HEADERDIR)}.h:
+    $(MC) -h $(PASS0_HEADERDIR) -r $(MC_SOURCEDIR) $(MC_FLAGS) $<
+{..\}.mc{$(MC_SOURCEDIR)}.rc:
+    $(MC) -h $(PASS0_HEADERDIR) -r $(MC_SOURCEDIR) $(MC_FLAGS) $<
+
+.mc{$(PASS0_HEADERDIR)}.h:
+    $(MC) -h $(PASS0_HEADERDIR) -r $(MC_SOURCEDIR) $(MC_FLAGS) $<
+.mc{$(MC_SOURCEDIR)}.rc:
+    $(MC) -h $(PASS0_HEADERDIR) -r $(MC_SOURCEDIR) $(MC_FLAGS) $<
+
+# ManagedObjectFormat files
+{..\}.mof.bmf:
+    $(MOFCOMP) -B:$@ $<
+.mof.bmf:
+    $(MOFCOMP) -B:$@ $<
+
+MKTYPLIB_CPP = $(TARGET_CPP)
+
+!ifdef USE_MIDL_FOR_MKTYPLIB
+
+MIDL_MKTYPLIB_FLAGS = \
+    $(PACKING) \
+    $(INCPATH0) \
+    -char unsigned \
+    -ms_ext \
+    -c_ext \
+    $(C_DEFINES) -D__MKTYPLIB__ \
+    $(MIDL_FLAGS) \
+    $(MIDL_OPTIMIZATION) \
+    $(MKTYPLIB_FLAGS:-h =-header ) \
+    -tlb $@ \
+    -cpp_cmd $(TARGET_CPP) \
+    -mktyplib203
+
+.odl{$O\}.tlb:
+    $(MIDL) $(MIDL_MKTYPLIB_FLAGS) $<
+
+{..\}.odl{$O\}.tlb:
+    $(MIDL) $(MIDL_MKTYPLIB_FLAGS) $<
+
+.tdl{$O\}.tlb:
+    $(MIDL) $(MIDL_MKTYPLIB_FLAGS) $<
+
+{..\}.tdl{$O\}.tlb:
+    $(MIDL) $(MIDL_MKTYPLIB_FLAGS) $<
+
+!else
+
+.odl{$O\}.tlb:
+    @echo $(MKTYPLIB) /tlb $@ -nocpp $(MKTYPLIB_FLAGS) $<
+    @$(C_PREPROCESSOR_NAME) @<<$(CL_RSP) /Tc$< > $O\MyTypLib.TMP
+$(CPPXX: =
+)
+-D__MKTYPLIB__
+<<NOKEEP
+    @$(MKTYPLIB) /tlb $@ -nocpp $(MKTYPLIB_FLAGS) $O\MyTypLib.TMP
+
+{..\}.odl{$O\}.tlb:
+    @echo $(MKTYPLIB) /tlb $@ -nocpp $(MKTYPLIB_FLAGS) $<
+    @$(C_PREPROCESSOR_NAME) @<<$(CL_RSP) /Tc$< > $O\MyTypLib.TMP
+$(CPPXX: =
+)
+-D__MKTYPLIB__
+<<NOKEEP
+    @$(MKTYPLIB) /tlb $@ -nocpp $(MKTYPLIB_FLAGS) $O\MyTypLib.TMP
+
+.tdl{$O\}.tlb:
+    @echo $(MKTYPLIB) /tlb $@ -nocpp $(MKTYPLIB_FLAGS) $<
+    @$(C_PREPROCESSOR_NAME) @<<$(CL_RSP) /Tc$< > $O\MyTypLib.TMP
+$(CPPXX: =
+)
+-D__MKTYPLIB__
+<<NOKEEP
+    @$(MKTYPLIB) /tlb $@ -nocpp $(MKTYPLIB_FLAGS) $O\MyTypLib.TMP
+
+{..\}.tdl{$O\}.tlb:
+    @echo $(MKTYPLIB) /tlb $@ -nocpp $(MKTYPLIB_FLAGS) $<
+    @$(C_PREPROCESSOR_NAME) @<<$(CL_RSP) /Tc$< > $O\MyTypLib.TMP
+$(CPPXX: =
+)
+-D__MKTYPLIB__
+<<NOKEEP
+    @$(MKTYPLIB) /tlb $@ -nocpp $(MKTYPLIB_FLAGS) $O\MyTypLib.TMP
+
+!endif
+
+
+# OSSINFO must be set in the *environment* for the ASN compiler to find its
+# configuration file, $(OSSINFO)\ossinfo.
+
+! ifndef OSSINFO
+OSSINFO=$(BASEDIR)\public\sdk\lib
+! endif
+
+! ifndef ASNDEFAULTFILE
+ASNDEFAULTFILE=$(OSSINFO)\asn1dflt.z4
+! endif
+
+! ifndef ASNSYNTAX
+ASNSYNTAX=-1990
+! endif
+
+ASNFLAGS=$(ASNDEFAULTFILE) $(ASNSYNTAX) $(ASNFLAGS)
+
+# if ASNDBG is explicitly set, let that control whether the voluminous ASN
+# symbols are supressed.  Otherwise, suppress the symbols for free builds.
+
+! ifdef ASNDBG
+!  if $(ASNDBG) == 0
+ASNFLAGS=-minimize $(ASNFLAGS)
+!  endif
+! elseif $(FREEBUILD)
+ASNFLAGS=-minimize $(ASNFLAGS)
+! endif
+
+{}.asn{$(PASS0_HEADERDIR)}.h:
+    $(ASN) $(ASNFLAGS) -out $(PASS0_HEADERDIR)\$(@B) $<
+
+!ENDIF
+
+#
+# Default language ID to US English (0x0409)
+#
+
+!IFDEF RCCODEPAGE
+RCOPTIONS=$(RCOPTIONS) -c $(RCCODEPAGE)
+!ENDIF
+
+!IFNDEF RCNOFONTMAP
+RCOPTIONS=-z "MS Sans Serif,Helv/MS Shell Dlg" $(RCOPTIONS)
+!ENDIF
+
+RC_COMPILER=rc -l 409 $(RCOPTIONS)
+
+INCPATHRC = $(INCPATH0: =)
+INCPATHRC = $(INCPATHRC:-I=;)
+INCPATHRC = $(INCPATHRC:/I=;)
+
+CDEFINERC = $(CDEFINES:  = )
+CDEFINERC = $(CDEFINERC:  = )
+
+!IF $(MPPC)
+{..\}.rc{$O\}.res:
+     $(RC_COMPILER) -r -m -fo $(@R).res $(RC_DEFINES) $(RCXBANG) $(INCPATH0) $<
+!ELSE
+{..\}.rc{$O\}.res:
+    @type <<$(ECHO_RSP)
+    $(RC_COMPILER) -r -fo $(@R).tmp $(CDEFINES) $(INCPATH0) $<
+<<NOKEEP
+    @set include=$(INCPATHRC);$(INCLUDE)
+    @$(RC_COMPILER) -r -fo $(@R).tmp $(CDEFINERC) $<
+    @set include=$(INCLUDE)
+    @cvtres -nologo -machine:$(MACHINE_TYPE) -readonly -out:$@ $(@R).tmp
+! IF "$(NTKEEPRESOURCETMPFILES)" == ""
+    @-erase $(@R).tmp
+! ENDIF
+!ENDIF
+
+!ifdef USE_VS70_RULES
+
+{}.ctc{$O\}.cto:
+    $(CTC_NAME) $< $@ -C$(TARGET_CPP) -I$(CTC_INCLUDES:;= -I)
+
+{}.h{$O\}.cto:
+    $(CTC_NAME) $< $@ -C$(TARGET_CPP) -I$(CTC_INCLUDES:;= -I)
+
+{}.cmd{$O\}.cto:
+    $(CTC_NAME) $< $@ -C$(TARGET_CPP) -I$(CTC_INCLUDES:;= -I)
+
+{..\}.ctc{$O\}.cto:
+    $(CTC_NAME) $< $@ -C$(TARGET_CPP) -I$(CTC_INCLUDES:;= -I)
+
+{..\}.h{$O\}.cto:
+    $(CTC_NAME) $< $@ -C$(TARGET_CPP) -I$(CTC_INCLUDES:;= -I)
+
+{..\}.cmd{$O\}.cto:
+    $(CTC_NAME) $< $@ -C$(TARGET_CPP) -I$(CTC_INCLUDES:;= -I)
+
+{$O\}.ctc{$O\}.cto:
+    $(CTC_NAME) $< $@ -C$(TARGET_CPP) -I$(CTC_INCLUDES:;= -I)
+
+{$O\}.h{$O\}.cto:
+    $(CTC_NAME) $< $@ -C$(TARGET_CPP) -I$(CTC_INCLUDES:;= -I)
+
+{$O\}.cmd{$O\}.cto:
+    $(CTC_NAME) $< $@ -C$(TARGET_CPP) -I$(CTC_INCLUDES:;= -I)
+
+!endif // USE_VS70_RULES
+
+!IF $(MPPC)
+{}.rc{$O\}.res:
+    $(RC_COMPILER) -r -m -fo $(@R).res $(RC_DEFINES) $(RCXBANG) $(INCPATH0) $<
+!ELSE
+{}.rc{$O\}.res:
+    @type <<$(ECHO_RSP)
+    $(RC_COMPILER) -r -fo $(@R).tmp $(CDEFINES) $(INCPATH0) $<
+<<NOKEEP
+    @set include=$(INCPATHRC);$(INCLUDE)
+    @$(RC_COMPILER) -r -fo $(@R).tmp $(CDEFINERC) $<
+    @set include=$(INCLUDE)
+    @cvtres -nologo -machine:$(MACHINE_TYPE) -readonly -out:$@ $(@R).tmp
+! IF "$(NTKEEPRESOURCETMPFILES)" == ""
+    @-erase $(@R).tmp
+! ENDIF
+!ENDIF
+
+!IF $(MPPC)
+
+#
+# The definitions for the resource compiler are the same as the definitions
+# for the C compiler accept we need to remove INC_OLE2 because the resource
+# compiler doesn't understand the pragma's that the VC guys used to rename
+# the macos include files.  Thus, the resource compiler can't parse the ole
+# headers
+#
+
+RC_DEFINES=$(C_DEFINES:INC_OLE2=NO_OLE)
+
+#
+# Setup for the mac resource compiler
+#
+
+# Macintosh-specific resourse (.r) to .rsc rule
+MRC_COMPILER=mrc -l 0x409
+
+.SUFFIXES: .r
+
+{..\}.r{$(_OBJ_DIR)\$(TARGET_DIRECTORY)\}.rsc:
+    $(MRC_COMPILER) -o $(@R).rsc $(RC_DEFINES) $(INCPATH0) $<
+
+.r{$(_OBJ_DIR)\$(TARGET_DIRECTORY)\}.rsc:
+    $(MRC_COMPILER) -o $(@R).rsc $(RC_DEFINES) $(INCPATH0) $<
+!ENDIF
+
+
+{..\}.rc.rcpp:
+    set include=$(INCPATHRC);$(INCLUDE)
+    $(RC_COMPILER) -r -p -fo $(@R).tmp $(CDEFINERC) $<
+    @set include=$(INCLUDE)
+
+{}.rc.rcpp:
+    set include=$(INCPATHRC);$(INCLUDE)
+    $(RC_COMPILER) -r -p -fo $(@R).tmp $(CDEFINERC) $<
+    @set include=$(INCLUDE)
+
+.thk{$O\}.asm:
+    thunk -o $@ $<
+
+JVC = jvc /nologo
+
+!ifndef JAVA_DEBUG_FLAGS
+!if $(FREEBUILD)
+JAVA_DEBUG_FLAGS = /O
+!else
+JAVA_DEBUG_FLAGS = /g
+!endif
+!endif
+
+!ifndef JAVA_WARNING_FLAGS
+JAVA_WARNING_FLAGS = /w4
+!endif
+
+JAVA_BASE_CLASS = \
+    $(BASEDIR)\public\sdk\classes\afc.zip; \
+    $(BASEDIR)\public\sdk\classes\classes.zip
+
+JAVA_CLASS_PATH = $(JAVA_BASE_CLASS); $(MAKEDIR); $(USER_CLASS_PATH)
+JAVA_CLASS_PATH = $(JAVA_CLASS_PATH: =)
+
+JVC_FLAGS = /cp $(JAVA_CLASS_PATH) $(JAVA_DEBUG_FLAGS) $(JAVA_WARNING_FLAGS) /d $(O)
+
+{$(MAKEDIR)}.java{$O\}.class:
+    $(JVC) $(JVC_FLAGS) $<
+
+#
+# The DDK must support using VC 5 which does not support the /FC switch
+# allow disabling of it
+#
+
+!ifdef DDK_VC5_COMPILE
+USE_FC =
+!else
+USE_FC = /FC
+!endif
+
+ECHO_RSP = $O\echo.msg
+CL_RSP   = $O\cl.rsp
+CLCOD_RSP = $O\clcod.rsp
+LINK_RSP = $O\lnk.rsp
+
+{$O\}.cxx{$O\}.obj:
+    @type <<$(ECHO_RSP)
+$(ECHO_CXX_MSG)
+<<NOKEEP
+    @$(CXX_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+!ifdef BATCH_NMAKE
+{..\}.cxx{$O\}.obj::
+!else
+{..\}.cxx{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_CXX_MSG)
+<<NOKEEP
+    @$(CXX_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+!if $(AXP64)
+!ifdef BATCH_NMAKE
+{..\alpha\}.cxx{$O\}.obj::
+!else
+{..\alpha\}.cxx{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_CXX_MSG)
+<<NOKEEP
+    @$(CXX_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+!endif
+
+!ifdef BATCH_NMAKE
+{..\$(TARGET_DIRECTORY)\}.cxx{$O\}.obj::
+!else
+{..\$(TARGET_DIRECTORY)\}.cxx{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_CXX_MSG)
+<<NOKEEP
+    @$(CXX_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+!ifdef BATCH_NMAKE
+{$O\}.cpp{$O\}.obj::
+!else
+{$O\}.cpp{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_CXX_MSG)
+<<NOKEEP
+    @$(CXX_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+!ifdef BATCH_NMAKE
+{..\}.cpp{$O\}.obj::
+!else
+{..\}.cpp{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_CXX_MSG)
+<<NOKEEP
+    @$(CXX_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+!if $(AXP64)
+!ifdef BATCH_NMAKE
+{..\alpha\}.cpp{$O\}.obj::
+!else
+{..\alpha\}.cpp{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_CXX_MSG)
+<<NOKEEP
+    @$(CXX_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+!endif
+
+!ifdef BATCH_NMAKE
+{..\$(TARGET_DIRECTORY)\}.cpp{$O\}.obj::
+!else
+{..\$(TARGET_DIRECTORY)\}.cpp{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_CXX_MSG)
+<<NOKEEP
+    @$(CXX_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+!ifdef BATCH_NMAKE
+{}.cxx{$O\}.obj::
+!else
+{}.cxx{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_CXX_MSG)
+<<NOKEEP
+    @$(CXX_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+!if $(AXP64)
+!ifdef BATCH_NMAKE
+{alpha\}.cxx{$O\}.obj::
+!else
+{alpha\}.cxx{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_CXX_MSG)
+<<NOKEEP
+    @$(CXX_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+!endif
+
+!ifdef BATCH_NMAKE
+{$(TARGET_DIRECTORY)\}.cxx{$O\}.obj::
+!else
+{$(TARGET_DIRECTORY)\}.cxx{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_CXX_MSG)
+<<NOKEEP
+    @$(CXX_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+!ifdef BATCH_NMAKE
+{}.cpp{$O\}.obj::
+!else
+{}.cpp{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_CXX_MSG)
+<<NOKEEP
+    @$(CXX_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+!if $(AXP64)
+!ifdef BATCH_NMAKE
+{alpha\}.cpp{$O\}.obj::
+!else
+{alpha\}.cpp{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_CXX_MSG)
+<<NOKEEP
+    @$(CXX_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+!endif
+
+!ifdef BATCH_NMAKE
+{$(TARGET_DIRECTORY)\}.cpp{$O\}.obj::
+!else
+{$(TARGET_DIRECTORY)\}.cpp{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_CXX_MSG)
+<<NOKEEP
+    @$(CXX_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+{..\}.cxx{}.cod:
+    $(CXX_COMPILER_NAME) @<<$(CLCOD_RSP) /Fc $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+{..\}.cxx{}.pp:
+    $(CXX_COMPILER_NAME) @<<$(CL_RSP) /E $(USE_FC) $< > $@
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+{..\}.cpp{}.cod:
+    $(CXX_COMPILER_NAME) @<<$(CLCOD_RSP) /Fc $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+{..\}.cpp{}.pp:
+    $(CXX_COMPILER_NAME) @<<$(CL_RSP) /E $(USE_FC) $< > $@
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+{}.cxx{}.cod:
+    $(CXX_COMPILER_NAME) @<<$(CLCOD_RSP) /Fc $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+{}.cxx{}.pp:
+    $(CXX_COMPILER_NAME) @<<$(CL_RSP) /E $(USE_FC) $< > $@
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+{}.cpp{}.cod:
+    $(CXX_COMPILER_NAME) @<<$(CLCOD_RSP) /Fc $(USE_FC) $<
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+{}.cpp{}.pp:
+    $(CXX_COMPILER_NAME) @<<$(CL_RSP) /E $(USE_FC) $< > $@
+$(CXX_COMPILER_FLAGS: =
+)
+<<NOKEEP
+
+# Expand spaces to newlines, replace double # signs with spaces.
+EX_C_COMPILER_FLAGS=$(C_COMPILER_FLAGS: =^
+)
+EX_C_COMPILER_FLAGS=$(EX_C_COMPILER_FLAGS:^#^#= )
+
+!ifdef BATCH_NMAKE
+{..\}.c{$O\}.obj::
+!else
+{..\}.c{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_MSG)
+<<NOKEEP
+    @$(C_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $(USECXX_FLAG) $<
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+
+!if $(AXP64)
+!ifdef BATCH_NMAKE
+{..\alpha\}.c{$O\}.obj::
+!else
+{..\alpha\}.c{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_MSG)
+<<NOKEEP
+    @$(C_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $(USECXX_FLAG) $<
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+!endif
+
+!ifdef BATCH_NMAKE
+{..\$(TARGET_DIRECTORY)\}.c{$O\}.obj::
+!else
+{..\$(TARGET_DIRECTORY)\}.c{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_MSG)
+<<NOKEEP
+    @$(C_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $(USECXX_FLAG) $<
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+
+!ifdef BATCH_NMAKE
+{$O\}.c{$O\}.obj::
+!else
+{$O\}.c{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_MSG)
+<<NOKEEP
+    @$(C_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $<
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+
+!ifdef BATCH_NMAKE
+{}.c{$O\}.obj::
+!else
+{}.c{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_MSG)
+<<NOKEEP
+    @$(C_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $(USECXX_FLAG) $<
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+
+!if $(AXP64)
+!ifdef BATCH_NMAKE
+{alpha\}.c{$O\}.obj::
+!else
+{alpha\}.c{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_MSG)
+<<NOKEEP
+    @$(C_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $(USECXX_FLAG) $<
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+!endif
+
+!ifdef BATCH_NMAKE
+{$(TARGET_DIRECTORY)\}.c{$O\}.obj::
+!else
+{$(TARGET_DIRECTORY)\}.c{$O\}.obj:
+!endif
+    @type <<$(ECHO_RSP)
+$(ECHO_MSG)
+<<NOKEEP
+    @$(C_COMPILER_NAME) @<<$(CL_RSP) -Fo"$(MAKEDIR)\$O/" $(USE_FC) $(USECXX_FLAG) $<
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+
+{..\}.c{}.cod:
+    $(C_COMPILER_NAME) @<<$(CLCOD_RSP) /Fc $(USE_FC) $(USECXX_FLAG) $<
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+
+!if $(AXP64)
+{..\alpha\}.c{}.cod:
+    $(C_COMPILER_NAME) @<<$(CLCOD_RSP) /Fc $(USE_FC) $(USECXX_FLAG) $<
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+!endif
+
+{..\$(TARGET_DIRECTORY)\}.c{}.cod:
+    $(C_COMPILER_NAME) @<<$(CLCOD_RSP) /Fc $(USE_FC) $(USECXX_FLAG) $<
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+
+{..\}.c{}.pp:
+    $(C_COMPILER_NAME) @<<$(CL_RSP) /E $(USE_FC) $(USECXX_FLAG) $< > $@
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+
+!if $(AXP64)
+{..\alpha\}.c{}.pp:
+    $(C_COMPILER_NAME) @<<$(CL_RSP) /E $(USE_FC) $(USECXX_FLAG) $< > $@
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+!endif
+
+{..\$(TARGET_DIRECTORY)\}.c{}.pp:
+    $(C_COMPILER_NAME) @<<$(CL_RSP) /E $(USE_FC) $(USECXX_FLAG) $< > $@
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+
+{}.c{}.cod:
+    $(C_COMPILER_NAME) @<<$(CLCOD_RSP) /Fc $(USE_FC) $(USECXX_FLAG) $<
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+
+!if $(AXP64)
+{alpha\}.c{}.cod:
+    $(C_COMPILER_NAME) @<<$(CLCOD_RSP) /Fc $(USE_FC) $(USECXX_FLAG) $<
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+!endif
+
+{$(TARGET_DIRECTORY)\}.c{}.cod:
+    $(C_COMPILER_NAME) @<<$(CLCOD_RSP) /Fc $(USE_FC) $(USECXX_FLAG) $<
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+
+{}.c{}.pp:
+    $(C_COMPILER_NAME) @<<$(CL_RSP) /E $(USE_FC) $(USECXX_FLAG) $< > $@
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+
+!if $(AXP64)
+{alpha\}.c{}.pp:
+    $(C_COMPILER_NAME) @<<$(CL_RSP) /E $(USE_FC) $(USECXX_FLAG) $< > $@
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+!endif
+
+{$(TARGET_DIRECTORY)\}.c{}.pp:
+    $(C_COMPILER_NAME) @<<$(CL_RSP) /E $(USE_FC) $(USECXX_FLAG) $< > $@
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+
+!if $(AXP64)
+{}.c{alpha\}.pp:
+    $(C_COMPILER_NAME) @<<$(CL_RSP) /E $(USE_FC) $(USECXX_FLAG) $< > $@
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+!endif
+
+{}.c{$(TARGET_DIRECTORY)\}.pp:
+    $(C_COMPILER_NAME) @<<$(CL_RSP) /E $(USE_FC) $(USECXX_FLAG) $< > $@
+$(EX_C_COMPILER_FLAGS)
+<<NOKEEP
+
+
+
+!if "$(NTNOFUZZYLOOKUP)"=="1"
+LIBRARY_OBJS=
+!else
+LIBRARY_OBJS = $(LIBRARY_OBJS) $(HEADEROBJNAME)
+!endif
+
+!ifdef USE_INCREMENTAL_LINKING
+IMPLIB_DEPEND =
+!else
+IMPLIB_DEPEND = $(LIBRARY_OBJS)
+!endif
+
+#
+# Standard inference rule for generating machine specific def files.
+#
+.SUFFIXES: .def .src
+
+{..\}.src{$O}.def:
+    @type <<$(ECHO_RSP)
+$(ECHO_MSG) /EP $<
+<<NOKEEP
+    @$(C_PREPROCESSOR_NAME) @<<$(CL_RSP) /Tc$< > $@
+$(CPPXX: =
+)
+<<NOKEEP
+
+{}.src{$O}.def:
+    @type <<$(ECHO_RSP)
+$(ECHO_MSG) /EP $<
+<<NOKEEP
+    @$(C_PREPROCESSOR_NAME) @<<$(CL_RSP) /Tc$< > $@
+$(CPPXX: =
+)
+<<NOKEEP
+
+{..\}.def{$O}.def:
+    @type <<$(ECHO_RSP)
+$(ECHO_MSG) /EP $<
+<<NOKEEP
+    @$(C_PREPROCESSOR_NAME) @<<$(CL_RSP) /Tc$< > $@
+$(CPPXX: =
+)
+<<NOKEEP
+
+{}.def{$O}.def:
+    @type <<$(ECHO_RSP)
+$(ECHO_MSG) /EP $<
+<<NOKEEP
+    @$(C_PREPROCESSOR_NAME) @<<$(CL_RSP) /Tc$< > $@
+$(CPPXX: =
+)
+<<NOKEEP
+
+# one more leve down for HALS
+{..\..\}.src{$O}.def:
+    @type <<$(ECHO_RSP)
+$(ECHO_MSG) /EP $<
+<<NOKEEP
+    @$(C_PREPROCESSOR_NAME) @<<$(CL_RSP) /Tc$< > $@
+$(CPPXX: =
+)
+<<NOKEEP
+
+!ifdef NO_BROWSER_FILE
+BROWSERFILE=
+!else
+! ifdef BROWSER_INFO
+!  ifndef BROWSERFILE
+BROWSERFILE = "$(TARGETPATH)\$(TARGET_DIRECTORY)\$(TARGETNAME).bsc"
+!  endif
+! else
+BROWSERFILE=
+! endif
+!endif
+
+!if defined (USE_LINT) && ("$(LINT_TYPE)" != "all")
+
+{}.cxx{$O\}.lob:
+! if "$(LINT_TYPE)" != "lob"
+    @echo done >$@
+! endif
+    $(LINT_CMD) $<
+
+{$(TARGET_DIRECTORY)\}.cxx{$O\}.lob:
+! if "$(LINT_TYPE)" != "lob"
+    @echo done >$@
+! endif
+    $(LINT_CMD) $<
+
+{..\}.cxx{$O\}.lob:
+! if "$(LINT_TYPE)" != "lob"
+    @echo done >$@
+! endif
+    $(LINT_CMD) $<
+
+{..\$(TARGET_DIRECTORY)\}.cxx{$O\}.lob:
+! if "$(LINT_TYPE)" != "lob"
+    @echo done >$@
+! endif
+    $(LINT_CMD) $<
+
+{}.cpp{$O\}.lob:
+! if "$(LINT_TYPE)" != "lob"
+    @echo done >$@
+! endif
+    $(LINT_CMD) $<
+
+{$(TARGET_DIRECTORY)\}.cpp{$O\}.lob:
+! if "$(LINT_TYPE)" != "lob"
+    @echo done >$@
+! endif
+    $(LINT_CMD) $<
+
+{..\}.cpp{$O\}.lob:
+! if "$(LINT_TYPE)" != "lob"
+    @echo done >$@
+! endif
+    $(LINT_CMD) $<
+
+{..\$(TARGET_DIRECTORY)\}.cpp{$O\}.lob:
+! if "$(LINT_TYPE)" != "lob"
+    @echo done >$@
+! endif
+    $(LINT_CMD) $<
+
+{}.c{$O\}.lob:
+! if "$(LINT_TYPE)" != "lob"
+    @echo done >$@
+! endif
+    $(LINT_CMD) $<
+
+{$(TARGET_DIRECTORY)\}.c{$O\}.lob:
+! if "$(LINT_TYPE)" != "lob"
+    @echo done >$@
+! endif
+    $(LINT_CMD) $<
+
+{..\}.c{$O\}.lob:
+! if "$(LINT_TYPE)" != "lob"
+    @echo done >$@
+! endif
+    $(LINT_CMD) $<
+
+{..\$(TARGET_DIRECTORY)\}.c{$O\}.lob:
+! if "$(LINT_TYPE)" != "lob"
+    @echo done >$@
+! endif
+    $(LINT_CMD) $<
+
+!endif
+
+#
+# Standard inference rule for User Mode object files that produce User Mode
+# image files
+#
+{$O\}.obj{$O\}$(UMAPPLEXT):
+    $(LINKER) @<<
+$(LINKER_FLAGS: =
+)
+$(TSLINKER_FLAG)
+$(PDB_ROOTUM)
+$(ORDER: =
+)
+$(LINKGPSIZE: =
+)
+$(LINKER_OPTIDATA)
+!if "$(UMBASE)" != ""
+-base:$(UMBASE)
+!endif
+!if "$(SUBSYSTEM)" != ""
+-subsystem:$(SUBSYSTEM)
+!endif
+$(UMENTRY)
+$(HEADEROBJNAME: =
+)
+$(UMRES: =
+)
+$<
+$(UMOBJS: =
+)
+$(UMLIBS: =
+)
+$(CRTLIBS: =
+)
+$(LINKLIBS: =
+)
+<<NOKEEP
+    $(MAPSYM_CMD)
+    $(POST_BUILD_CMD)
+    $(SIGNCODE_CMD)
+    $(BINPLACE_CMD)
+
+#
+# Standard list of targets: all, clean and loc.  all is the default target.
+#
+
+!IFNDEF PASS0ONLY
+
+all:  obj\_objects.mac \
+        $(NTTARGETFILE0)  \
+        $(PASS0_OBJECTS) \
+        $(PRECOMPILED_TARGET) \
+        $(HEADEROBJNAME) \
+        build_objects \
+        $(TARGETLOBFILES1) \
+        $(TARGETLIBFILES) \
+        $(NTTARGETFILE1)  \
+        $(TARGETEXEFILES) \
+        $(BROWSERFILE)   \
+        $(TARGETLOBFILES2) \
+        build_umobjects \
+        $(UMEXEFILES) \
+! if "$(MISCFILES: =)" != ""
+        $(NTTARGETFILES) \
+!  ifdef _NTTREE
+        $(MISCFILES) \
+        binplace_miscfiles
+!  else
+        $(MISCFILES)
+!  endif
+! else
+        $(NTTARGETFILES)
+! endif
+! if "$(BUILDMSG)" != ""
+    @echo.
+    @echo $(BUILDMSG)
+! endif
+
+binplace_miscfiles: $(MISCFILES)
+!ifndef NO_BINPLACE
+    @!binplace -R $(_NTTREE) $(BINPLACE_DBGFLAGS_NT) $(BINPLACE_FLAGS) $(BINPLACE_LC_MISCFLAGS) $**
+! if "$(_NTTREE_NO_SPLIT)" != ""
+    @!binplace -R $(_NTTREE_NO_SPLIT) -Q $(BINPLACE_FLAGS) $**
+! endif
+!endif
+
+build_objects: $(TARGETOBJFILES)
+
+build_umobjects: $(UMOBJFILES)
+
+!ELSE   # PASS0ONLY
+
+all:    $(NTTARGETFILE0)  \
+        $(PASS0_OBJECTS)
+! IF "$(BUILDMSG)" != ""
+    @echo.
+    @echo $(BUILDMSG)
+! ENDIF
+
+!ENDIF  # PASS0ONLY
+
+update:
+    @echo Updating library.
+
+obj\_objects.mac: $(SOURCES_USED)
+    @echo Rebuilding obj\_objects.mac from $(SOURCES_USED).
+    @build -OZf >nul 2>&1
+    @echo obj\_objects.mac was rebuilt, please reinvoke NMAKE
+    @md \ >nul 2>nul
+
+loc:
+    @-loc *.h $(SOURCES)
+
+print:
+    @-ppr *.h $(SOURCES)
+
+!IFDEF NTTARGETFILES
+! INCLUDE .\makefile.inc
+!ELSE
+! IFDEF NTTARGETFILE0
+!  INCLUDE .\makefile.inc
+! ELSE
+!  IFDEF NTTARGETFILE1
+!   INCLUDE .\makefile.inc
+!  ENDIF
+! ENDIF
+!ENDIF
+
+!IF "$(PRECOMPILED_INCLUDE)" != ""
+! ifdef PRECOMPILED_SOURCEFILE
+$(PRECOMPILED_TARGET) $(HEADEROBJNAME): $(PRECOMPILED_INCLUDE)
+    @type <<
+$(ECHO_PRECOMPILED_MSG1)
+<<NOKEEP
+    @$(C_COMPILER_NAME) @<< $(PRECOMPILED_FLAG) $(PRECOMPILED_SOURCEFILE)
+$(EX_C_COMPILER_FLAGS)
+/Yl$(TARGETNAME) /Yc$(?F) $(HEADERFILE) $(HEADEROBJ)
+<<NOKEEP
+! else
+$(PRECOMPILED_TARGET) $(HEADEROBJNAME): $(PRECOMPILED_INCLUDE)
+    @type <<$O\pch_hdr.src
+$(ECHO_PRECOMPILED_MSG2)
+
+#include "$(?F)"
+
+<<NOKEEP
+    @$(C_COMPILER_NAME) @<< $(PRECOMPILED_FLAG)<<$O\pch_hdr.src
+$(EX_C_COMPILER_FLAGS)
+/Yl$(TARGETNAME) /Yc$(?F) $(HEADERFILE) $(HEADEROBJ)
+<<NOKEEP
+#include "$(?F)"
+<<NOKEEP
+! endif
+!ENDIF
+
+!IFNDEF NOLINK
+
+! IF "$(UMTEST)" != "" || "$(UMAPPL)" != ""
+
+$(UMEXEFILES): $(UMLIBS) $(CRTLIBS) $(LINKLIBS)
+
+! ENDIF
+!ENDIF
+
+!if defined(BROWSER_INFO) && !defined(NO_BROWSER_FILE)
+
+! ifndef BSCMAKE_FLAGS
+BSCMAKE_FLAGS = -nologo
+! endif
+
+$(BROWSERFILE) : $O\*.sbr $(OTHER_SBR_FILES)
+    -bscmake $(BSCMAKE_FLAGS) -o $(BROWSERFILE) @<<$O\bscmake.rsp
+$(**: =
+)
+<<NOKEEP
+!endif
+
+#
+# These dependencies produce the target binaries from the object files.
+# These will trigger the sources to object inference rules to generate the
+# object files.
+#
+
+!IF "$(TARGET)" != ""
+! IF "$(TARGETTYPE)"=="PROGLIB"
+$(TARGET:.exe=.lib) $(TARGET:.exe=.exp): $(DLLDEF) $(IMPLIB_DEPEND)
+    -$(LIB_NAME) -out:$(@R).lib @<<
+$(LIBRARIAN_FLAGS: =
+)
+-def:$(DLLDEF)
+$(LIBRARY_OBJS: =
+)
+<<NOKEEP
+    $(LINT_CMD2)
+    
+$(TARGET): $(OBJECTS) $(TARGETPATH)\$(TARGET_DIRECTORY)\$(TARGETNAME).exp $(UMRES) $(UMLIBS) $(CRTLIBS) $(MACHINE_TARGETLIBS) $(LINKLIBS)
+    $(LINKER) @<<
+$(LINKER_FLAGS: =
+)
+$(TSLINKER_FLAG)
+$(ORDER: =
+)
+$(LINKGPSIZE: =
+)
+$(HEADEROBJNAME: =
+)
+$(LINKER_OPTIDATA)
+!if "$(SUBSYSTEM)" != ""
+-subsystem:$(SUBSYSTEM)
+!endif
+!if "$(UMBASE)" != ""
+-base:$(UMBASE)
+!endif
+$(UMENTRY: =
+)
+$(**: =
+)
+<<NOKEEP
+    $(MAPSYM_CMD)
+    $(POST_BUILD_CMD)
+    $(SIGNCODE_CMD)
+    $(BINPLACE_CMD)
+
+! ELSEIF "$(TARGETTYPE)"=="PROGRAM"
+
+$(TARGET): $(UMRES) $(OBJECTS) $(CRTLIBS) $(UMLIBS) $(MACHINE_TARGETLIBS) $(LINKLIBS)
+    $(LINKER) @<<
+$(LINKER_FLAGS: =
+)
+$(TSLINKER_FLAG)
+!if "$(SUBSYSTEM)" != ""
+-subsystem:$(SUBSYSTEM)
+!endif
+!if "$(UMBASE)" != ""
+-base:$(UMBASE)
+!endif
+$(ORDER: =
+)
+$(LINKGPSIZE: =
+)
+$(UMENTRY: =
+)
+$(LINKER_OPTIDATA)
+$(HEADEROBJNAME: =
+)
+$(**: =
+)
+<<NOKEEP
+    $(MAPSYM_CMD)
+    $(POST_BUILD_CMD)
+    $(SIGNCODE_CMD)
+    $(BINPLACE_CMD)
+    $(BUILDXE_CMD)
+    $(LINT_CMD2)
+
+! ELSEIF "$(TARGETTYPE)"=="DYNLINK"
+
+!  ifdef RESOURCE_ONLY_DLL
+DYNLINK_EXP=
+!  else
+
+$(DYNLINK_LIB) $(DYNLINK_EXP) : $(DLLDEF) $(IMPLIB_DEPEND) $(DLLLIBOBJECTS)
+    -$(LIB_NAME) -out:$(DYNLINK_LIB) @<<
+$(LIBRARIAN_FLAGS: =
+)
+-def:$(DLLDEF)
+$(LIBRARY_OBJS: =
+)
+<<NOKEEP
+!   IF "$(DLLLIBOBJECTS)" != " "
+    -$(LIB_NAME) -out:$(DYNLINK_LIB) @<<
+$(LIBRARIAN_FLAGS: =
+)
+$(@R).lib
+$(DLLLIBOBJECTS)
+<<NOKEEP
+!   ENDIF
+    $(LINT_CMD2)
+
+!  endif # RESOURCE_ONLY_DLL
+
+!  IF "$(MAKEDLL)" != ""
+
+$(TARGET): $(DYNLINK_EXP) $(OBJECTS) $(LINKLIBS) $(CRTLIBS) $(MACHINE_TARGETLIBS)
+    $(LINKER) @<<
+$(LINKER_FLAGS: =
+)
+-dll
+$(ORDER: =
+)
+$(LINKER_OPTIDATA)
+-base:$(DLLBASE)
+!if "$(SUBSYSTEM)" != ""
+-subsystem:$(SUBSYSTEM)
+!endif
+$(DLLENTRY: =
+)
+$(HEADEROBJNAME: =
+)
+$(**: =
+)
+<<NOKEEP
+    $(MAPSYM_CMD)
+    $(POST_BUILD_CMD)
+    $(SIGNCODE_CMD)
+    $(BINPLACE_CMD)
+    $(MAPDUMP_CMD)
+
+!  ENDIF # "$(MAKEDLL)" != ""
+
+
+! ELSEIF "$(TARGETTYPE)"=="LIBRARY"
+
+$(TARGET): $(OBJECTS) $(OBJLIBFILES)
+    @-erase $@ >nul 2>nul
+    -$(LIBRARIAN) @<<
+$(HEADEROBJNAME: =
+)
+$(**: =
+)
+<<NOKEEP
+    $(LINT_CMD2)
+
+! ELSEIF "$(TARGETTYPE)"=="DRIVER" || \
+    "$(TARGETTYPE)"=="MINIPORT"
+
+$(TARGET): $(OBJECTS) $(MACHINE_TARGETLIBS) $(CRTLIBS)
+    $(LINKER) @<<
+$(LINKER_FLAGS: =
+)
+$(ORDER: =
+)
+$(SECTION_INFO1)
+$(SECTION_INFO2)
+$(LINKER_OPTIDATA)
+$(DRIVER_SWITCH)
+-align:$(DRIVER_ALIGNMENT)
+-subsystem:native$(SUBSYSTEM_NATVER)
+-base:$(DRIVERBASE)
+-entry:DriverEntry$(ENTRY_SUFFIX)
+-out:$(TARGET)
+$(HEADEROBJNAME: =
+)
+$(**: =
+)
+<<NOKEEP
+    $(MAPSYM_CMD)
+    $(POST_BUILD_CMD)
+    $(SIGNCODE_CMD)
+    $(BINPLACE_CMD)
+    $(MAPDUMP_CMD)
+    $(LINT_CMD2)
+
+! ELSEIF "$(TARGETTYPE)"=="GDI_DRIVER"
+
+$(TARGET): $(OBJECTS) $(MACHINE_TARGETLIBS) $(CRTLIBS) $(GDI_DRIVER_LIBS)
+    $(LINKER) @<<
+$(LINKER_FLAGS: =
+)
+-dll
+$(ORDER: =
+)
+$(SECTION_INFO1)
+$(SECTION_INFO2)
+$(LINKER_OPTIDATA)
+$(DRIVER_SWITCH)
+-align:$(DRIVER_ALIGNMENT)
+-subsystem:native$(SUBSYSTEM_NATVER)
+-base:$(DRIVERBASE)
+-entry:DrvEnableDriver$(GDI_ENTRY_SUFFIX)
+-out:$(TARGET)
+$(HEADEROBJNAME: =
+)
+$(**: =
+)
+<<NOKEEP
+    $(MAPSYM_CMD)
+    $(POST_BUILD_CMD)
+    $(SIGNCODE_CMD)
+    $(BINPLACE_CMD)
+    $(MAPDUMP_CMD)
+    $(LINT_CMD2)
+
+! ELSEIF "$(TARGETTYPE)"=="EXPORT_DRIVER"
+
+$(DYNLINK_EXP) $(DYNLINK_LIB) : $(DLLDEF) $(OBJECTS) $(LINKLIBS) $(DLLLIBOBJECTS)
+    -$(LIB_NAME) -out:$(DYNLINK_LIB) @<<
+$(LIBRARIAN_FLAGS: =
+)
+-def:$(DLLDEF)
+$(OBJECTS)
+$(LINKLIBS)
+<<NOKEEP
+!  if "$(DLLLIBOBJECTS)" != " "
+    -$(LIB_NAME) -out:$(DYNLINK_LIB) @<<
+$(LIBRARIAN_FLAGS: =
+)
+$(DYNLINK_LIB)
+$(DLLLIBOBJECTS)
+<<NOKEEP
+!  endif
+    $(LINT_CMD2)
+
+!  IF "$(MAKEDLL)" != ""
+$(TARGET): $(DYNLINK_EXP) $(OBJECTS) $(CRTLIBS) $(MACHINE_TARGETLIBS) $(LINKLIBS)
+    $(LINKER) @<<
+$(LINKER_FLAGS: =
+)
+$(ORDER: =
+)
+$(LINKER_OPTIDATA)
+$(DRIVER_SWITCH)
+-align:$(DRIVER_ALIGNMENT)
+-subsystem:native$(SUBSYSTEM_NATVER)
+-base:$(DRIVERBASE)
+-entry:DriverEntry$(ENTRY_SUFFIX)
+-out:$(TARGET)
+$(HEADEROBJNAME: =
+)
+$(**: =
+)
+<<NOKEEP
+    $(MAPSYM_CMD)
+    $(POST_BUILD_CMD)
+    $(SIGNCODE_CMD)
+    $(BINPLACE_CMD)
+!  ENDIF
+
+! ELSEIF "$(TARGETTYPE)"=="HAL"
+
+!  IF "$(MAKEDLL)" == ""
+$(TARGET) $(TARGET:.lib=.exp): $(DLLDEF) $O\*.obj
+    -$(LIB_NAME) -out:$(@R).lib @<<
+$(LIBRARIAN_FLAGS: =
+)
+-def:$(DLLDEF)
+$O\*.obj
+<<NOKEEP
+!  ELSE
+$(TARGET:.dll=.lib) $(TARGET:.dll=.exp): $(DLLDEF) $O\*.obj
+    -$(LIB_NAME) -out:$(@R).lib @<<
+$(LIBRARIAN_FLAGS: =
+)
+-def:$(DLLDEF)
+$O\*.obj
+<<NOKEEP
+
+$(TARGET): $(TARGETPATH)\$(TARGET_DIRECTORY)\$(TARGETNAME).exp $(OBJECTS) $(CRTLIBS) $(MACHINE_TARGETLIBS) $(LINKLIBS)
+    $(LINKER) @<<
+$(LINKER_FLAGS: =
+)
+$(LINKER_OPTIDATA)
+$(DRIVER_SWITCH)
+-align:$(HAL_ALIGNMENT)
+!if "$(SUBSYSTEM)" != ""
+-subsystem:$(SUBSYSTEM)
+!endif
+-base:$(HALBASE)
+!if !$(USE_VC7)
+-miscrdata
+!endif
+-dll
+-entry:HalInitSystem$(ENTRY_SUFFIX)
+-out:$(TARGET)
+$(**: =
+)
+<<NOKEEP
+    $(POST_BUILD_CMD)
+    $(SIGNCODE_CMD)
+    $(BINPLACE_CMD)
+    $(MAPDUMP_CMD)
+    $(LINT_CMD2)
+!  ENDIF
+
+! ELSEIF "$(TARGETTYPE)"=="BOOTPGM"
+
+$(TARGET): $(OBJECTS) $(CRTLIBS) $(MACHINE_TARGETLIBS) $(LINKLIBS)
+    $(LINKER) @<<
+$(LINKER_FLAGS: =
+)
+$(DRIVER_SWITCH)
+!if "$(SUBSYSTEM)" != ""
+-subsystem:$(SUBSYSTEM)
+!endif
+-base:$(BOOTBASE)
+-entry:_start
+-map:$(@R).map
+$(**: =
+)
+<<NOKEEP
+    $(LINT_CMD2)
+
+! ENDIF
+!ENDIF
+
+!IFNDEF NOLINK
+! IF "$(NTTEST)" != ""
+
+obj\$(TARGET_DIRECTORY)\$(NTTEST).exe: $(NTRES) \
+                        $(KERNEL_LIBS) \
+                        $(LINKLIBS)
+    $(LINKER) @<<
+$(LINKER_FLAGS: =
+)
+$(ORDER: =
+)
+$(LINKGPSIZE: =
+)
+$(NTTEST_LINK_OPTIONS: =
+)
+$(LINKER_OPTIDATA)
+$(DRIVER_SWITCH)
+!if "$(SUBSYSTEM)" != ""
+-subsystem:$(SUBSYSTEM)
+!endif
+-align:$(KERNEL_ALIGNMENT)
+!if !$(USE_VC7)
+-miscrdata
+!endif
+$(**: =
+)
+<<NOKEEP
+    $(POST_BUILD_CMD)
+    $(SIGNCODE_CMD)
+    $(BINPLACE_CMD)
+    $(MAPDUMP_CMD)
+    $(LINT_CMD2)
+
+! ENDIF
+!ENDIF
+
+!IF DEFINED(USE_LINT) && ("$(LINT_TYPE)" == "all")
+
+$O\$(LINT_OUTPUT).$(LINT_EXT): $(TARGETOBJFILES)
+    $(LINT_ALL_CMD) $(SOURCES)
+!ENDIF
+
+$O\*.res : $(MASTER_VERSION_FILE)

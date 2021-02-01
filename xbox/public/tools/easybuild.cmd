@@ -1,6 +1,7 @@
 @echo off
 cls
 rem Here we set some variables that are not set by Easy-build.cmd/razzle during load, so we just load them
+set Easy-Build-Version=v0.19
 set _BUILDVER=4400
 set COMPUTERNAME=XBuilds
 if /i "%NTDEBUG%" == "" set NTDEBUG=ntsdnodbg
@@ -21,9 +22,21 @@ if /i "%2" == "XM3" set OFFICIAL_BUILD=1
 if /i "%2" == "XM3P" set RETAILXM3P=1
 if /i "%2" == "XM3P" set OFFICIAL_BUILD=1
 if NOT exist "%_NTDRIVE%%_NTROOT%\private\ntos\inc\nv_ref_2a.h" cp "%_NTDRIVE%%_NTROOT%\private\ntos\av\nv_ref_2a.h" "%_NTDRIVE%%_NTROOT%\private\ntos\inc\"
+if exist "%_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def.new" goto applychkpatch
+goto eb-xbox-mainmenu
+
+:applychkpatch
+echo Applying CHK fixes..
+copy "%_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def" "%_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def.old"
+del "%_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def"
+copy "%_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def.new" "%_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def"
+del "%_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def.new"
+goto eb-xbox-mainmenu
+
+
 :eb-xbox-mainmenu
 cls
-
+Title Easy-Build XBOX Build Environment %Easy-Build-Version%
 set ebbuildoptions=%Build_Default%
 set ebdrive=%_NTDrive%
 set ebntroot=%_NTBINDIR%
@@ -33,6 +46,10 @@ if /i "%1" == "XM3" set ebxm3build=RETAILXM3 Defined
 if /i "%1" == "XM3P" set ebxm3build=RETAILXM3P Defined
 if /i "%2" == "XM3" set ebxm3build=RETAILXM3 Defined
 if /i "%2" == "XM3P" set ebxm3build=RETAILXM3P Defined
+if /i "%_BINPLACE_SUBDIR%" == "fre" set ErrorLogsEB=%ebntroot%\private\build.err
+if /i "%_BINPLACE_SUBDIR%" == "chk" set ErrorLogsEB=%ebntroot%\private\buildd.err
+if /i "%_BINPLACE_SUBDIR%" == "fre" set WarningLogsEB=%ebntroot%\private\build.wrn
+if /i "%_BINPLACE_SUBDIR%" == "chk" set WarningLogsEB=%ebntroot%\private\buildd.wrn
 cd /d %ebntroot%
 color 2F
 echo --------------------------------------------------------------------------------------------
@@ -67,8 +84,8 @@ echo ___________________________________________________________________________
 if /i "%NTMMENU%"=="1" goto cleanbuild
 if /i "%NTMMENU%"=="2" goto DirtyBuild
 REM Opens the most recent builds error logs in Notepad
-if /i "%NTMMENU%"=="b" notepad %ebntroot%\private\build.err & goto eb-xbox-mainmenu
-if /i "%NTMMENU%"=="w" notepad %ebntroot%\private\build.wrn & goto eb-xbox-mainmenu
+if /i "%NTMMENU%"=="b" cmd.exe /c notepad %ErrorLogsEB%
+if /i "%NTMMENU%"=="w" cmd.exe /c notepad %WarningLogsEB%
 if /i "%NTMMENU%"=="3" goto SpecificBLD
 if /i "%NTMMENU%"=="4" goto postbuild-placeholder
 if /i "%NTMMENU%"=="p" notepad %_NTPOSTBLD%\build_logs\postbuild.err & goto eb-xbox-mainmenu
@@ -87,6 +104,7 @@ if /i "%NTMMENU%"=="options" goto BuildOptions
 goto eb-xbox-mainmenu
 
 :eb-ISO-menu
+Title Easy-Build XBOX Build Environment - ISO Menu
 cls
 echo --------------------------------------------------------------------------------------------
 echo  Empyreal's Easy-Build for XBOX ORIGINAL (Very limited features currently, WIP)
@@ -113,6 +131,7 @@ goto eb-extras-menu
 
 
 :eb-extras-menu
+Title Easy-Build XBOX Build Environment - Extras
 cls
 echo --------------------------------------------------------------------------------------------
 echo  Empyreal's Easy-Build for XBOX ORIGINAL (Very limited features currently, WIP)
@@ -138,25 +157,22 @@ echo still working this out..
 pause
 goto eb-xbox-mainmenu
 :cleanbuild
+Title Easy-Build XBOX Build Environment - Clean Building
 cls
 cd /d %ebntroot%\private
-build -bcDeFZP
-REM Rebuild private\ntos to ensure bios ROM files get built (mainly xpreldr.bin)
-cd /d %ebntroot%\private\ntos\bootx
 build -bcDeFZP
 pause
 goto eb-xbox-mainmenu
 :DirtyBuild
+Title Easy-Build XBOX Build Environment - Rebuilding
 cls
 cd /d %ebntroot%\private
-build -bDeFZP
-REM Rebuild private\ntos to ensure bios ROM files get built (mainly xpreldr.bin)
-cd /d %ebntroot%\private\ntos\bootx
 build -bDeFZP
 pause
 goto eb-xbox-mainmenu
 
 :HVSLaunchtest
+Title Easy-Build XBOX Build Environment - HVS Launcher Test
 CLS
 cd /d %ebntroot%
 echo.
@@ -171,6 +187,7 @@ pause
 cmd /c %ebntroot%\private\test\hvs\createdirs.cmd | tee %_NT386TREE%\HVTestBinplace.log&& pause && goto eb-xbox-mainmenu
 
 :RecoveryImage
+Title Easy-Build XBOX Build Environment - Recovery Image
 cls
 cd /d %ebntroot%
 echo xupdrec (Originally updrec.cmd)
@@ -190,6 +207,7 @@ cmd /c xupdrec | tee %_NT386TREE%\xupdrec.log&& pause && goto eb-ISO-menu
 
 
 :SetupSDK
+Title Easy-Build XBOX Build Environment - Xbox SDK Build
 cls
 echo XSDKBuild (Originally SDKBuild.cmd)
 echo This will start a modified script to build the XSDK.
@@ -205,6 +223,7 @@ pause
 cmd /c %_NTDrive%%_NTROOT%\private\SDK\setup\xsdkbuild.bat | tee %_NT386TREE%\SDKBuild.log&& pause && goto eb-xbox-mainmenu
 
 :DebugCopySym
+Title Easy-Build XBOX Build Environment - Copying Debugging Symbols
 echo.
 echo.
 cls
@@ -213,6 +232,7 @@ pause
 goto eb-xbox-mainmenu
 
 :BIOSPack_Barnabus
+Title Easy-Build XBOX Build Environment - BIOSPack
 cls
 echo.
 echo  BIOSpack - From Barnabus Kernel Repack
@@ -236,6 +256,7 @@ goto eb-xbox-mainmenu
 
 
 :EEPROMmenu
+Title Easy-Build XBOX Build Environment - EEPROM Builder
 If NOT exist "%_NTDrive%%_NTROOT%\private\sdktools\mkeeprom\obj\i386\mkeeprom.exe" cd /d "%_NTDrive%%_NTROOT%\private\sdktools\mkeeprom" && build -bcZP
 if NOT exist "%IDW_DIR%\mkeeprom.exe" copy "%_NTDrive%%_NTROOT%\private\sdktools\mkeeprom\obj\i386\mkeeprom.exe" "%IDW_DIR%" 
 cls
@@ -250,8 +271,9 @@ echo   Origin:
 echo   NA) North America     JP) Japan     ROW) Rest of the World
 echo.
 echo   HDD Status:
-echo   ZKey) Zero HDD Key     SqeKey) Sequential HDD Key     DevKey) DevKit HDD Key
+echo   ZKey) Zero HDD Key     SeqKey) Sequential HDD Key     DevKey) DevKit HDD Key
 echo.
+echo   Type to make EEPROM: Build
 echo   Currently Selected: %eb-eeprom-origin%      %eb-eeprom-hddstatus% 
 set /p eb-eeprom-userinput=Select:
 echo.
@@ -302,6 +324,7 @@ goto EEPROMmenu
 
 
 :BuildBiosImage
+Title Easy-Build XBOX Build Environment - RomBld Bios Maker
 cls
 echo This will try to use 'rombld' to build the Xbox BIOS image.
 echo.
@@ -312,7 +335,7 @@ echo.
 echo This will be targeted as an XDK Xbox bios, retail 'XM3' Bioses fails
 echo to build due to incorrect 'preloader' size currently.
 echo.
-echo NOTE: If xpreldr.bin is missing, clean build %_NTROOT%\private\ntos\bootx
+echo NOTE: If any files are missing Easy-Build will attempt to rebuild
 echo.
 echo From what I know built Bios roms from source aren't bootable, 
 echo if this is bootable please let me know!
@@ -332,14 +355,20 @@ if exist "%_NT386TREE%\xboxbios_eb-rombld.bin" echo File created at "%_NT386TREE
 pause
 goto eb-xbox-mainmenu
 
+
 :RombldError
 echo.
-echo %ebromerror% is missing.. Rebuild NTOS\BOOTX
+echo %ebromerror% is missing.. 
+echo Attempting to Rebuild NTOS\BOOTX
 pause
-goto eb-xbox-mainmenu
+REM Rebuild private\ntos to ensure bios ROM files get built (mainly xpreldr.bin)
+cd /d %ebntroot%\private\ntos\bootx
+build -bcDeFZP
+goto BuildBiosImage
 
 
 :SpecificBLD
+Title Easy-Build XBOX Build Environment - Build Specific Folder
 cls
 echo ----------------------------------------------------------------------
 echo This section we can clean build certain components of the source
@@ -360,6 +389,7 @@ pause
 goto eb-xbox-mainmenu
 
 :postbuild-placeholder
+Title Easy-Build XBOX Build Environment - Copying Kernel Files
 cls
 echo This is a 'Postbuild' script I made from 'copybins.cmd' and 'copytest.cmd' to
 echo place files in %_NT386TREE% instead of an Xbox Dev Kit.. THIS IS NOT AN 'OFFICIAL' SCRIPT
@@ -370,6 +400,7 @@ pause
 cmd /c xcopybins.cmd | tee %_NT386TREE%\xcopybins.log&& goto eb-xbox-mainmenu
 
 :XDKSampleCD
+Title Easy-Build XBOX Build Environment - XDK Sample CD
 cls 
 echo.
 echo Here the XDK Sample CD will be copied and built for Xboxes
@@ -382,6 +413,7 @@ pause
 cmd /c xmakesamples.cmd | tee %_NT386TREE%\xdksamples.log&& goto eb-xbox-mainmenu
 
 :XBRecovery
+Title Easy-Build XBOX Build Environment - Recovery Image
 cls
 echo.
 echo This will initiate building the Recovery iso.
@@ -397,13 +429,14 @@ pause
 goto eb-xbox-mainmenu
 
 :xbsebuild
+Title Easy-Build XBOX Build Environment - XBSE Builder
 cls
 cmd /c xbsebuild.bat
 pause
 goto eb-extras-menu
 
 :BuildOptions
-
+Title Easy-Build XBOX Build Environment - Build Options
 REM Over time I will add more features, first I need to find what to change and how
 REM Suggestions and improvements greatly welcomed here.
 REM

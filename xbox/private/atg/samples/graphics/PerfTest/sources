@@ -1,0 +1,33 @@
+TARGETNAME = PerfTest
+PROJNAME   = PerfTest
+SOURCES    = PerfTest.cpp VolumeLight.cpp
+TITLEID    = 0xfffff100
+
+NTTARGETFILE0 = $(O)\PerfTest.dsp $(O)\Font.xpr $(O)\Font12.xpr $(O)\Gamepad.xpr $(O)\resource.xpr
+
+XE_FLAGS   = $(XE_FLAGS) /TESTNAME:$(PROJNAME) /TESTID:$(TITLEID) /INITFLAGS:0x00000000
+
+TARGETPATH = obj
+TARGETTYPE = PROGRAM
+UMTYPE     = xboxapp
+
+INCLUDES   = $(INCLUDES);..\..\common\include
+
+
+# Make use of d3d8i.lib for release builds (instead of d3d8.lib)
+# d3d8d.lib has unresolved external functions.. 
+#For now we use the FREE version although not ideal
+#!if $(FREEBUILD)
+D3D8_LIB = d3d8i.lib
+#!else
+#D3D8_LIB = d3d8d.lib
+#!endif
+
+LINKLIBS   = \
+             ..\..\common\src\obj\*\xbframe.lib \
+             $(XDK_LIB_PATH)\$(D3D8_LIB) \
+             $(XDK_LIB_PATH)\d3dx8$(D).lib \
+             $(XDK_LIB_PATH)\xgraphics$(D).lib
+
+
+USE_LIBCMT=1
