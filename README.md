@@ -38,6 +38,12 @@ You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and 
 **What's Updated?**
 
 ```
+- Added idw\biospack to %PATH%.
+
+- Replaced 'rombld' sections of ntos\init\*\makefile.inc with BIOSpack to allow bios Images to be created during build.
+
+- Allowed seperate EEPROM and BIOS images to be created for CHK and FRE ('Postbuild only')
+
 - Added more Information to easy-build-xinit
 
 - Removed CHK builds dependancy on building to 'objd', now builds to 'obj' to avoid errors 
