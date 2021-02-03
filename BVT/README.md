@@ -21,15 +21,17 @@ I Will be adding features as time goes on, the first is adding a bit more functi
 
 - An empty folder to be used as a Network Share for Host and Build VM ([I recommend using the `.VHDX` file](https://github.com/Empyreal96/easy-build-xbox/raw/main/BVT/BVT_HDD.7z) or creating your own  `BVT VHD`).
 
-- [XEMU Emulator](https://github.com/mborgerson/xemu) extracted to the `BVT1_XEMU` folder.
+- [Your preferred XEMU Emulator fork](https://github.com/mborgerson/xemu) extracted to the `BVT1_XEMU` folder.
 
-- [MCPX 1.0 ROM](https://github.com/mborgerson/xemu/wiki#mcpx-boot-rom-image) (As far as I know MCPX 1.1 Images not supported*).
+- [MCPX ROM](https://github.com/mborgerson/xemu/wiki#mcpx-boot-rom-image) (As far as I know MCPX 1.1 Images not supported*).
 
 - [Xbox Formatted HDD Image for XEMU](https://github.com/mborgerson/xemu/wiki#hard-disk-drive-image).
 
 - BVTMonitor.cmd at the ROOT of the BVT Drive/Folder.
 
   *(Items with a* * *need conformation)*
+
+## **Notes:** You will need to a compatible build of XEMU that supports the Visor patches in the Complex Xbox Tree, otherwise it wont boot.
 
 ## **How To Use?**
 
