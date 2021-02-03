@@ -1,7 +1,7 @@
 @echo off
 cls
 rem Here we set some variables that are not set by Easy-build.cmd/razzle during load, so we just load them
-set Easy-Build-Version=v0.19
+set Easy-Build-Version=v0.2
 set _BUILDVER=4400
 set COMPUTERNAME=XBuilds
 if /i "%NTDEBUG%" == "" set NTDEBUG=ntsdnodbg
@@ -66,6 +66,7 @@ echo (Very limited features currently, WIP.. Suggestions are needed)
 echo.
 echo --------------------------------------------------------------------------------------------
 echo  options) Modify Some Build Options.
+echo  BVT) Start BVT Build Process
 echo --------------------------------------------------------------------------------------------
 echo  1) Clean Build (Full err path, delete object files)
 echo  2) 'Dirty' Build (Full err path, no checks)
@@ -83,6 +84,7 @@ set /p NTMMENU=Select:
 echo ____________________________________________________________________________________________
 if /i "%NTMMENU%"=="1" goto cleanbuild
 if /i "%NTMMENU%"=="2" goto DirtyBuild
+if /i "%NTMMENU%"=="BVT" goto InitBVTTestrun
 REM Opens the most recent builds error logs in Notepad
 if /i "%NTMMENU%"=="b" cmd.exe /c notepad %ErrorLogsEB%
 if /i "%NTMMENU%"=="w" cmd.exe /c notepad %WarningLogsEB%
@@ -476,3 +478,123 @@ if /i "%bldopt%"=="back" goto eb-xbox-mainmenu
 goto BuildOptions
 
 REM
+
+
+:InitBVTTestrun
+if exist "%_NTDRIVE%%_NTROOT%\public\tools\SavedBVTAddress.txt" for /F "delims=" %%i in (%_NTDRIVE%%_NTROOT%\public\tools\SavedBVTAddress.txt) do set "_BVTUNCSAVEDPATH=%%i"
+cls
+echo --------------------------------------------------------------------------------------------
+echo  Build Verification Testing Setup.
+echo --------------------------------------------------------------------------------------------
+echo.
+echo  Providing you have already read the instructions shown in 'BVTMonitor.cmd' we will attempt
+echo  to connect to the Shared Folder, then go through the build process, 
+echo  placing files needed onto the Network Share..
+echo.
+echo  The Virtual BVT Will boot up when the files have been placed. You can choose if you want the 
+echo  Network settings to be saved, or entered upon each run (Default is enter each time).
+echo.
+echo.
+echo YOU MUST KNOW THE SHARE POINT'S ADDRESS.. TYPE IN THIS FORMAT: \\tsclient\D 
+echo To go back to the MainMenu Type: Back
+echo If you saved the Address previously, just press ENTER.
+echo.
+set /p userbvtinput=Please Enter Address:
+echo.
+if /i "%userbvtinput%" == "" goto InitBVTConnection
+if /i "%userbvtinput%" == "Back" goto eb-xbox-mainmenu
+set _BVTUNCPATH=%userbvtinput%
+goto Init2BVTTestRun
+
+:Init2BVTTestRun
+cls
+echo So %_BVTUNCPATH% is the correct Address?
+echo.
+set /p userconfirm=Yes or No?:
+echo.
+if /i "%userconfirm%" == "Yes" goto InitBVTSaveAddress
+if /i "%userconfirm%" == "No" goto InitBVTTestrun
+goto Init2BVTTestRun
+
+:InitBVTSaveAddress
+if exist "%_NTDRIVE%%_NTROOT%\public\tools\SavedBVTAddress.txt" goto InitBVTConnection
+cls
+echo Save %_BVTUNCPATH% for next time?
+echo.
+set /p usersave=Yes or No?:
+echo.
+if /i "%usersave%" == "Yes" goto InitBVTSaveConnection
+if /i "%usersave%" == "No" goto InitBVTConnection
+goto Init2BVTTestRun
+
+:InitBVTSaveConnection
+echo %_BVTUNCPATH% >> %_NTDRIVE%%_NTROOT%\public\tools\SavedBVTAddress.txt
+goto InitBVTConnection
+
+:InitBVTConnection
+echo.
+if exist "%_NTDRIVE%%_NTROOT%\public\tools\SavedBVTAddress.txt" (net use X: %_BVTUNCSAVEDPATH%) else (net use X: %_BVTUNCPATH%)
+if exist "X:\BVTMonitor.cmd" echo BVT Shared Drive found >> "X:\xboxbins\NEEDED_BY_BVTMONITOR\BVTConnected.txt" && goto InitBVTConnectSuccess
+if NOT exist "X:\BVTMonitor.cmd" echo BVTMONITOR.CMD NOT FOUND, PLEASE REVIEW SETTINGS && pause && goto InitBVTTestrun
+
+:InitBVTConnectSuccess
+echo.
+echo Connection Succeeded, Checking file paths...
+echo.
+if not exist "X:\BVT1_XEMU" echo "X:\BVT1_XEMU" Cannot be found! && pause && goto InitBVTTestrun
+if not exist "X:\Bldr_Files" echo "X:\Bldr_Files" Cannot be found! && pause && goto InitBVTTestrun
+if not exist "X:\xboxbins" echo "X:\xboxbins" Cannot be found! && pause && goto InitBVTTestrun
+if exist "X:\BVT1_XEMU\xqemu.exe" echo XQEMU is not supported at this time, please use XEMU && pause && goto InitBVTTestrun
+if not exist "X:\BVT1_XEMU\xemuw.exe" echo "X:\BVT1_XEMU\xemuw.exe" Cannot be found! && pause && goto InitBVTTestrun
+if not exist "X:\BVT1_XEMU\xbox_hdd.qcow2" echo "X:\BVT1_XEMU\xbox_hdd.qcow2" Cannot be found! && pause && goto InitBVTTestrun
+if not exist "X:\Bldr_Files\mcpx.bin" echo "X:\Bldr_Files\mcpx.bin" Cannot be found! && pause && goto InitBVTTestrun
+echo Everything seems to be in order!
+set _BVTMonSanityChecks=X:\xboxbins\NEEDED_BY_BVTMONITOR
+goto StartBVTBuild
+
+
+:StartBVTBuild
+echo Starting Build.
+echo Build Started >> "%_BVTMonSanityChecks%\BuildStarted.txt"
+cd /d %_NTDRIVE%%_NTROOT%\private\
+if exist "%_NTDRIVE%%_NTROOT%\public\tools\BVTNoCleanBuild.txt" (build -bDeZFP) else (build -bcDeFZP)
+if /i "%ebxbtype%" == "fre" copy "%_NTDRIVE%%_NTROOT%\private\build.log" "%_BVTMonSanityChecks%\"
+if /i "%ebxbtype%" == "fre" copy "%_NTDRIVE%%_NTROOT%\private\build.err" "%_BVTMonSanityChecks%\"
+if /i "%ebxbtype%" == "fre" copy "%_NTDRIVE%%_NTROOT%\private\build.wrn" "%_BVTMonSanityChecks%\"
+if /i "%ebxbtype%" == "chk" copy "%_NTDRIVE%%_NTROOT%\private\buildd.log" "%_BVTMonSanityChecks%\"
+if /i "%ebxbtype%" == "chk" copy "%_NTDRIVE%%_NTROOT%\private\buildd.err" "%_BVTMonSanityChecks%\"
+if /i "%ebxbtype%" == "chk" copy "%_NTDRIVE%%_NTROOT%\private\buildd.wrn" "%_BVTMonSanityChecks%\"
+if exist %_NT386TREE%\xboxkrnl.exe set _BVTKernelBuilt=1
+echo PostBuild Finished >> "%_BVTMonSanityChecks%\FinalBuildPrep.txt"
+if /i "%_BVTKernelBuilt%" == "1" copy "%_NT386TREE%\xboxkrnl.exe" "X:\xboxbins\Release\xboxkrnl.exe" /Y /V
+REM if NOT exist "%_BVTMonSanityChecks%\KernelFound.txt echo Error Detecting Kernel on Network && pause && goto InitBVTTestrun
+if exist "X:\xboxbins\Release\xboxkrnl.exe" echo Kernel Successfully Transferred >> %_BVTMonSanityChecks%\KernelRecieved.txt && goto MakeBVTBios
+REM if NOT exist "X:\xboxbins\Release\xboxkrnl.exe" echo Xboxkrnl.exe Failed to copy to %_BVTUNCPATH% && goto InitBVTTestrun
+:MakeBVTBios
+if exist "%IDW_DIR%\biospack\boot\xboxkrnl.img" del "%IDW_DIR%\biospack\boot\xboxkrnl.img"
+copy "%_NT386TREE%\xboxkrnl.exe" "%IDW_DIR%\biospack\boot\xboxkrnl.img"
+%IDW_DIR%\biospack\biospack.exe -t multi -i %IDW_DIR%\biospack\boot\ -o %IDW_DIR%\biospack\xboxbios.bin
+if exist "%IDW_DIR%\biospack\xboxbios.bin" (echo Finished! %IDW_DIR%\biospack\xboxbios.bin) else (echo Failed && goto eb-xbox-mainmenu )
+copy "%IDW_DIR%\biospack\xboxbios.bin" "X:\xboxbins\Release\xboxbios.bin"
+goto WaitForBVTBiosCheck
+
+:WaitForBVTBiosCheck
+if exist "%_BVTMonSanityChecks%\BiosFound.txt" goto BVTWaitForSignal
+goto WaitForBVTBiosCheck
+
+:BVTWaitForSignal
+if exist "%_BVTMonSanityChecks%\VirtualBVTStarted.txt" goto BVTHasStarted
+goto BVTWaitForSignal
+
+:BVTHasStarted
+if not exist "%_BVTMonSanityChecks%\WaitingOnHost.txt" (
+echo Waiting on HOST BVT Machine >> "%_BVTMonSanityChecks%\WaitingOnHost.txt" 
+)
+echo.
+echo The Virtual BVT has now started, you can now test.
+echo You will be taken to the Main Menu once the test is done.
+echo.
+if exist "%_BVTMonSanityChecks%\BVTTestFinished.txt" echo Build VM going to Main Menu >> %_BVTMonSanityChecks%\VMGoneHome.txt && pause && goto eb-xbox-mainmenu
+goto BVTHasStarted
+
+

@@ -38,27 +38,9 @@ You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and 
 **What's Updated?**
 
 ```
-- Added idw\biospack to %PATH%.
-
-- Replaced 'rombld' sections of ntos\init\*\makefile.inc with BIOSpack to allow bios Images to be created during build.
-
-- Allowed seperate EEPROM and BIOS images to be created for CHK and FRE ('Postbuild only')
-
-- Added more Information to easy-build-xinit
-
-- Removed CHK builds dependancy on building to 'objd', now builds to 'obj' to avoid errors 
-
-- Some FREE .libs are used as wevhave no suitable CHK versions that don't cause unresolved externals
-
-- Made Easy-Build backup old Makefile.def before applying the CHK compatible one.
-
-- Fixed incorrect error logs being opened on CHK
-
-- Fixed 'bldrldr.lib' error finally
-
-- Moved rebuilding 'ntos\bootx' to Rombld section , will now attempt to rebuild if files are missing
-
-- Fixed spelling error in EEPROM menu
+- Added first test version of BVTMonitor, A tool to automatically Deploy your build Kernel to a Virtual BVT (XEMU) for testing.
+- Updated VHD Image, and added a premade 'skeleton' VHD for BVTMonitor.
+- 2bl.img and remainder.img replaced with iND BIOS 5001 versions as this had better success in booting in XEMU when packed with our Kernel
 ```
 
 (*Previous updated at bottom of ReadMe*)
@@ -91,6 +73,17 @@ You may encounter issues with **"language Independent Intel 32 Files"** during b
 **Previous Updates**
 
 ```
+- Added idw\biospack to %PATH%.
+- Replaced 'rombld' sections of ntos\init\*\makefile.inc with BIOSpack to allow bios Images to be created during build.
+- Allowed seperate EEPROM and BIOS images to be created for CHK and FRE ('Postbuild only')
+- Added more Information to easy-build-xinit
+- Removed CHK builds dependancy on building to 'objd', now builds to 'obj' to avoid errors 
+- Some FREE .libs are used as wevhave no suitable CHK versions that don't cause unresolved externals
+- Made Easy-Build backup old Makefile.def before applying the CHK compatible one.
+- Fixed incorrect error logs being opened on CHK
+- Fixed 'bldrldr.lib' error finally
+- Moved rebuilding 'ntos\bootx' to Rombld section , will now attempt to rebuild if files are missing
+- Fixed spelling error in EEPROM menu
 - Updated link for the .vhd as it was down
 - Added BIOSPack from the Barnabus Kernel leak as it allows building of a *working* BIOS ROM
 - Added EEPROM Building options
