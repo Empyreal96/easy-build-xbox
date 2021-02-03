@@ -62,7 +62,7 @@ You may encounter issues with **"language Independent Intel 32 Files"** during b
 
 **For a VHD image with the SRC set up ready go here (Let me know if link dies):**
 
-  https://mega.nz/file/DlQ1CChY#3C0kPSwfUTCRgFiLS2qYpN0Y8c5n6UMCvLf-u82w8sw
+  https://mega.nz/file/2s5kFBDK#xyg4VEcEvqXDSqofyIOCLDmkt6_dPmtnxhjXVGP_J7A
 
 **NOTE** The version of Easy-Build in the VHD is the initial version, **UPDATE EASY-BUILD** simply by dropping the updated files here in place.
 
