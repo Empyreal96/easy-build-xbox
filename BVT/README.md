@@ -4,7 +4,7 @@
 
 ![Menu](https://github.com/Empyreal96/easy-build-xbox/raw/main/BVTmenu.png)
 
-BVTMonitor is a tool to simulate a BVT XBOX, to allow building and deploying a compiled Kernel and other files. This tool is aimed at people why are making code edits and want an almost automated process for deploying the files to the BVT.
+BVTMonitor is a tool to simulate a BVT XBOX, to allow building and deploying a compiled Kernel and other files. This tool is aimed at people who are making code edits and want an almost automated process for deploying the files to the BVT.
 
 I Will be adding features as time goes on, the first is adding a bit more functionality, and allowing xemu's IP to be exposed to the Build VM for debugging, better deployments and to be able to use more internal source tools
 
