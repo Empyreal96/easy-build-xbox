@@ -40,6 +40,7 @@ BVT Machine ReadMe: https://github.com/Empyreal96/easy-build-xbox/blob/main/BVT/
 **What's Updated?**
 
 ```
+- Re-Readded Updated VHD, the issue is not the VHD, notes on BVTMonitor Readme
 - Added first test version of BVTMonitor, A tool to automatically Deploy your build Kernel to a Virtual BVT (XEMU) for testing.
 - Added a premade 'skeleton' VHD for BVTMonitor.
 - 2bl.img and remainder.img replaced with iND BIOS 5001 versions as this had better success in booting in XEMU when packed with our Kernel
