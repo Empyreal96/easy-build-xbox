@@ -19,7 +19,7 @@ I Will be adding features as time goes on, the first is adding a bit more functi
 
 **NOTE**: This has ONLY BEEN TESTED ON WINDOWS 10 X64, if this works on older OSs, let me know!
 
-- An empty folder to be used as a Network Share for Host and Build VM (I recommend using the `.VHDX` file or creating your own  `BVT VHD`).
+- An empty folder to be used as a Network Share for Host and Build VM ([I recommend using the `.VHDX` file](https://github.com/Empyreal96/easy-build-xbox/raw/main/BVT/BVT_HDD.7z) or creating your own  `BVT VHD`).
 
 - [XEMU Emulator](https://github.com/mborgerson/xemu) extracted to the `BVT1_XEMU` folder.
 
