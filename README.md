@@ -35,6 +35,8 @@ You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and 
 
 *Any issues or suggestions please open an issue ticket so I can look into it*
 
+BVT Machine ReadMe: https://github.com/Empyreal96/easy-build-xbox/blob/main/BVT/README.md
+
 **What's Updated?**
 
 ```
