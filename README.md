@@ -1,5 +1,7 @@
 # **Easy-Build for XBOX Original**
 
+![menu](https://github.com/Empyreal96/easy-build-xbox/raw/main/menu.png)
+
 ## **What is it?**
 
 A tool in testing for compiling xbox code. Easy to Update script.
