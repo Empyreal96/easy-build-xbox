@@ -1,7 +1,5 @@
 # **Easy-Build for XBOX Original**
 
-[TOC]
-
 ## **What is it?**
 
 A tool in testing for compiling xbox code. Easy to Update script.
@@ -40,6 +38,7 @@ You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and 
 ## **What's Updated?**
 
 ```
+- Modified Wiki
 - Fixed issue with overwriting a saved BVT Address
 - Fixed a few issues which would cause errors during BVT Test
 - Re-Readded Updated VHD, the issue is not the VHD, notes on BVTMonitor Readme
@@ -76,7 +75,7 @@ It provides *(With a teeny bit of setup)* an almost fully automated process for 
 
 [**BVTMonitor Readme**](https://github.com/Empyreal96/easy-build-xbox/blob/main/BVT/README.md)
 
-Go to the Wiki Page: TBA
+[**Go to the Wiki Page:**](https://github.com/Empyreal96/easy-build-xbox/wiki/Build-Verification-Testing-Monitor-Wiki)
 
 
 
