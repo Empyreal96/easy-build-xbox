@@ -1,0 +1,1 @@
+This file simply tells Easy-Build/BVTMonitor to build the Kernel ONLY

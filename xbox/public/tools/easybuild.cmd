@@ -515,6 +515,7 @@ set /p userconfirm=Yes or No?:
 echo.
 if /i "%userconfirm%" == "Yes" goto InitBVTSaveAddress
 if /i "%userconfirm%" == "No" goto InitBVTTestrun
+if exist "%_NTDRIVE%%_NTROOT%\public\tools\SavedBVTAddress.txt" goto InitBVTConnection
 goto Init2BVTTestRun
 
 :InitBVTSaveAddress
@@ -557,6 +558,7 @@ goto StartBVTBuild
 
 :StartBVTBuild
 echo Starting Build.
+if exist "%_NTDRIVE%%_NTROOT%\public\tools\BVTKernelOnly.txt" goto StartKernelOnlyBVT
 echo Build Started >> "%_BVTMonSanityChecks%\BuildStarted.txt"
 cd /d %_NTDRIVE%%_NTROOT%\private\
 if exist "%_NTDRIVE%%_NTROOT%\public\tools\BVTNoCleanBuild.txt" (build -bDeZFP) else (build -bcDeFZP)
@@ -569,10 +571,38 @@ if /i "%ebxbtype%" == "chk" copy "%_NTDRIVE%%_NTROOT%\private\buildd.wrn" "%_BVT
 if exist %_NT386TREE%\xboxkrnl.exe set _BVTKernelBuilt=1
 echo PostBuild Finished >> "%_BVTMonSanityChecks%\FinalBuildPrep.txt"
 if exist "X:\xboxbins\Release\xboxkrnl.exe" del "X:\xboxbins\Release\xboxkrnl.exe"
+if NOT exist "X:\xboxbins\Release\Symbols\" mkdir "X:\xboxbins\Release\Symbols\"
 if /i "%_BVTKernelBuilt%" == "1" copy "%_NT386TREE%\xboxkrnl.exe" "X:\xboxbins\Release\xboxkrnl.exe" /Y /V
+if /i "%_BVTKernelBuilt%" == "1" copy "%_NT386TREE%\xboxkrnl.pdb" "X:\xboxbins\Release\Symbols\xboxkrnl.pdb" /Y /V
+if /i "%_BVTKernelBuilt%" == "1" copy "%_NT386TREE%\xboxkrnl.map" "X:\xboxbins\Release\Symbols\xboxkrnl.map" /Y /V
 REM if NOT exist "%_BVTMonSanityChecks%\KernelFound.txt echo Error Detecting Kernel on Network && pause && goto InitBVTTestrun
 if exist "X:\xboxbins\Release\xboxkrnl.exe" echo Kernel Successfully Transferred >> %_BVTMonSanityChecks%\KernelRecieved.txt && goto MakeBVTBios
 REM if NOT exist "X:\xboxbins\Release\xboxkrnl.exe" echo Xboxkrnl.exe Failed to copy to %_BVTUNCPATH% && goto InitBVTTestrun
+
+:StartKernelOnlyBVT
+echo Kernel Build Started >> "%_BVTMonSanityChecks%\BuildStarted.txt"
+cd /d %_NTDRIVE%%_NTROOT%\private\ntos
+if exist "%_NTDRIVE%%_NTROOT%\public\tools\BVTNoCleanBuild.txt" (build -bDeZFP) else (build -bcDeFZP)
+if /i "%ebxbtype%" == "fre" copy "%_NTDRIVE%%_NTROOT%\private\build.log" "%_BVTMonSanityChecks%\"
+if /i "%ebxbtype%" == "fre" copy "%_NTDRIVE%%_NTROOT%\private\build.err" "%_BVTMonSanityChecks%\"
+if /i "%ebxbtype%" == "fre" copy "%_NTDRIVE%%_NTROOT%\private\build.wrn" "%_BVTMonSanityChecks%\"
+if /i "%ebxbtype%" == "chk" copy "%_NTDRIVE%%_NTROOT%\private\buildd.log" "%_BVTMonSanityChecks%\"
+if /i "%ebxbtype%" == "chk" copy "%_NTDRIVE%%_NTROOT%\private\buildd.err" "%_BVTMonSanityChecks%\"
+if /i "%ebxbtype%" == "chk" copy "%_NTDRIVE%%_NTROOT%\private\buildd.wrn" "%_BVTMonSanityChecks%\"
+if exist %_NT386TREE%\xboxkrnl.exe set _BVTKernelBuilt=1
+echo PostBuild Finished >> "%_BVTMonSanityChecks%\FinalBuildPrep.txt"
+if exist "X:\xboxbins\Release\xboxkrnl.exe" del "X:\xboxbins\Release\xboxkrnl.exe"
+if NOT exist "X:\xboxbins\Release\Symbols\" mkdir "X:\xboxbins\Release\Symbols\"
+if /i "%_BVTKernelBuilt%" == "1" copy "%_NT386TREE%\xboxkrnl.exe" "X:\xboxbins\Release\xboxkrnl.exe" /Y /V
+if /i "%_BVTKernelBuilt%" == "1" copy "%_NT386TREE%\xboxkrnl.pdb" "X:\xboxbins\Release\Symbols\xboxkrnl.pdb" /Y /V
+if /i "%_BVTKernelBuilt%" == "1" copy "%_NT386TREE%\xboxkrnl.map" "X:\xboxbins\Release\Symbols\xboxkrnl.map" /Y /V
+REM if NOT exist "%_BVTMonSanityChecks%\KernelFound.txt echo Error Detecting Kernel on Network && pause && goto InitBVTTestrun
+if exist "X:\xboxbins\Release\xboxkrnl.exe" echo Kernel Successfully Transferred >> %_BVTMonSanityChecks%\KernelRecieved.txt && goto MakeBVTBios
+REM if NOT exist "X:\xboxbins\Release\xboxkrnl.exe" echo Xboxkrnl.exe Failed to copy to %_BVTUNCPATH% && goto InitBVTTestrun
+
+
+
+
 :MakeBVTBios
 if exist "%IDW_DIR%\biospack\boot\xboxkrnl.img" del "%IDW_DIR%\biospack\boot\xboxkrnl.img"
 copy "%_NT386TREE%\xboxkrnl.exe" "%IDW_DIR%\biospack\boot\xboxkrnl.img"

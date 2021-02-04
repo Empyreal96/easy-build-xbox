@@ -222,6 +222,7 @@ if exist "%_BVTMonSanityChecks%\BVTTestFinished.txt" cd /d "%_BVTMonSanityChecks
 if not exist "%_XBins%\Tested" mkdir %_XBins%\Tested 
 cd /d "%_XBins%\Tested" && del *.* /f /q
 copy "%_XBOXBIOS%" "%_XBins%\Tested\"
+copy "%_XBins%\Release\Symbols\xboxkrnl.*" "%_XBins%\Tested\Symbols"
 if exist "%_XBins%\Tested\xboxbios.bin" del "%_XBOXBIOS%"
 copy "%_XBOXKERNEL%" "%_XBins%\Tested\"
 if exist "%_XBins%\Tested\xboxkrnl.exe" del "%_XBOXKERNEL%"
@@ -249,6 +250,7 @@ echo.
 echo Finished.
 goto End
 :End
+echo Press Enter to exit.
 pause
 
 
