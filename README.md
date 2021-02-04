@@ -1,8 +1,8 @@
-# Easy-Build for XBOX Original
+# **Easy-Build for XBOX Original**
 
+[TOC]
 
-
-**What is it?**
+## **What is it?**
 
 A tool in testing for compiling xbox code. Easy to Update script.
 
@@ -16,11 +16,13 @@ A tool in testing for compiling xbox code. Easy to Update script.
 
 - Buildable XDK Samples and other isos (needs testing in xemu/xqemu/xbox).
 
-*More info at the Wiki:*
-https://github.com/Empyreal96/easy-build-xbox/wiki
+  
+
+### *Wiki:* https://github.com/Empyreal96/easy-build-xbox/wiki
 
 
-**How to use**
+
+## **How to use**
 You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and CPXXUPD) you can grab the .VHD at the bottom of the page if you want a 'set up' environment
 
 - Have easy-build-xinit.cmd on the ROOT of a drive e.g: D:\easy-build-xinit.cmd
@@ -31,15 +33,15 @@ You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and 
 - Type into razzle: easybuild
 - (To build chk type "easybuild chk" without quotes)
 - You can now build from the Easy-Build mainmenu
-- Built binaries will be in %DriveRoot%\xbox\xboxbuilds\fre\{dump}
+- Built binaries will be in %DriveRoot%\xbox\xboxbuilds\\{fre\\chk}\dump
 
-*Any issues or suggestions please open an issue ticket so I can look into it*
+  **NOTE: Some Features may not work as expected, whether it be from Source or implemented options, either way please let me know. Also any suggestions to Features or just feedback is very welcome**
 
-BVT Machine ReadMe: https://github.com/Empyreal96/easy-build-xbox/blob/main/BVT/README.md
-
-**What's Updated?**
+## **What's Updated?**
 
 ```
+- Fixed issue with overwriting a saved BVT Address
+- Fixed a few issues which would cause errors during BVT Test
 - Re-Readded Updated VHD, the issue is not the VHD, notes on BVTMonitor Readme
 - Added first test version of BVTMonitor, A tool to automatically Deploy your build Kernel to a Virtual BVT (XEMU) for testing.
 - Added a premade 'skeleton' VHD for BVTMonitor.
@@ -48,13 +50,47 @@ BVT Machine ReadMe: https://github.com/Empyreal96/easy-build-xbox/blob/main/BVT/
 
 (*Previous updated at bottom of ReadMe*)
 
-**XDK Building**
+
+
+# **Virtual Build Verification Testing (BVT) Machine**
+
+## Brief Overview
+
+The Virtual BVT Consists of an XEMU fork of your choice (Ideally supporting visor hacked Bioses), BVTMonitor.cmd and any Boot files XEMU Required (Just not BIOS, BVTMonitor is used to test the Source Build Kernels).
+
+It provides *(With a teeny bit of setup)* an almost fully automated process for connecting Easy-Build to BVTMonitor, building the source, and Binplacing the files on the BVT Drive and starting the BVT (XEMU) as soon as the required bios files have been placed!
+
+## BVTMonitor's Capabilities 
+
+- Detect when Easy-Build has Initiated the BVT Session.
+
+- Monitor the BVT Drive for any files placed by Easy-Build.
+
+- Automatically configure XEMU with source-placed files
+
+- Start as soon as everything is placed and configured
+
+  
+
+### Read for more information on getting setup with BVT:
+
+[**BVTMonitor Readme**](https://github.com/Empyreal96/easy-build-xbox/blob/main/BVT/README.md)
+
+Go to the Wiki Page: TBA
+
+
+
+
+
+# **XDK Building**
 **InstallShield Professional 6.2 is required for this**
 I have included my currently in progress script to try and build the Xbox SDK. Currently it fails compiling the InstallShield specific XDK Setup scripts.. 
 
 - To run the script, load Easy-Build, drop to Razzle prompt and type **"private\SDK\setup\xsdkbuild.cmd"**
 
 You may encounter issues with **"language Independent Intel 32 Files"** during build, I haven't gotten round to looking at this so if anyone does make progress let me know!
+
+# **Links**
 
 **If you want to help the development of Easy-Build, have some issues join the Matrix chat!**
 
@@ -66,14 +102,7 @@ You may encounter issues with **"language Independent Intel 32 Files"** during b
 
 **NOTE** The version of Easy-Build in the VHD is the initial version, **UPDATE EASY-BUILD** simply by dropping the updated files here in place.
 
-
-  **NOTE: Some Features may not work as expected, whether it be from Source or implemented options, either way please let me know** 
-
-  ![Menu](https://github.com/Empyreal96/easy-build-xbox/raw/main/menu.png)
-
-
-
-**Previous Updates**
+# **Previous Updates**
 
 ```
 - Added idw\biospack to %PATH%.

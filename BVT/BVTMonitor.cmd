@@ -1,6 +1,7 @@
 @echo off
-Title Easy-Build XBOX Build Verification Testing Monitor - BVTMonitor v0.1
-set BVTMonVer=v0.1
+set _BVTMonVer=v0.11
+Title Easy-Build XBOX Build Verification Testing Monitor - %_BVTMonVer%
+if exist "%~dp0\xboxbins\NEEDED_BY_BVTMONITOR" cd /d "%~dp0\xboxbins\NEEDED_BY_BVTMONITOR" && del *.* /f /q
 color 2F
 :BVTWelcome
 echo --------------------------------------------------------------------------------------------
@@ -129,6 +130,7 @@ goto FileChecker_Stage-GotEEPROM
 :FileChecker_Stage2
 echo Kernel Check Successful! >> "%_BVTMonSanityChecks%\KernelFound.txt"
 if exist "%_BVTMonSanityChecks%\Build.log" goto FileChecker_Final
+if exist "%_BVTMonSanityChecks%\Buildd.log" goto FileChecker_Final
 goto FileChecker_Stage2
 
 :FileChecker_Final
@@ -143,6 +145,7 @@ echo The old file will be backed up to "xemu.ini.bak"
 echo.
 echo Please Wait..
 echo.
+if exist "%_BVTBldrFiles%\xboxbios.bin" del "%_BVTBldrFiles%\xboxbios.bin"
 copy "%_XBOXBIOS%" "%_BVTBldrFiles%\xboxbios.bin"
 cd /d %_VirtualBVTDir%
 REM I struggled to find easy and working methods here, so I am using a messy 'find the string, set it as a variable, set new path as variable, run both through replace.vbs
@@ -150,24 +153,24 @@ REM                              xboxbios.bin
 if exist "%APPDATA%\xemu\xemu\xemu.ini" copy %APPDATA%\xemu\xemu\xemu.ini %APPDATA%\xemu\xemu\xemu.ini.bak
 if NOT Exist "%_BVTDrive%\xemu.ini.bak" copy "%APPDATA%\xemu\xemu\xemu.ini.bak" "%_BVTDrive%\xemu.ini.bak"
 for /f "tokens=*" %%i in ('findstr flash_path* "%APPDATA%\xemu\xemu\xemu.ini"') do if "%%i"=="%%i" set "_XEMUOLDFlashPath=%%i"
-echo %_XEMUOLDFlashPath%
+echo Old entry: %_XEMUOLDFlashPath%
 set "_XEMUNEWFlashPath=flash_path = %_BVTBldrFiles%\xboxbios.bin"
 rem Pause
-echo %_XEMUNEWFlashPath%
+echo New Entry: %_XEMUNEWFlashPath%
 %_BVTToolPath%\replace.vbs %APPDATA%\xemu\xemu\xemu.ini "%_XEMUOLDFlashPath%" "%_XEMUNEWFlashPath%" /I
 REM                              MCPX.bin
 for /f "tokens=*" %%i in ('findstr bootrom_path* "%APPDATA%\xemu\xemu\xemu.ini"') do if "%%i"=="%%i" set "_XEMUOLDBootromPath=%%i"
-echo %_XEMUOLDBootromPath%
+echo  Old entry: %_XEMUOLDBootromPath%
 set "_XEMUNEWBootromPath=bootrom_path = %_BVTMCPX%"
 rem Pause
-echo %_XEMUNEWBootromPath%
+echo  New entry: %_XEMUNEWBootromPath%
 %_BVTToolPath%\replace.vbs %APPDATA%\xemu\xemu\xemu.ini "%_XEMUOLDBootromPath%" "%_XEMUNEWBootromPath%" /I
 REM                             xbox_hdd.qcow2
 for /f "tokens=*" %%i in ('findstr hdd_path* "%APPDATA%\xemu\xemu\xemu.ini"') do if "%%i"=="%%i" set "_XEMUOLDHDDPath=%%i"
-echo %_XEMUOLDHDDPath%
+echo  Old entry: %_XEMUOLDHDDPath%
 set "_XEMUNEWHDDPath=hdd_path = %_BVTHDD%"
 rem Pause
-echo %_XEMUNEWHDDPath%
+echo New entry: %_XEMUNEWHDDPath%
 %_BVTToolPath%\replace.vbs %APPDATA%\xemu\xemu\xemu.ini "%_XEMUOLDHDDPath%" "%_XEMUNEWHDDPath%" /I
 
 if exist "%_EEPROM%" goto StartBVTEEPROMTest
@@ -197,10 +200,10 @@ goto WaitForVM
 :StartBVTWithEEPROM
 REM                             eeprom.bin
 for /f "tokens=*" %%i in ('findstr eeprom_path* "%APPDATA%\xemu\xemu\xemu.ini"') do if "%%i"=="%%i" set "_XEMUOLDEEPROMPath=%%i"
-echo %_XEMUOLDEEPROMPath%
+echo Old entry: %_XEMUOLDEEPROMPath%
 set "_XEMUNEWEEPROMPath=eeprom_path = %_EEPROM%"
 Pause
-echo %_XEMUNEWEEPROMPath%
+echo New entry: %_XEMUNEWEEPROMPath%
 %_BVTToolPath%\replace.vbs %APPDATA%\xemu\xemu\xemu.ini "%_XEMUOLDEEPROMPath%" "%_XEMUNEWEEPROMPath%" /I
 
 echo Virtual BVT Started EEPROM >> %_BVTMonSanityChecks%\VirtualBVTStarted.txt
@@ -217,12 +220,13 @@ goto WaitForVM
 REM This is required because of the leftover .txt files
 if exist "%_BVTMonSanityChecks%\BVTTestFinished.txt" cd /d "%_BVTMonSanityChecks%" && del *.* /f /q
 if not exist "%_XBins%\Tested" mkdir %_XBins%\Tested 
-copy %_XBOXBIOS% %_XBins%\Tested
-if exist "%_XBins%\Tested\xboxbios.bin" del %_XBOXBIOS%
-copy %_XBOXKERNEL% %_XBins%\Tested
-if exist "%_XBins%\Tested\xboxkrnl.exe" del %_XBOXKERNEL%
-if exist "%_EEPROM%" copy "%_EEPROM%" %_XBins%\Tested
-copy %_XBOXBIOS% %_XBins%\Tested
+cd /d "%_XBins%\Tested" && del *.* /f /q
+copy "%_XBOXBIOS%" "%_XBins%\Tested\"
+if exist "%_XBins%\Tested\xboxbios.bin" del "%_XBOXBIOS%"
+copy "%_XBOXKERNEL%" "%_XBins%\Tested\"
+if exist "%_XBins%\Tested\xboxkrnl.exe" del "%_XBOXKERNEL%"
+rem if exist "%_EEPROM%" copy "%_EEPROM%" "%_XBins%\Tested\"
+rem if exist "%_XBins%\Tested\eeprom.bin" del "%_EEPROM%"
 if exist "%_BVTBldrFiles%\xboxbios.bin" del %_BVTBldrFiles%\xboxbios.bin
 if exist "%_BVTMonSanityChecks%\Build.log" copy %_BVTMonSanityChecks%\Build.log %_XBins%\Tested
 if exist "%_BVTMonSanityChecks%\Build.err" copy %_BVTMonSanityChecks%\Build.err %_XBins%\Tested

@@ -1,8 +1,15 @@
-# Easy-Build XBOX Build Verification Testing Monitor (BVTMonitor)
+# Easy-Build XBOX: Build Verification Testing Monitor (BVTMonitor)
 
-*This tool is VERY experimental, you may encounter errors and/or bugs*
+***This tool is VERY experimental, you may encounter errors and/or bugs***
 
-![Menu](https://github.com/Empyreal96/easy-build-xbox/raw/main/BVTmenu.png)
+- [Home](#easy-build-xbox--build-verification-testing-monitor--bvtmonitor-)
+  * [**What does it contain?**](#--what-does-it-contain---)
+  * [**Essential Requirements**](#--essential-requirements--)
+  * [**How To Use?**](#--how-to-use---)
+    + [**How does it work?**](#--how-does-it-work---)
+  * [**Notes:**](#--notes---)
+
+<img src="https://github.com/Empyreal96/easy-build-xbox/raw/main/BVTmenu.png" alt="Menu" style="zoom: 67%;" />
 
 BVTMonitor is a tool to simulate a BVT XBOX, to allow building and deploying a compiled Kernel and other files. This tool is aimed at people who are making code edits and want an almost automated process for deploying the files to the BVT.
 
@@ -17,7 +24,7 @@ I Will be adding features as time goes on, the first is adding a bit more functi
 
 ## **Essential Requirements**
 
-**NOTE**: This has ONLY BEEN TESTED ON WINDOWS 10 X64, if this works on older OSs, let me know!
+**NOTE**: This has **ONLY BEEN TESTED ON WINDOWS 10 X64**, if this works on older OSs, let me know!
 
 - An empty folder to be used as a Network Share for Host and Build VM ([I recommend using the `.VHDX` file](https://github.com/Empyreal96/easy-build-xbox/raw/main/BVT/BVT_HDD.7z) or creating your own  `BVT VHD`).
 
@@ -31,9 +38,11 @@ I Will be adding features as time goes on, the first is adding a bit more functi
 
   *(Items with a* * *need conformation)*
 
-## **Notes:** You will need to a compatible build of XEMU that supports the Visor patches in the Complex Xbox Tree, otherwise it wont boot.
+
 
 ## **How To Use?**
+
+[**Please Visit the Wiki**]() for more details on using BVTMonitor, Tips on editing the Script and other info
 
 - Setup the BVT Folder/Drive, and make sure it has Sharing Enabled and a Network Address assigned.
 - Load BVTMonitor and follow onscreen instructions until you see `Waiting for Connection.`
@@ -49,3 +58,7 @@ Built files (xboxkrnl.exe, xboxbios.bin and eventually more) are placed into `xb
 
 Xemu will automatically open when it has all the files it needs and *hopefully* boot your modified Kernel! When you are done make sure to close BVTMonitor as this will place the just tested BIOS and kernel into `xboxbins\tested`and clean up the .txt files created throughout the BVT Build.
 
+## **Notes:** 
+
+- You will need a compatible build of XEMU that supports the Visor patches in the Complex Xbox Tree, otherwise it wont boot the 4400 Kernel.
+- You will need to experiment with what version MCPX you use
