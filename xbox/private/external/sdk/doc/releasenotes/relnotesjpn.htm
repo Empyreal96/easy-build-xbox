@@ -1,0 +1,634 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML DIR=LTR><HEAD><TITLE>August プレビュー版 2001 XDK リリースノート</TITLE>
+<META content="text/html; charset=shift_jis" http-equiv=Content-Type>
+<STYLE>@font-face {
+	font-family: Wingdings;
+}
+@font-face {
+	font-family: Verdana;
+}
+P.MsoNormal {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN: 0in 0in 0pt; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana
+}
+LI.MsoNormal {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN: 0in 0in 0pt; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana
+}
+DIV.MsoNormal {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN: 0in 0in 0pt; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana
+}
+H1 {
+	FONT-FAMILY: Verdana; FONT-SIZE: 24pt; FONT-WEIGHT: bold; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-outline-level: 1; mso-font-kerning: 18.0pt
+}
+H2 {
+	FONT-FAMILY: Verdana; FONT-SIZE: 18pt; FONT-WEIGHT: bold; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-outline-level: 2
+}
+H3 {
+	FONT-FAMILY: Verdana; FONT-SIZE: 13.5pt; FONT-WEIGHT: bold; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-outline-level: 3
+}
+H4 {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; FONT-WEIGHT: bold; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-outline-level: 4
+}
+P.MsoCommentText {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN: 0in 0in 0pt; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana
+}
+LI.MsoCommentText {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN: 0in 0in 0pt; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana
+}
+DIV.MsoCommentText {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN: 0in 0in 0pt; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana
+}
+P.MsoHeader {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN: 0in 0in 0pt; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; tab-stops: center 3.0in right 6.0in
+}
+LI.MsoHeader {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN: 0in 0in 0pt; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; tab-stops: center 3.0in right 6.0in
+}
+DIV.MsoHeader {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN: 0in 0in 0pt; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; tab-stops: center 3.0in right 6.0in
+}
+P.MsoFooter {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN: 0in 0in 0pt; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; tab-stops: center 3.0in right 6.0in
+}
+LI.MsoFooter {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN: 0in 0in 0pt; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; tab-stops: center 3.0in right 6.0in
+}
+DIV.MsoFooter {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN: 0in 0in 0pt; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; tab-stops: center 3.0in right 6.0in
+}
+SPAN.MsoCommentReference {
+	mso-ansi-font-size: 8.0pt; mso-bidi-font-size: 8.0pt
+}
+A:link {
+	COLOR: blue; TEXT-DECORATION: underline; text-underline: single
+}
+SPAN.MsoHyperlink {
+	COLOR: blue; TEXT-DECORATION: underline; text-underline: single
+}
+A:visited {
+	COLOR: blue; TEXT-DECORATION: underline; text-underline: single
+}
+SPAN.MsoHyperlinkFollowed {
+	COLOR: blue; TEXT-DECORATION: underline; text-underline: single
+}
+P {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto
+}
+P.intro {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-style-name: intro
+}
+LI.intro {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-style-name: intro
+}
+DIV.intro {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-style-name: intro
+}
+P.note {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-style-name: note
+}
+LI.note {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-style-name: note
+}
+DIV.note {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-style-name: note
+}
+LI {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-style-name: note
+}
+P.content {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-style-name: content
+}
+LI.content {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-style-name: content
+}
+DIV.content {
+	FONT-FAMILY: Verdana; FONT-SIZE: 10pt; MARGIN-LEFT: 0in; MARGIN-RIGHT: 0in; mso-pagination: widow-orphan; mso-fareast-font-family: Verdana; mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; mso-style-name: content
+}
+SPAN.msoIns {
+	COLOR: teal; TEXT-DECORATION: underline; text-underline: single; mso-style-name: ""; mso-style-type: export-only
+}
+SPAN.msoDel {
+	COLOR: red; TEXT-DECORATION: line-through; mso-style-name: ""; mso-style-type: export-only
+}
+DIV.Section1 {
+	page: Section1
+}
+OL {
+	MARGIN-BOTTOM: 0in
+}
+UL {
+	MARGIN-BOTTOM: 0in
+}
+TD {padding: 1px; padding-left: 10px; FONT-FAMILY: Verdana; FONT-SIZE: 10pt; 
+}
+TH {padding: 1px; padding-left: 10px; FONT-FAMILY: Verdana; FONT-SIZE: 10pt; 
+}
+</STYLE>
+
+<META content="MSHTML 5.000.29200.0" name=GENERATOR></HEAD>
+<BODY>
+<H2>August プレビュー版 2001 XDK リリースノート</H2>
+<P class=intro>// NOTE This is for August 2001 XDK and used to satisfy the XDK 
+Build<br>// This doc is prior to the 4400 Complex Tree<br>// There was no 
+documentation like this in the tree<br></P>
+<P class=intro>&nbsp;</P>
+<P class=intro>Xbox&#8482; ビデオゲームシステム用 Xbox 開発キット (XDK) の本リリース版は、Xbox 本体のソフトウェアとお使いの開発システムの SDK をアップデートします。 お使いの 開発システムに最新の SDK をインストールしてください。また、Xbox 本体リカバリ用 CD-ROM を使用して本体のソフトウェアをアップデートしてください。本リリース版には、最新のリカバリ用 CD-ROM が必要です。本体にプレインストールされているデータは、現バージョンの SDK とは 互換性がないため、アップデートする必要があります。詳細については、インストールの説明を参照してください。</P>
+
+<P class="note"><B><I>注意</I></B>&nbsp;&nbsp;&nbsp;今回のリリースの XDK に含まれている本体と開発用ソフトウェアは、次回のリリースでアップデートされたシステムに交換されます。</P>
+
+
+
+ 
+ 
+
+ 
+
+
+
+
+
+
+<TABLE style="font-family: verdana; font-size: 10pt">
+<TH colspan=2 align=left><H3>目次</H3></th>
+
+<tr><TD><A HREF="#1."><BIG><B>1.</B></BIG></td><TD><A HREF="#1."><BIG><B>サポート</TD></B></BIG></A></tr><BR>
+<tr><TD>&nbsp;</TD></tr>
+
+<!--************************************************************************************-->
+<tr><TD><A HREF="#2."><BIG><B>2.</B></BIG></A><TD><A HREF="#2."><BIG><B>開発環境/Visual C++ の問題</TD></B></BIG></A></tr>
+
+
+<tr><TD><A HREF="#2.1"><B>2.1</B></A><TD><A HREF="#2.1"><b>August プレビュー版の本リリース版をインストールした後について</b></A></TD></tr>
+
+<tr><TD><A HREF="#2.2"><B>2.2</B></A><TD><A HREF="#2.2"><b>Direct3D の署名変更について</b></A></TD></tr>
+
+<tr><TD><A HREF="#2.3"><B>2.3</B></A><TD><A HREF="#2.3"><b>DirectMusic の初期化</b></A></TD></tr>
+
+<tr><TD><A HREF="#2.4"><B>2.4</B></A><TD><A HREF="#2.4"><b>開発システムとリテール版システム両設定に対応のリカバリ用 CD-ROM</b></A></TD></tr>
+
+<tr><TD><A HREF="#2.5"><B>2.5</B></A><TD><A HREF="#2.5"><b>ゲームディスク (DVD) エミュレーションソフトウェアの新しいバージョン</b></A></TD></tr>
+
+<tr><TD><A HREF="#2.6"><B>2.6</B></A><TD><A HREF="#2.6"><b>メモリ クロック速度の調整</b></A></TD></tr>
+
+<tr><TD><A HREF="#2.7"><B>2.7</B></A><TD><A HREF="#2.7"><b>CertGame のローカリゼーションについて</b></A></TD></tr>
+
+<tr><TD><A HREF="#2.8"><B>2.8</B></A><TD><A HREF="#2.8"><b>DVD レイアウトツールについて</b></A></TD></tr>
+
+<tr><TD><A HREF="#2.9"><B>2.9</B></A><TD><A HREF="#2.9"><b>Xbox ADPCM Codec</b></A></TD></tr>
+
+<tr><TD><A HREF="#2.10"><B>2.10</B></A><TD><A HREF="#2.10"><b>HDTV AV パック接続時のインターレース走査モードについて</b></A></TD></tr>
+
+<tr><TD>&nbsp;</TD></tr>
+
+<!--************************************************************************************-->
+<tr><TD><A HREF="#3."><BIG><B>3.</B></BIG></A><TD><A HREF="#3."><BIG><B>Xbox 本体の問題</TD></B></BIG></A></tr>
+
+<tr><TD><A HREF="#3.1"><B>3.1</B></A><TD><A HREF="#3.1"><b>サンプルにおける最終版コントローラボタン設定のサポートについて</b></A></TD></tr>
+
+
+
+<!--************************************************************************************-->
+<tr><TD>&nbsp;</TD></tr>
+<tr><TD><A HREF="#4."><BIG><B>4.</B></BIG></A><TD><A HREF="#4."><BIG><B>以前のリリースにおける開発環境/Visual C++ の問題</TD></B></BIG></A></tr>
+
+
+
+
+
+
+<tr><TD><A HREF="#4.1"><B>4.1</B></A><TD><A HREF="#4.1"><b>SDK に含まれていた AdpcmCreateDecoder XMO について</b></A></TD></tr>
+<tr><TD><A HREF="#4.2"><B>4.2</B></A><TD><A HREF="#4.2"><b>3-D 作成 API の必要性について</b></A></TD></tr>
+<tr><TD><A HREF="#4.3"><B>4.3</B></A><TD><A HREF="#4.3"><b>XnetInitialize/XnetCleanup について</b></TD></tr>
+<tr><TD><A HREF="#4.4"><B>4.4</B></A><TD><A HREF="#4.4"><b>Win32 ベースの PCI DVD エミュレーションカードにおける IDE ポートについて</b></A></TD></tr>
+<tr><TD><A HREF="#4.5"><B>4.5</B></A><TD><A HREF="#4.5"><B>自動コピーを無効にする機能の設定に関する問題</B></A></TD></tr>
+<tr><TD><A HREF="#4.6"><B>4.6</B></A><TD><A HREF="#4.6"><b>DirectSoundDoWork() をメインレンダーループで呼び出す必要性について</b></A></TD></tr>
+<tr><TD><A HREF="#4.7"><B>4.7</B></A><TD><A HREF="#4.7"><b>DirectSound: Dowdsstdfx.bin のダウンロード</TD></tr>
+<tr><TD><A HREF="#4.8"><B>4.8</B></A><TD><A HREF="#4.8"><b>IDirectMusicPerformance8::InitAudioX パラメータの変更</b></A></TD></tr>
+<tr><TD><A HREF="#4.9"><B>4.9</B></A><TD><A HREF="#4.9"><b>DirectPlay および DirectPlay ボイスライブラリについて</b></A></TD></tr>
+<tr><TD><A HREF="#4.10"><B>4.10</B></A><TD><A HREF="#4.10"><b>Dolby デジタルエンコーディングのサポートについて</b></A></TD></tr>
+<tr><TD><A HREF="#4.11"><B>4.11</B></A><TD><A HREF="#4.11"><b>DirectSound: ADPCM の使用について</b></A></TD></tr>
+<tr><TD><A HREF="#4.12"><B>4.12</B></A><TD><A HREF="#4.12"><b>DirectMusic: 現在のエフェクトのサポートについて</TD></tr>
+<tr><TD><A HREF="#4.13"><B>4.13</B></A><TD><A HREF="#4.13"><b>Xbox 独自の D3DFORMAT 値</b></A></TD></tr>
+<tr><TD><A HREF="#4.14"><B>4.14</B></A><TD><A HREF="#4.14"><b>メモリユニットの初期化</b></A></TD></tr>
+<tr><TD><A HREF="#4.15"><B>4.15</B></A><TD><A HREF="#4.15"><B>[Remote Executable Path And File Name] ウィンドウ</B></A></TD></tr>
+<tr><TD><A HREF="#4.16"><B>4.16</B></A><TD><A HREF="#4.16"><b>XQueryValue 関数について</b></A></TD></tr>
+<tr><TD><A HREF="#4.17"><B>4.17</B></A><TD><A HREF="#4.17"><B>&quot;No address for Xbox has been set&quot; エラーメッセージ</B></A></TD></tr>
+<tr><TD><A HREF="#4.18"><B>4.18</B></A><TD><A HREF="#4.18"><b>Fire and Trees サンプルのビルドに必要なもの (DirectX 8 SDK)</b></A></TD></tr>
+<tr><TD><A HREF="#4.19"><B>4.19</B></A><TD><A HREF="#4.19"><b>LoadSave サンプルとセーブゲームの署名</b></A></TD></tr>
+<tr><TD><A HREF="#4.20"><B>4.20</B></A><TD><A HREF="#4.20"><b>Visual C++ 6.0 Service Pack 5 に必要な新しい Processor Pack のインストール</b></A></TD></tr>
+<tr><TD><A HREF="#4.21"><B>4.21</B></A><TD><A HREF="#4.21"><b>サブミキシングおよび複数の音色を使用した際に起きるオーディオの歪みについて</b></A></TD></tr>
+<tr><TD><A HREF="#4.22"><B>4.22</B></A><TD><A HREF="#4.22"><b>ユーザー固有の Visual C++ ライブラリとヘッダー パス</b></A></TD></tr>
+<tr><TD><A HREF="#4.23"><B>4.23</B></A><TD><A HREF="#4.23"><b>Visual C++ 7.0 のコード最適化の設定</b></A></TD></tr>
+<tr><TD><A HREF="#4.24"><B>4.24</B></A><TD><A HREF="#4.24"><b>XGraphics.lib の新しい数値演算ライブラリ</b></A></TD></tr>
+<tr><TD><A HREF="#4.25"><B>4.25</B></A><TD><A HREF="#4.25"><b>XGraphics.lib の新しいテクスチャ圧縮メソッド</b></A></TD></tr>
+<tr><TD><A HREF="#4.26"><B>4.26</B></A><TD><A HREF="#4.26"><b>最新の形式列挙型を含む .dds ファイルを生成する XDxTex</b></A></TD></tr>
+<tr><TD><A HREF="#4.27"><B>4.27</B></A><TD><A HREF="#4.27"><b>最新の DXT3 と DXT5 圧縮形式</b></A></TD></tr>
+<tr><TD><A HREF="#4.28"><B>4.28</B></A><TD><A HREF="#4.28"><b>今回のバージョンのバンドラツールにおける .jpg と .dds ファイルのサポート</b></A></TD></tr>
+<tr><TD><A HREF="#4.29"><B>4.29</B></A><TD><A HREF="#4.29"><b>デバッグキーボードのサポートが単独のライブラリへ移りました</b></A></TD></tr>
+<tr><TD><A HREF="#4.30"><B>4.30</B></A><TD><A HREF="#4.30"><b>Unicode フォント</b></A></TD></tr>
+<tr><TD><A HREF="#4.31"><B>4.31</B></A><TD><A HREF="#4.31"><b>PlaySegmentEx を使用した DirectMusic スケジュールについて</b></A></TD></tr>
+<tr><TD><A HREF="#4.32"><B>4.32</B></A><TD><A HREF="#4.32"><B>ピクセルシェーダ プログラムの更新</B></A></TD></tr>
+<tr><TD><A HREF="#4.33"><B>4.33</B></A><TD><A HREF="#4.33"><B>SetBufferData 使用時における DirectSound のメモリ量について</B></A></TD></tr>
+<tr><TD><A HREF="#4.34"><B>4.34</B></A><TD><A HREF="#4.34"><B>DirectMusic における部分的ダウンロードのサポートについて</B></A></TD></tr>
+<tr><TD><A HREF="#4.35"><B>4.35</B></A><TD><A HREF="#4.35"><B>DirectMusic Loader の解放</B></A></TD>
+<tr><TD><A HREF="#4.36"><B>4.36</B></A><TD><A HREF="#4.36"><B>デバッグチャンネル関数</B></A></TD></tr>
+<tr><TD><A HREF="#4.37"><B>4.37</B></A><TD><A HREF="#4.37"><B>Xbox SDK リファレンスマニュアル</B></A></TD></tr>
+<tr><TD><A HREF="#4.38"><B>4.38</B></A><TD><A HREF="#4.38"><B>デフォルト (またはそれ以上の) スタックサイズの使用に関して</B></A></TD></tr>
+<tr><TD><A HREF="#4.39"><B>4.39</B></A><TD><A HREF="#4.39"><b>DVD エミュレーションソフトウェア 日本語版に必要な Hot Fix (パッチ)</b></A></TD></tr>
+<tr><TD><A HREF="#4.40"><B>4.40</B></A><TD><A HREF="#4.40"><b>DirectMusic: DLS セグメント再生時の歪みについて</TD></tr>
+
+
+<tr><TD>&nbsp;</TD></tr>
+
+<!--************************************************************************************-->
+<tr><TD><A HREF="#5."><BIG><B>5.</B></BIG></A><TD><A HREF="#5."><BIG><B>以前のリリースにおける Xbox 本体の問題</TD></B></BIG></A></tr>
+
+
+
+
+
+<tr><TD><A HREF="#5.1"><B>5.1</B></A><TD><A HREF="#5.1"><B>Xbox 本体リカバリ用 CD-ROM</B></A></TD></tr>
+<tr><TD><A HREF="#5.2"><B>5.2</B></A><TD><A HREF="#5.2"><b>ビデオ設定用コントローラのショートカット</b></A></TD></tr>
+<tr><TD><A HREF="#5.3"><B>5.3</B></A><TD><A HREF="#5.3"><b>使用中に画面が白色になった場合</b></A></TD></tr>
+<tr><TD><A HREF="#5.4"><B>5.4</B></A><TD><A HREF="#5.4"><b>本体の時間設定</b></A></TD></tr>
+<tr><TD><A HREF="#5.5"><B>5.5</B></A><TD><A HREF="#5.5"><b>デフォルトの TV 設定</b></A></TD></tr>
+<tr><TD><A HREF="#5.6"><B>5.6</B></A><TD><A HREF="#5.6"><b>本リリースに同梱の新しい Xbox コントローラを使用してください</b></A></TD></tr>
+<tr><TD><A HREF="#5.7"><B>5.7</B></A><TD><A HREF="#5.7"><b>本バージョンにおける本体の GPU クロック速度</b></A></TD></tr>
+<tr><TD><A HREF="#5.8"><B>5.8</B></A><TD><A HREF="#5.8"><b>サムスティックの遊び領域について</b></A></TD></tr>
+<tr><TD><A HREF="#5.9"><B>5.9</B></A><TD><A HREF="#5.9"><b>本体と梱包材</b></A></TD></tr>
+<tr><TD><A HREF="#5.10"><B>5.10</B></A><TD><A HREF="#5.10"><b>プレビュー版 XBExplorer ツール</b></A></TD></tr>
+<tr><TD><A HREF="#5.11"><B>5.11</B></A><TD><A HREF="#5.11"><b>デフォルトセーブイメージにおける Dashboard メタデータの変更</b></A></TD></tr>
+
+</TABLE>
+
+<!--*********************************************************************************-->
+<H3><A NAME="1."></A>1.&nbsp;&nbsp;&nbsp;サポート</H3>
+<P>サポートおよびフィードバックは、次の電子メール アドレスまでご連絡ください。
+<UL>
+<LI><A href="mailto:xboxdsj@xbox.com"><B>xboxdsj@xbox.com</B></A> &mdash; ハードウェアの問題、XDK のセットアップサポート、 交換部品、および開発者サポートに関する質問などは、この電子メールアドレスまでご連絡ください。</LI>
+<LI><A href="mailto:xdkj@xbox.com"><B>xdkj@xbox.com</B></A> &mdash; XDK に関するフィードバックは、この電子メール アドレスまでお寄せください。</LI> 
+<LI><A target=_blank href="http://www.betaplace.com/"><B>https://xds.xbox.com</B></A> &mdash; 発送および請求などのその他のカスタマーサポートに関する問題は、 このベータサポート Web サイトの「サポート」セクションを参照してください。 また、FAQ、最新版リリースノート、およびホワイトペーパー(ドキュメント)に関する情報もこのサイトを参照してください。サイトにログインするには、 Microsoft ベータプログラムの ID とパスワードを入力する必要が あります。ID とパスワードをお持ちでない場合は、<A href="mailto:xboxdsj@xbox.com"><B>xboxdsj@xbox.com</B></A> までご連絡ください。</LI>
+</UL>
+</P>
+
+<H3><A NAME="2."></A>2.&nbsp;&nbsp;&nbsp;開発環境/Visual C++ の問題</H3>
+
+<H4><A NAME="2.1"></A>2.1&nbsp;&nbsp;&nbsp;August プレビュー版の本リリース版をインストールした後について</H4>
+<p>警告 :  August プレビュー版リリースををお使いの開発コンソールにインストールした後、以前のリリース版にダウングレードすることはできません。しかし、August プレビュー版 SDK のデバッグ版とリテール版を交換することは可能です。</p>
+
+<H4><A NAME="2.2"></A>2.2&nbsp;&nbsp;&nbsp;Direct3D の署名変更について</H4>
+<p>以下のグラフィック関数の署名が変更されました。</p>
+
+<ul>
+
+<li><b>IDirect3DDevice8::GetVertexBlendModelView</b></a></li>
+
+<li><b>IDirect3DDevice8::SetVertexBlendModelView</b></a></li>
+
+<li><b>IDirect3DPushBuffer8::SetVertexBlendModelView</b></a></li>
+
+</ul>
+<p>これらの関数が使用されているコードは動作しませんので、ご注意ください。</p>
+
+<H4><A NAME="2.3"></A>2.3&nbsp;&nbsp;&nbsp;DirectMusic の初期化</H4>
+<p>Microsoft&#174 DirectMusic&#174 を使用するゲームでは、DirectMusic の呼び出しを行う前に <b>DirectMusicInitialize</b>、<b>DirectMusicInitializeEx</b>、または <b>DirectMusicInitializeFixedSizeHeaps</b> を呼び出してください。 初期化の関数の呼び出しは現在オプション (DirectMusic によって自動的に行われます) ですが、次期 September リリース版の Xbox システムソフトウェアにおいては手動で呼び出す必要があります。</p>
+
+<H4><A NAME="2.4"></A>2.4&nbsp;&nbsp;&nbsp;開発システムとリテール版システム両設定に対応のリカバリ用 CD-ROM</H4>
+
+<p>リカバリ時に、本体を開発キット (今までと同じ) か、リテール版本体 (新しいオプション) としてリカバリできるようになりました。  画面で指示があった際、<B>Y</B> ボタンを押すと本体をリテール版本体としてリカバリすることができます。  リテール版としてリカバリすることで、ゲームを購入する顧客が入手する Xbox 本体と同じように動作するので、ゲーム認定前にゲームを実際にテストする際に役に立ちます。  リテール版の設定ではメモリが 64 MB のみ使用可能になるので、ゲームはディスクドライブから読み込まれる必要があります。また、タイトルランチャとサンプルはインストールされません。さらに、Xbox Dashboard がデフォルトのタイトルとなり、リモートデバッガや xb* ツールを使用して本体と通信することができなくなります。</p>
+
+
+<H4><A NAME="2.5"></A>2.5&nbsp;&nbsp;&nbsp;ゲームディスク (DVD) エミュレーションソフトウェアの新しいバージョン</H4>
+
+<p>August プレビュー版 2001 XDK リリースは、June 版と July 版で提供されたゲームディスク (DVD) エミュレーションソフトウェアとツールに互換性がなくなります。 
+
+<P>これは、Applied Microsystems 社によって Microsoft&#174 Win32&#174 ベースの PCI ゲームディスクエミュレーションカード用の新ハードウェアドライバが提供されたためですが、これに多くの改善を加えてさらに安定したドライバにしました。 </P>
+
+<p>ゲームディスクエミュレーションを使用しているユーザーは、以下の手順に従ってください。</p>
+<ol>
+<li>まず、Administrator としてログオンしているか確認してください。</li>
+<li>開発システムで、[スタート] ボタンをクリックして [ファイル名を指定して実行] を選択します。[名前 :] ウィンドウに以下 (引用句も含む) を入力してください。<pre>&quot;C:\Program Files\Microsoft Xbox SDK\xbox\bin\amcinfo.exe&quot;</pre>このプログラムによって、開発システムの XDK-DVD PCI カードが正常に動作しているかテストされます。</li>
+<li>amcinfo.exe プログラムによって、以下のような出力が生成されます。
+<blockquote><pre>====================================================
+Xbox DVD Emulation Card DiagnosticsCopyright (C) 2001 Applied Microsystems Corporation
+
+All rights reserved.
+====================================================
+ 
+Querying Xbox DVD Emulator card......DONE
+ 
+TI PCI2250 bridge chip revision = 0x01
+</pre></blockquote>戻り値が 0x01 の場合、PCI チップは正常ですので IDE ケーブルを使用してハードドライブを XDK-DVD PCI カードに接続してください。 詳細は、Xbox SDK オンラインヘルプの「初めて Xbox DVD Emulator System をインストールする方法」にある説明を参照してください。</li>
+<li>戻り値が 0x02 (またはそれ以外) の場合、不良なカードです。<A href="mailto:xboxdsj@xbox.com"><B>xboxdsj@xbox.com</B></A> の開発者サポートまでご連絡ください。</li>
+</ol>
+
+<P>新ドライバのアップグレード方法は、<B>Xbox DVD エミュレータのセットアップとアップグレード</B> のトピックにある説明を参照してください。</P>
+
+
+<H4><A NAME="2.6"></A>2.6&nbsp;&nbsp;&nbsp;メモリクロック速度の調整</H4>
+
+<p>今回のリリースでは、メモリクロック速度 (メモリクロックとフロントサイド BUS/プロセッサを含む) が最終的な速度よりも 1 パーセント速くなっています。 これは一時的な処置で、以前のバージョンの開発コンソールの安定性を高めるために行われたものです。 この調整によって行われた速度の変更は以下のとおりです。</p>
+
+<table border=1 width=300px>
+<tr><th colspan=2><b>August プレビュー版リリースにおけるクロック速度</b></th></tr>
+
+<tr><td>メモリクロック</td><td>202 MHz</td></tr>
+<tr><td>フロントサイドバスクロック</td><td>135 MHz</td></tr>
+<tr><td>プロセッサクロック</td><td>740 MHz</td></tr>
+</table>
+<br>
+<table border=1 width=300px>
+<tr><th colspan=2><b>August 最終リリース版におけるクロック速度</b></th></tr>
+
+<tr><td>メモリクロック</td><td>200 MHz</td></tr>
+<tr><td>フロントサイドバスクロック</td><td>133 MHz</td></tr>
+<tr><td>プロセッサクロック</td><td>733 MHz</td></tr>
+
+</table>
+<p></p>
+
+<H4><A NAME="2.7"></A>2.7&nbsp;&nbsp;&nbsp;CertGame のローカリゼーションについて</H4>
+
+<p>本リリース版では、CertGame の日本語バージョンは完全にローカライズされていません。</p>
+
+<H4><A NAME="2.8"></A>2.8&nbsp;&nbsp;&nbsp;DVD レイアウトツールについて</H4>
+<p>以前の DVD レイアウトツールが、Xbox ゲームディスクレイアウトツールに交換されました。 この新しいツールのショートカットが [スタート] メニューに追加されています。</p>
+
+
+<H4><A NAME="2.9"></A>2.9&nbsp;&nbsp;&nbsp;Xbox ADPCM Codec</H4>
+<p>Voxware Codec にバグがあるため、Voxware Codec の後にインストールされた Codec で正常に列挙が行われません。 特に、Xbox ADPCM Codec を使用することができなくなります。 Xbox ADPCM Codec を使用するには、以下の手順に従ってください。</p>
+ 
+<ol>
+<li>デスクトップから [スタート] をクリックし、[設定] を選択します。その後、[コントロール パネル] を選択します。</li>
+ 
+<li>[コントロール パネル] ウィンドウで、[サウンドとマルチメディア] をダブルクリックします。 [サウンドとマルチメディアのプロパティ] ダイアログ ボックスが開きます。</li>
+ 
+<li>[ハードウェア] タブを選択します。</li>
+ 
+<li>デバイスの一覧から [オーディオ CODEC] を選択し、[プロパティ] をクリックします。 [オーディオ CODEC のプロパティ] ダイアログ ボックスが表示されます。</li>
+ 
+<li>[プロパティ] タブを選択します。</li>
+ 
+<li>[Voxware Compression Toolkit] を選択し、[削除] をクリックします。 これで Voxware Codec が削除されます。 Voxware Codec 削除後、Xbox ADPCM Codec が正常に機能しますが、Voxware Codec が必要なアプリケーションは正常に動作しなくなります。</li>
+</ol>
+<p>Xbox ADPCM Codec は XDK インストール時に自動的にインストールされます。XDK をインストールせずに Codec のみをインストールする場合、インストール CD-ROM の ADPCM ディレクトリにある xbadpcm.inf を右クリックして、表示されるメニューから [Install] を選択します。</p>
+
+<H4><A NAME="2.10"></A>2.10&nbsp;&nbsp;&nbsp;HDTV AV パック接続時のインターレース走査モードについて</h4>
+<p>以前までは、この AV パックではプログレッシブ走査モードのみがサポートされていました。  Xbox Dashboard と DVD 再生時のデフォルトビデオモードは、今回から 480i になりました。  ユーザーが TV で 480p をサポートできるように、Dashboard に新しいビデオ設定が追加されました。  この設定を有効にすると、HDTV AV パック接続時に 480p ビデオモードが有効になります。  これで、コンポーネント入力機能のある TV でプログレッシブ走査モードに対応していない場合でも HDTV AV パックが使用でき、コンポーネントビデオの良質な出力を Xbox ユーザーが使用することが可能になります。  また、HDTV AV パックが接続されているときに、フィールドレンダリングを使用するゲームがインターレースモードを選択することが可能になります。  一般的に、480p モードは 480i モードよりも良質の出力を提供するので、両ビデオモードが有効になっている場合はゲームにインターレースモードを必要としない限り 480p モードを選択してください。</p>
+
+<BR>
+
+<H3><A NAME="3."></A>3.&nbsp;&nbsp;&nbsp;Xbox 本体の問題</H3>
+
+<H4><A NAME="3.1"></A>3.1&nbsp;&nbsp;&nbsp;サンプルにおける最終版コントローラ ボタン設定のサポートについて</H4>
+<p>今回のリリース時において、最終版コントローラ ボタンの設定がすべてのサンプルでサポートされるようになりました。 ボタン設定の詳細については、SDK のオンライン ヘルプを参照してください。 また、「左トリガ + 右トリガ + 黒」のソフトリセットボタンの組み合わせも引き続きサポートされます。 CertGame のみ、「START + BACK」ボタンを 3 秒間押し続ける機能をサポートします。</p>
+
+
+<BR>
+
+
+<H3><A NAME="4."></A>4.&nbsp;&nbsp;&nbsp;以前のリリースにおける開発環境/Visual C++ の問題</H3>
+
+<H4>SDK に含まれていた AdpcmCreateDecoder XMO について</H4>
+<p>ハードウェアにおける ADPCM 解凍は Microsoft&#174 DirectSound&#174 によってサポートされるようになったため、AdpcmCreateDecoder XMO は今回のリリースから取り除かれています。</p>
+
+<H4><A NAME="4.2"></A>4.2&nbsp;&nbsp;&nbsp;3-D 作成 API の必要性について</H4>
+<p>3-D サウンドを使用しているすべてのタイトルは、3-D バッファを作成する前に <b>DirectSoundUseFullHRTF</b> または <b>DirectSoundUseLightHRTF</b> を呼び出す必要があります。</p>
+
+<H4><A NAME="4.3"></A>4.3&nbsp;&nbsp;&nbsp;XnetInitialize/XnetCleanup について</h4>
+<p>タイトルにネットワークを使用する場合、初期化コードに変更を行わないとコンパイルすることができません。  </p>
+
+<p>呼び出しを <B>XnetInitialize</B> と以下のように変更してください。</p>
+
+	<pre>XNetStartupParams xnsp;
+	memset( &amp;xnsp, 0, sizeof( xnsp ) );
+	xnsp.cfgSizeOfStruct = sizeof( XNetStartupParams );
+	xnsp.cfgFlags = XNET_STARTUP_BYPASS_SECURITY;
+	INT err = XNetStartup( &amp;xnsp );
+</pre> 
+
+<p>これにより、ネットワークを使用して個人的なデバッグやモニタを行う際に Xbox Secure Network Library に PC におけるインセキュアな通信を許可させることが可能になります。他の Xbox とのシステム リンク プレイにおいては、新しいセキュア API (<B>XNetRegisterKey</B>、<B>XNetXnAddrToInAddr</B> など) を使用してください。xnets.lib を使用してリンクした際にセキュリティを回避する試みはエラーではありませんが、フラグが無視されたものです。</p>
+
+
+<H4><A NAME="4.4"></A>4.4&nbsp;&nbsp;&nbsp;Win32 ベースの PCI DVD エミュレーションカードにおける IDE ポートについて</h4>
+<p>DVD エミュレーションハードドライブをエミュレーションカードにある IDE ポートに接続せずに、お使いのコンピュータの未使用の IDE ポートに接続してください。お使いのソフトウェア機能およびパフォーマンスに障害はありません。 Applied Microsystems 社はすでにこの問題に気づき、解決に取り組んでおります。しばらくお待ちください。</p>
+
+<H4><A NAME="4.5"></A>4.5&nbsp;&nbsp;&nbsp;&quot;自動コピーを無効にする機能の設定に関する問題</H4>
+<P>本リリース版の Xbox SDK では、Visual C++ に自動コピー機能が追加され、Xbox 実行ファイル (.XBE) 作成後にリモート実行パス ([プロジェクトの設定] の [デバッグ] でパスを指定) によってファイルが自動的にターゲットマシンにコピーされます。この機能は、 [プロジェクトの設定] の [Xbox イメージ] にある [XBE ファイルの自動コピーを無効にする] チェックボックスをオンにすることでプロジェクト ごとに無効にすることができます。しかし、バグが存在するため、ユーザーの設定をプロジェクト ファイル (.DSP) に保存することができません。 この自動コピー機能を無効にしたい場合、プロジェクトを開くたびにチェックボックスをオンにする必要があります。</P>
+
+<H4><A NAME="4.6"></A>4.6&nbsp;&nbsp;&nbsp;DirectSoundDoWork() をメインレンダーループで呼び出す必要性について</h4>
+<p><b>DirectSoundDoWork</b>() をメインレンダーループで呼び出す必要があります。これは、(1) DirectSound 通知の実行を可能にし、 (2) 再生の終了したバッファを LOCDEFER することでハードウェアリソースを使用可能にします。</p>
+
+<H4><A NAME="4.7"></A>4.7&nbsp;&nbsp;&nbsp;DirectSound: Dowdsstdfx.bin のダウンロード</h4>
+<p>すべてのゲームは、提供されているデフォルトの DSP イメージ、scratchimg.bin を使用して <b>IDirectSound::DownloadEffectsImage</b>() を 呼び出す必要があります。これは、3-D 音声を正常に再生するのに必要です。デフォルトイメージは、play3dsound\media ディレクトリにあります。</p>
+
+<H4><A NAME="4.8"></A>4.8&nbsp;&nbsp;&nbsp;<b>IDirectMusicPerformance8::InitAudioX</b> パラメータの変更</h4>
+<p><b>IDirectMusicPerformance8::InitAudioX</b> の 3 番目のパラメータが変更されました。新しいパラメータ (<i>dwVoiceCount</i>) は、 DirectMusic に配置されたハードウェア 2-D 音色の数を指定します。これらの音色は DirectSound では使用できません。このカウントには、 使用を予定している 3-D バッファ (3-D オーディオパス) の数を含めないでください。また、これらの音色を保留した場合、使用可能な 音色の合計数は保留した音色の数にともなって減少します。</p>
+
+<H4><A NAME="4.9"></A>4.9&nbsp;&nbsp;&nbsp;DirectPlay および DirectPlay Voice ライブラリについて</h4>
+<p>Microsoft&#174 DirectPlay&#174 と DirectPlay The Microsoft&#174 DirectPla&#174 and DirectPlay Voice タイトルライブラリが一時的に XDK から取り除かれました。 これらのライブラリは、DirectX 8.1 と新しい Xbox Secure Network ライブラリの変更にともなってアップデートされています。 Voice ライブラリは、XDK の September リリースに追加される予定です。開発中のゲームのスケジュールに影響が及ぶ場合は、アカウントマネージャ までご連絡ください。タイトルには Xbox Winsock を使用することができます。また、ネットワークの実装に関しては Xbox Secure Network ライブラリを使用してください。</p>
+
+<H4><A NAME="4.10"></A>4.10&nbsp;&nbsp;&nbsp;Dolby&#174 デジタルエンコーディングのサポートについて</h4>
+<p>Dolby データは、オプティカルデジタル出力対応 AV コネクタを使用した際に使用できるデジタル出力です。</p>
+
+<H4><A NAME="4.11"></A>4.11&nbsp;&nbsp;&nbsp;DirectSound: ADPCM の使用について</h4>
+<p><B>IDirectSoundStream</B> 用に使用される ADPCM パケットは、物理的に連続メモリになっている必要があります。パケットを <b>XPhysicalAlloc</b> (および <B>XPhysicalFree</B> の解放) を使用して配置してください。 これは <b>IDirectSoundStream</b> のみに適用されることで、<b>DirectSoundBuffer</b> にこの制限はありません。</p>
+
+<H4><A NAME="4.12"></A>4.12&nbsp;&nbsp;&nbsp;DirectMusic: 現在のエフェクトのサポートについて</h4>
+<p>リバーブとコーラスのみが標準オーディオパスにてサポートされます。</p>
+
+<H4><A NAME="4.13"></A>4.13&nbsp;&nbsp;&nbsp;Xbox 独自の D3DFORMAT 値</H4>
+<p>Microsoft&#174 DirectX&#174 バージョンのサーフェスフォーマット (D3DFORMAT) が、Xbox 用に大幅に修正されました。有効な Xbox 値に関しては、 Xbox XDK オンラインヘルプの「D3DFORMAT」トピックを参照してください。
+</p>
+
+<H4><A NAME="4.14"></A>4.14&nbsp;&nbsp;&nbsp;メモリユニットの初期化</H4>
+<p>本リリース版の XDK で使用する前に、すべてのメモリユニットをタイトルランチャで初期化する必要があります。 
+</p>
+
+<H4><A NAME="4.15"></A>4.15&nbsp;&nbsp;&nbsp;[Remote Executable Path And File Name] ウィンドウ</H4>
+<P>新規の Xbox プロジェクト (提供されているサンプルを含む) を作成する際、リモート実行パスおよびファイル名を入力するように求める [Remote Executable Path And File Name] ウィンドウが表示されます。これは、.xbe ファイルがコピーされる場所です。例えば、Fuzzy Teapot サンプルを作成した場合、xe:\samples\fuzzy\fuzzy.xbe と入力することになります。サンプルは通常 xe:\samples にあるサブディレクトリにコピー されますが、xe:\ ドライブ上であればどこでも場所を指定することができます。</P>
+
+
+
+<H4><A NAME="4.16"></A>4.16&nbsp;&nbsp;&nbsp;XQueryValue 関数について</H4>
+<p><B>XQueryValue</B> 関数をシステム設定の照会に使用することができなくなりました。代わりに、新しい <B>XGet</B>xxx 設定機能を 使用してください。  新しい関数は、 <B>XGetLanguage</B>、<B>XGetAVPack</B>、<B>XGetVideoStandard</B>、<B>XGetVideoFlags</B>、<B>XGetAudioFlags</B>、<B>XGetParentalControlSetting</B> および <B>XGetGameRegion</B> です。  関数の署名および適用できるフラグに関しては、xbox.h ヘッダー ファイルを参照してください。  完全なドキュメントは、XDK の将来のリリースに追加される予定です。</p>
+
+
+
+<p>ライブラリは、通常の Xbox ネットワークおよび Winsock 機能の一部として実装されています。いくつかの関数呼び出しを行うことで、 既存の Xbox Winsock コードを Secure ライブラリと一緒に機能させることができます。Xbox Secure Network ライブラリ機能を提供する使用可能な <B>XNet</B>xxx 関数 (<B>XNetStartup</B> を含む) を winsockx.h ヘッダー ファイルでご確認ください。このライブラリに関するドキュメントと サンプルは、SDK の将来のリリースにて提供される予定です。</p>
+
+<p>今回のリリースにおいて、Xbox ネットワーキングおよび Winsock ライブラリに以下の変更が行われました。</p>
+
+<UL>
+<LI>マルチキャストは、サポートされなくなりました。</LI>
+<LI>SOCK_RAW がサポートされなくなりました。</LI>
+<LI>IPPROTO_IP オプションのすべて (IP_OPTIONS, IP_HDRINCL, IP_TOS, IP_TTL, IP_DONTFRAGMENT) がサポートされなくなりました。</LI>
+</UL>
+
+<p>以下の関数は使用されなくなったので、次回のリリースにおいて取り除かれます。</p>
+<UL>
+<LI>inet_ntoa - <B>XNetInAddrToString</B> に変わりました。バッファを提供します。
+<LI>gethostname - 本体にはネットワーク名がありません。
+<LI>gethostbyaddr - DNS がサポートされなくなりました。逆方向の互換性はありません。
+<LI>gethostbyaddr - DNS がサポートされなくなりました。逆方向の互換性はありません。
+<LI>getservbyport - サポートされていません。逆方向の互換性はありません。
+<LI>getservbyname -  サポートされていません。逆方向の互換性はありません。
+<LI>getprotobynumber - サポートされていません。逆方向の互換性はありません。
+<LI>getprotobyname - サポートされていません。逆方向の互換性はありません。
+<LI>XnetInitialize - <B>XNetStartup</B> に変わりました。
+<LI>XnetCleanup - <B>XNetCleanup</B> に変わりました。
+<LI>XnetGetIpAddress - <B>XNetGetTitleXnAddr</B> または <B>XNetGetDebugXnAddr</B> に変わりました。
+<LI>XnetGetEthernetLinkStatus - <B>XNetGetEthernetLinkStatus</B> に変わりました。
+<LI>XnetInitParams - さらに多くのフィールドのある <B>XNetStartupParams</B> に変わりました。
+</UL>
+
+<H4><A NAME="4.17"></A>4.17&nbsp;&nbsp;&nbsp;&quot;No address for Xbox has been set&quot; エラーメッセージ</H4>
+<P>&quot;No address for Xbox has been set&quot; エラーメッセージを回避するには、開発システムをアップデートする必要があります。 開発システムをアップデートするには、 
+<OL>
+<LI>[スタート] から [ファイル名を指定して実行] を選択し、[名前 :] ウィンドウに cmd と入力します。</LI>
+<LI>[cmd.exe] ウィンドウの C:\ プロンプトに、<B>xbdir -x <I>name</I> xe:\</B> を入力します。<B><I>name</I></B> は、本体の 名前です。名前を指定する代わりに、本体の IP アドレスを入力することもできます。(IP アドレスは、本体の起動中に 表示されます。)</LI> 
+</OL>
+</P>
+
+<H4><A NAME="4.18"></A>4.18&nbsp;&nbsp;&nbsp;Fire and Trees サンプルのビルドに必要なもの (DirectX 8.0 SDK)</H4>
+<p>新しいバージョンのバンドラツールは、Microsoft&#174 DirectX&#174 8.0 に依存性があります。 これらのサンプル用のメディアはコンパイル中にバンドラを必要とするため、サンプルをビルドするシステムには必ず DirectX 8.0 SDK をインストールしてください。</p>
+
+<H4><A NAME="4.19"></A>4.19&nbsp;&nbsp;&nbsp;LoadSave サンプルとセーブゲームの署名</H4>
+<p>(新しいセーブゲーム署名関数を使用した) セーブゲームの署名が、LoadSave リファレンス UI サンプルに追加されました。 セーブゲームのこの新しい署名機能は、LoadSave サンプルの以前のセーブゲームを無効にします。これらの古いセーブゲームをロードした場合、&quot;Unable to load %s.&quot; というエラーメッセージが表示されます。</p>
+
+
+
+<H4><A NAME="4.20"></A>4.20&nbsp;&nbsp;&nbsp;Visual C++ 6.0 Service Pack 5 に必要な新しい Processor Pack のインストール</H4>
+<p>Visual C++ 6.0 Service Pack 5 をインストールした場合、以前のバージョンの Processor Pack を使用して行った変更がこの Service Pack によって 上書きされてしまうため、最新の Microsoft Visual C++ Processor Pack をインストールする必要があります。以前のバージョンの Processor Pack を Service Pack 5 と一緒にインストールすることはできません。</p>
+
+<UL>
+<LI>XDK アップデート版をベータサポート Web サイトからインストールする場合、以下のリンクから最新の Processor Pack をダウンロードすること ができます。 <a href="http://msdn.microsoft.com/vstudio/downloads/ppack/default.asp"><B>msdn.microsoft.com/vstudio/downloads/ppack/default.asp</B></A>.</LI>
+<LI>August プレビュー版 2001 Xbox SDK CD-ROM をお持ちの場合、CD-ROM から Processor Pack をインストールすることができます。開発システムの CD-ROM ドライブに Xbox SDK CD-ROM を挿入し、インストール画面から [Visual C++ Processor Pack のインストール] を選択して画面に表示される指示に 従ってください (Processor Pack は、CD-ROM の VCPP ディレクトリにあります)。</LI>
+</UL>
+
+<H4><A NAME="4.21"></A>4.21&nbsp;&nbsp;&nbsp;サブミキシングおよび複数の音色を使用した際に発生するオーディオの歪みについて</H4>
+<p>ハードウェアの競合条件を解消するために行われるハードウェア同期化のため、サブミックスされた音色を有効にした際にオーディオボイスプロセッサが ACI DMA に対して少し遅れ出します。 これにより、オーディオの歪みが発生します。 この問題は、将来のリリースにて修正される予定です。</p>
+
+
+<H4><A NAME="4.22"></A>4.22&nbsp;&nbsp;&nbsp;ユーザー固有の Visual C++ ライブラリとヘッダーパス</H4>
+<p>Xbox SDK インストール後、Visual C++ ライブラリとヘッダーパスはそのインストールを実行したユーザー専用として設定されます。 別のユーザーとしてログインした場合、ライブラリとヘッダーパス環境変数は設定されません。</p>
+
+<H4><A NAME="4.23"></A>4.23&nbsp;&nbsp;&nbsp;Visual C++ 7.0 のコード最適化の設定</H4>
+<p>Xbox ターゲットマシン上で Microsoft&#174 Visual C++&#174 7.0 のコード最適化を行う場合、-GB/-G6 (GB は G6 にマップされています) を 使用してください。速度の最適化には、-O2 -GL -Gr が推奨設定です。エイリアスには、-Oa または -Ow を使用することができます。しかし、 作成したプログラムでリンクされたリストが使用されている場合、これらの設定は使用しないでください。また、多くのエイリアスに関する問題は、 リンクタイムコードの生成によって解消されます。
+</p>
+
+<H4><A NAME="4.24"></A>4.24&nbsp;&nbsp;&nbsp;XGraphics.lib の新しい数値演算ライブラリ</H4>
+<p>今回のリリースでは、XGraphics.lib に演算ライブラリ (xgmath.h) が含まれました。このライブラリは Direct3DX の数値演算ライブラリと 使用方法は同じですが、Pentium III SSE 命令を使用するように最適化されています。この最適化されたライブラリを使用するには、xgmath.h の 前に次の置換マクロを指定します。</p>
+	<pre>#define _USE_XGMATH</pre>
+<p>この置換マクロによって、Direct3DX 数値演算関数名が xgraphics 数値演算関数にエイリアスされます。XGraphics 数値演算ライブラリに使用 される行列は 16 バイト整列である必要があります。これは、通常メモリが行列用のみに配置されている場合のものですが、行列がより大きな構造の 一部であった場合の不正な整列を防ぐためです。</p>
+
+<H4><A NAME="4.25"></A>4.25&nbsp;&nbsp;&nbsp;XGraphics.lib の新しいテクスチャ圧縮メソッド</H4>
+<p>今回のリリースでは、XGraphics.lib にテクスチャを DXTn 形式に圧縮するのに使う <b>XGCompressRect</b>() と呼ばれるメソッドが含まれました。 このメソッドを使用することで、Direct3DX 圧縮コードよりも高品質な圧縮が可能になります。</p>
+
+<H4><A NAME="4.26"></A>4.26&nbsp;&nbsp;&nbsp;最新の形式列挙型を含む .dds ファイルを生成する XDxTex</H4>
+<p>XDxTex は、正しい形式列挙型を含む .dds ファイルを生成するように変更されました。この変更により、DirectX ツール DxTex によって生成された .dds ファイルと互換性を持つファイルが生成されます。更に、これらの列挙型を含む .dds ファイルを使用できるように Xbox における Direct3DX も 変更されています。以前のバージョンの XDxTex によって生成された .dds ファイルも継続して使用できます。XDxTex は、D3DX.lib の圧縮コードでは なく、改善された XGraphics.lib の圧縮コードを使用します。</p>
+
+<H4><A NAME="4.27"></A>4.27&nbsp;&nbsp;&nbsp;最新の DXT3 と DXT5 圧縮形式</H4>
+<p>Xbox において、DXT2 と DXT3 用の形式列挙型はハードウェアによってテクスチャ形式が同じように処理されるため、同じです。これは、DXT4 と DXT5 の場合も同じです。DXT2/DXT4 と DXT3/DXT5 における違いは、DXT2/DXT4 形式においてテクスチャの RGB 値が圧縮される前にアルファ値によって 乗算された状態であると認識されることです。Direct3DX を使用してテクスチャを圧縮する際 (通常、テクスチャを圧縮されていないファイル形式から 圧縮されたテクスチャにロードする)、Direct3DX ではこれらの形式を認識できません。今回のリリースからは、すでに乗算されていないテクスチャを 使用したい場合に、新しい Direcx3DX メソッド <B>SetDXT3DXT5</B>(TRUE) を呼び出すことができます。アルファ値によってすでに乗算されている テクスチャを使用したい場合は、FALSE の値をこの関数で渡します。</p>
+
+<H4><A NAME="4.28"></A>4.28&nbsp;&nbsp;&nbsp;今回のバージョンのバンドラツールにおける .jpg と .dds ファイルのサポート</H4>
+<p>今回のリリースでは、バンドラツールによる .jpg または .dds ファイルからの読み込みをサポートしません。これは、将来のリリースにて追加される予定です。  </p>
+
+<H4><A NAME="4.29"></A>4.29&nbsp;&nbsp;&nbsp;デバッグキーボードのサポートが単独のライブラリへ移りました</H4>
+<p>USB キーボード用のデバッグサポートが xapilibd.lib から単独のライブラリ xkbd.lib (デバッグ ビルドでは xkbdd.lib) に移りました。 これで、デバッグ ビルドを必要とせずにデバッグキーボードのサポートをゲームタイトルのリリースビルドまたはデバッグビルドで使用すること ができるようになりました。DEBUG_KEYBOARD define を使用すると、_DEBUG define によって自動的にサポートが有効にならずに、キーボードのサポート定義を含むことができます。今回のリリースでこのサポートを使用するには、DEBUG_KEYBOARD を定義して xkbd.lib または xkbdd.lib を リンクする必要があります。このライブラリを出荷する市販ゲームタイトルにおいて使用することはできません。</p>
+
+<H4><A NAME="4.30"></A>4.30&nbsp;&nbsp;&nbsp;Unicode フォント</H4>
+<p>今回のリリースには、Xbox が出荷されるすべての地域に対応したコード ページを含んだ Arial Unicode フォント (TTF) が含まれています。 このフォントは XDK ダウンロードには含まれていませんのでご了承ください。フォントは、XDK CD 上の \Extras\Fonts ディレクトリにあります。</p>
+
+<H4><A NAME="4.31"></A>4.31&nbsp;&nbsp;&nbsp;PlaySegmentEx を使用した DirectMusic の再生スケジュールについて</H4>
+<p><b>DirectMusic::PlaySegmentEx</b> を使用して再生をスケジュールすると正常に機能しない場合があります。<b>PlaySegmentEx</b> を使用する際、 手動で再生をスケジュールしてください。API を使用して再生をスケジュールしないでください。</p>
+
+<H4><A NAME="4.32"></A>4.32&nbsp;&nbsp;&nbsp;ピクセルシェーダプログラムの更新</H4>
+<p>mad ピクセル シェーダ命令のセマンティクスが、Microsoft&#174 DirectX&#174 8.0 の構文と一致するように変更されました。以前のセマンティクス は、</p>
+<pre>mad d, a, b, c     // d = a + b * c</pre>
+<p>でしたが、以下のように変更されました。</p>
+<pre>mad d, a, b, c     // d = a * b + c</pre>
+<p>この変更は、mad 命令を使用しているすべてのピクセルシェーダに影響しますが、コンパイラの警告やエラーメッセージは表示されません。 この問題を防ぐには、この命令を使ったすべてのピクセルシェーダで、mad 命令の 2 番目のパラメータを 4 番目のパラメータに移動させる必要が あります。</p>
+
+<H4><A NAME="4.33"></A>4.33&nbsp;&nbsp;&nbsp;SetBufferData 使用時における DirectSound のメモリ量について</H4>
+<p><b>GetCaps</b> 構造の <b>wMemoryAllocated</b> メンバーは、Microsoft&#174 DirectSound&#174 で使用されるメモリの総計を正確に反映しません (特に、<b>SetBufferData</b> を使用して <B>DirectSoundBuffer</B> を指定している場合)。</p>
+
+
+<H4><A NAME="4.34"></A>4.34&nbsp;&nbsp;&nbsp;DirectMusic における部分的ダウンロードのサポートについて</H4>
+<P>今回のリリースでは、部分的ダウンロードは Microsoft&#174 DirectMusic&#174 から派生した Xbox ライブラリでサポートされていません。 このため、DirectMusic のコンテンツに gm.dls への参照が含まれていたときなどに問題が発生する場合があるので、DirectMusic のコンテンツが DLS 音色のみを参照するように設定してください。</P>
+
+<H4><A NAME="4.35"></A>4.35&nbsp;&nbsp;DirectMusic Loader の解放</H4>
+<P>DirectMusic の Loader は、コンテンツセグメントがロードされた後に明示的に解放してください。コンテンツセグメントを解放しただけでは、 メモリを実際に解放することにはなりません。Loader 自体が解放されていない状態で新規の音楽が継続的にロードされた場合、アプリケーションがメモリ不足になる場合があります。</P>
+
+
+<H4><A NAME="4.36"></A>4.36&nbsp;&nbsp;デバッグチャネル関数</H4>
+<P>デバッグチャネルコマンドハンドラ内で安全に呼び出すことのできない C ランタイムおよび Xbox タイトルライブラリ (XTL) 関数が多くあり ます。<b>GetLastError</b> の値に影響を与える XTL 関数が呼び出された際、ターゲットマシンが応答しなくなる場合があります。さらに、 <B>GetLastError</B> の戻り値が不正な場合があります。デバッグチャネルコマンドハンドラを開発する際、できるだけ少ない C ランタイム関数と XTL 関数を呼び出すようにしてください。この問題は、将来の XDK リリースで改善される予定です。</p>
+
+<p>前回のリリースで問題のあった C ランタイム文字列関数は、今回のリリースにおいて安全に呼び出すことができます。</p>
+<H4><A NAME="4.37"></A>4.37&nbsp;&nbsp;Xbox SDK リファレンスマニュアル</H4>
+<P>Xbox システム レベル ライブラリのリファレンス資料には、Xbox ゲームシステムには該当しない情報を表示するリンクが含まれている場合が あります。これらのリンクを選択すると、通常「Topic Not Supported」ページが表示されます。</P>
+
+
+<H4><A NAME="4.38"></A>4.38&nbsp;&nbsp;デフォルト (またはそれ以上の) スタック サイズの使用に関して</H4>
+<P>デフォルト (64K) 以下のスタック サイズを使用することは、現在推奨しません。多くの機能は、小さなスタック サイズを使用した状況下での テストが行われていません。例えば、Microsoft&#174 Windows Media&#8482; Audio (WMA) ファイルを再生した時、スタック サイズがデフォルト設定 のサイズより小さい場合にアプリケーションがクラッシュする恐れがあります。WMA ファイル再生専用のスレッドを作成する場合は、スレッドにデフォルトのスタックサイズまたはそれ以上のサイズを使用するようにしてください。.</P>
+
+<H4><A NAME="4.39"></A>4.39&nbsp;&nbsp;&nbsp;DVD エミュレーション ソフトウェア 日本語版に必要な Hot Fix (パッチ)</H4>
+<p>今回のリリースの Xbox SDK に含まれている DVD エミュレーション ソフトウェアのバージョンを日本語版の開発システムにインストールする場合、16056_JPN_i386.zip ファイルまたは 16056_JPN_nec.zip ファイルを解凍して日本語版 Microsoft&#174 Windows&#174 2000 システム用の Hot Fix (パッチ) を実行する必要があります。 開発システムに DVD エミュレーションソフトウェアがインストールされた際、これらの Hot Fix ファイルは [インストールした場所]\DVDEmulation\Driver にあります。</p>
+
+
+<H4><A NAME="4.40"></A>4.40&nbsp;&nbsp;&nbsp;DirectMusic: DLS セグメント再生時の歪みについて</H4>
+<P>DLS セグメントで多くの音符を同時表現する際、オーディオの出力がクリップされ、歪みが生じる場合があります。この現象を低下させるには、<b>IDirectMusicPerformance8::SetGlobalParam</b>() 関数を使い、GUID_PerfMasterVolume とマイナスの数値で <b>DirectMusic</b> 全体の音量を調整してください。(<b>SetGlobalParam</b> の正しい使用法については、ドキュメントを参照してください。)</P>
+
+
+
+<br>
+
+
+<!--**********************************************************************************-->
+<H3><A NAME="5."></A>5.&nbsp;&nbsp;&nbsp;以前のリリースにおける Xbox 本体の問題</H3>
+
+<H4><A NAME="5.1"></A>5.1&nbsp;&nbsp;&nbsp;Xbox 本体リカバリ用 CD-ROM</H4>
+<p>Xbox 本体リカバリ用 CD-ROM を使用して、本体をアップデートする必要があります。この際、リカバリ用イメージが ROM を アップデートするため、リカバリ プロセス中に本体の電源を切ったり、再起動しないでください。</p>
+
+<p>最新のリカバリ用 CD-ROM を使用して本体を起動した後、画面に表示される指示に従ってください。アップデート後、 今回の Xbox SDK リリースと互換性のある最新のシステムソフトウェアが本体で動作します。</p>
+
+<p>.iso ディスク イメージ ファイルは、ベータ サポート Web サイト (<A href="https://xds.xbox.com" target="_blank"><B>http://xds.xbox.com</B></A>) からダウンロードすることもできます。 最新のリカバリ用イメージファイルをダウンロードする場合、.iso ファイルを使用して新しいリカバリ用 CD-ROM を作成する必要があります (作成作業の詳細については、ご使用の CD イメージ作成ソフトウェアのマニュアルを参照してください)。 尚、CD イメージは CD-RW ディスク使用して作成してください。CD-R はサポートされていません。</p>
+
+<H4><A NAME="5.2"></A>5.2&nbsp;&nbsp;&nbsp;ビデオ設定用コントローラのショートカット</H4>
+<p>ビデオモード設定を新 Xbox コントローラを使って、リカバリプロセス中またはタイトルランチャから変更することが可能になりました。 以下がその設定です。
+
+<br>左トリガ + 右トリガ + D パッド 右 = NTSC-M (北米) <br>左トリガ + 右トリガ + D パッド 上  = PAL-I <br>左トリガ + 右トリガ + D パッド 左 = NTSC-J (日本)
+</p>
+
+<H4><A NAME="5.3"></A>5.3&nbsp;&nbsp;&nbsp;使用中に画面が白色になった場合</H4>
+<p>Xbox 本体を使用中に画面が白色になった場合、本体の電源を切り、最低 5 秒間待ってから電源を入れ直してください。 この現象が発生した場合、Xbox サポートまでご連絡ください。</p>
+
+<H4><A NAME="5.4"></A>5.4&nbsp;&nbsp;&nbsp;本体の時間設定</H4>
+<p>Microsoft&#174 Windows&#174 2000 開発マシンから Xbox 本体へ初めてファイル転送を行った際、本体の時間設定が 開発マシンに合わせて自動的にアップデートされます。将来のバージョンの Xbox システムソフトウェアでは、Xbox Dashboard で 時間の設定を変更することが可能になります。</p>
+
+<H4><A NAME="5.5"></A>5.5&nbsp;&nbsp;&nbsp;デフォルトの TV 設定</H4>
+<p>Xbox 本体のビデオモードは、デフォルトで NTSC に設定されています。この設定を変更するには、本ドキュメントの「 <A HREF="#5.2"><B>5.2</B></A>」セクションに説明のあるコントローラショートカットを使用するか、Xbox Dashboard の「設定」画面で変更することができます。</p>
+
+<H4><A NAME="5.6"></A>5.6&nbsp;&nbsp;&nbsp;本リリースに同梱の新しい Xbox コントローラを使用してください</H4>
+<p>コントローラの構成がアップデートされました。本リリースに同梱の新しい Xbox コントローラのみを使用してください。 本リリースにはコントローラが 1 台しか同梱されていませんが、将来のリリースには 2 台含まれる予定です。以前のバージョンのコントローラの返却プロセスに関しては、Xbox サポートまでご連絡ください。</p>
+
+<H4><A NAME="5.7"></A>5.7&nbsp;&nbsp;&nbsp;本バージョンにおける本体の GPU クロック速度</H4>
+<P>このベータ リリースでは、本体の GPU のクロック速度はおよそ 210 MHz です。 この問題は、将来のリリースにて修正される予定です。</P>
+
+<H4><A NAME="5.8"></A>5.8&nbsp;&nbsp;&nbsp;サムスティックの遊び領域について</H4>
+<p>新ハードウェアで Xbox コントローラを使用する際、遊び領域は今回から設定されません。このため、サムスティックの解像度に関する 問題が発生すると思われますが、遊び領域を独自に設定する必要があります。すべてのボタンおよびサムスティックに関する製造元の許容誤差や値の領域に関する詳細は、XDK の将来のリリースで提供される予定です。 </p>
+ 
+<H4><A NAME="5.9"></A>5.9&nbsp;&nbsp;&nbsp;本体と梱包材</H4>
+<p>以前のバージョンのターゲットシステムやこのリリースに同梱の Xbox 本体を破棄せずに保管しておいてください。 また、以前のターゲットシステムや Xbox 本体が発送された梱包材も破棄せずに保管しておいてください。 新しいバージョンのハードウェアが入手可能になった時点で、以前のバージョンのターゲットシステムと本体をマイクロソフトに返却する際必要になります。</p>
+
+
+<H4><A NAME="5.10"></A>5.10&nbsp;&nbsp;&nbsp;プレビュー版 XBExplorer ツール</H4>
+<P class="content">XBExplorer ツールは、将来の XDK リリースで提供される新規ツールのプレビュー版です。このツールは、リモートツール (xbcopy や xbdir) 用 GUI を提供し、ファイル転送時におけるドラッグアンドドロップ、マッピングされたターゲットシステムドライブの表示、 ファイル名の変更、ターゲットシステムの再起動、そしてリモートターゲットシステム上のファイルのプロパティの表示をサポートします。</P>
+ 
+<H4><A NAME="5.11"></A>5.11&nbsp;&nbsp;&nbsp;デフォルトセーブイメージにおける Dashboard メタデータの変更</H4>
+<p>imagebld を使用してデフォルトセーブイメージを指定することができます。スイッチは、/DEFAULTSAVEIMAGE です。 イメージは XBE ファイルに保存され、U:\ ドライブと装填される各メモリユニット (MU) にタイトルによって自動的にコピーされます。 このイメージは、ディレクトリに固有のセーブイメージを含まないセーブゲームを表示する際に Xbox Dashboard によって使用されます。</p>
+ 
+<p>セーブゲームディレクトリに含まれる固有のセーブゲームイメージの名前は、Image.xbx にしないで SaveImage.xbx にしてください。</p> 
+
+
+
+</BODY></HTML>

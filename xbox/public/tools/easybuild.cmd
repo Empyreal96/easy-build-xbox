@@ -1,7 +1,7 @@
 @echo off
 cls
 rem Here we set some variables that are not set by Easy-build.cmd/razzle during load, so we just load them
-set Easy-Build-Version=v0.19.1
+set Easy-Build-Version=v0.2
 set _BUILDVER=4400
 set COMPUTERNAME=XBuilds
 if /i "%NTDEBUG%" == "" set NTDEBUG=ntsdnodbg
@@ -73,7 +73,7 @@ echo  2) 'Dirty' Build (Full err path, no checks)
 echo  3) Build Specific Directory Only
 echo  b/w) Open Build Error or Warning Logs
 echo --------------------------------------------------------------------------------------------
-echo  4) Binplace Kernel files       # 8) Build XDK (Needs help)
+echo  4) Binplace Kernel files       # 8) Build Xbox SDK Setup
 echo  5) Build BIOS ROM              # 9) Place 'HVS Launcher'
 echo  6) Build EEPROM                # 10) ISO Building Menu
 echo  7) Binplace Debugging Symbols  # 11) 
@@ -209,18 +209,15 @@ cmd /c xupdrec | tee %_NT386TREE%\xupdrec.log&& pause && goto eb-ISO-menu
 :SetupSDK
 Title Easy-Build XBOX Build Environment - Xbox SDK Build
 cls
-echo XSDKBuild (Originally SDKBuild.cmd)
-echo This will start a modified script to build the XSDK.
-echo (A work in progress, need help with getting this working)
+echo XDKBuild.bat
+echo This will start a modified script to build the XBOX SDK.
 echo.
-echo YOU NEED INSTALLSHIELD PROFESSIONAL 6.2 installed to:
-echo "%programfiles%\InstallShield\InstallShield Professional 6.2\"
 echo.
-echo Currently if fails at finding "Language Independant Intel 32 Files"
-echo when building the Setup.
-echo A folder will be created at "%_NTDRIVE%\SDKScratch\"
+echo Setup will be located at %_NT386TREE%\XDKSetup\%_BUILDVER%\XDKSetup%_BUILDVER%.exe
 pause
-cmd /c %_NTDrive%%_NTROOT%\private\SDK\setup\xsdkbuild.bat | tee %_NT386TREE%\SDKBuild.log&& pause && goto eb-xbox-mainmenu
+cmd /c %_NTDrive%%_NTROOT%\private\setup\xdk\xdkbuild.bat
+pause
+goto eb-xbox-mainmenu
 
 :DebugCopySym
 Title Easy-Build XBOX Build Environment - Copying Debugging Symbols

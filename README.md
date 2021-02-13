@@ -40,16 +40,11 @@ You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and 
 ## **What's Updated?**
 
 ```
-- Modified Wiki
-- Fixed issue with overwriting a saved BVT Address
-- Fixed a few issues which would cause errors during BVT Test
-- Re-Readded Updated VHD, the issue is not the VHD, notes on BVTMonitor Readme
-- Added first test version of BVTMonitor, A tool to automatically Deploy your build Kernel to a Virtual BVT (XEMU) for testing.
-- Added a premade 'skeleton' VHD for BVTMonitor.
-- 2bl.img and remainder.img replaced with iND BIOS 5001 versions as this had better success in booting in XEMU when packed with our Kernel
+- XDKSetup4400.exe is now Buildable! (Some files were missing from the tree and have been included from XDK 3823)
 ```
 
 (*Previous updated at bottom of ReadMe*)
+
 
 
 
@@ -81,15 +76,25 @@ It provides *(With a teeny bit of setup)* an almost fully automated process for 
 
 
 
+# **XDK Building** (Main Method)
+
+A small discovery I found was that MS decided to switch from the InstallShield style Setup to a custom build tool called `xpacker.exe`, This is the tool they use to pack the XDK, XBSE and other tools.
+
+This build script is located at **`private\setup\xdk\xdkbuild.bat`**
+
+It uses **`xdk.ini`,`xdk.csv`** and **`private\external\sdk`** to configure and build the Setup
+
+- Choose **Build Xbox SDK** from Easy-Build's Main Menu or run `private\setup\xdk\xdkbuild.bat` from a Razzle window
 
 
-# **XDK Building**
+
+# **XDK Building** (Old Deprecated Method)
 **InstallShield Professional 6.2 is required for this**
 I have included my currently in progress script to try and build the Xbox SDK. Currently it fails compiling the InstallShield specific XDK Setup scripts.. 
 
-- To run the script, load Easy-Build, drop to Razzle prompt and type **"private\SDK\setup\xsdkbuild.cmd"**
+- To run the script, load Easy-Build, drop to Razzle prompt and type **`private\SDK\setup\xsdkbuild.cmd`**
 
-You may encounter issues with **"language Independent Intel 32 Files"** during build, I haven't gotten round to looking at this so if anyone does make progress let me know!
+You may encounter issues with **`language Independent Intel 32 Files`** during build, I haven't gotten round to looking at this so if anyone does make progress let me know!
 
 # **Links**
 
@@ -106,6 +111,13 @@ You may encounter issues with **"language Independent Intel 32 Files"** during b
 # **Previous Updates**
 
 ```
+- Modified Wiki
+- Fixed issue with overwriting a saved BVT Address
+- Fixed a few issues which would cause errors during BVT Test
+- Re-Readded Updated VHD, the issue is not the VHD, notes on BVTMonitor Readme
+- Added first test version of BVTMonitor, A tool to automatically Deploy your build Kernel to a Virtual BVT (XEMU) for testing.
+- Added a premade 'skeleton' VHD for BVTMonitor.
+- 2bl.img and remainder.img replaced with iND BIOS 5001 versions as this had better success in booting in XEMU when packed with our Kernel
 - Added idw\biospack to %PATH%.
 - Replaced 'rombld' sections of ntos\init\*\makefile.inc with BIOSpack to allow bios Images to be created during build.
 - Allowed seperate EEPROM and BIOS images to be created for CHK and FRE ('Postbuild only')

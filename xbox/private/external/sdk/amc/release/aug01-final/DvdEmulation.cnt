@@ -1,0 +1,48 @@
+:Base dvdemulation.hlp
+:Title Xbox DVD Emulation System Help Contents
+1 Welcome=Welcome
+1 Guided Tour
+2 Overview=Walk_Through
+2 Preparing for Emulation=tut_Drive_Preparation
+2 Selecting Files for the Image=tut_File_Selection
+2 Optimizing Disc Geography=tut_Disk_Geography
+2 Enabling and Controlling Emulation=tut_Enabling_and_Controling_Emulation
+1 Selecting files for emulation
+2 Overview=gui_Disk_Layout_Tool
+2 Creating and prepairing DVD Root=task_To_create_and_prepare_DVD_Root
+2 Changing DVD Root=task_To_change_DVDRoot
+2 Opening an existing configuration file=task_To_open_an_existing_FLD_file
+2 Selecting folders or files=task_To_select_folders_or_files
+2 Building an image=task_Building_an_image
+2 Combining build with emulate=task_To_combine_build_with_emulate
+1 Remapping files to improve performance
+2 Overview=gui_Disc_Geography
+2 Loading files into the Geography Editor=task_To_load_files_into_the_Geography_Editor
+2 Creating a placement mapping=task_To_create_a_placement_mapping
+2 Monitoring placement status=task_To_monitor_placement_status
+2 Remapping when files don't fit=tut_file_placement_scenario
+2 Placing the GDFX filesystem=task_To_place_the_GDFX_filesystem_
+2 Grouping a set of files=task_To_group_a_set_of_files
+2 Resequencing files or groups=task_To_resequence_files_or_groups
+2 Deleting a group=task_To_delete_a_group
+2 Finding a file or group=task_To_find_a_file_or_group
+2 Saving the file mapping=task_To_save_the_file_mapping
+2 Changing the reserved size of the GDFX filesystem=task_To_adjust_the_reserved_size_of_the_GDFX_filesystem
+1 Starting and controlling emulation
+2 Overview=gui_Emulator_Controller
+2 Starting the Emulation Control Panel=task_Starting_the_Emulation_Controller
+2 Enabling/Disabling emulation=task_Enabling_Disabling_emulation
+2 Changing the emulation mode=task_Changing_the_emulation_mode
+2 Enabling sector logging=task_To_enable_sector_logging
+2 Selecting and running the game=task_Selecting_the_game_to_run
+2 To run actual game discs in Xbox player=task_To_run_actual_game_discs_in_Xbox_player
+1 Tips for advanced users
+2 Using sector logging=task_Using_sector_logging
+2 Managing the GDFX system file=ref_Placing_the_GDFX_filesystem
+2 Resolving file placement problems=tut_file_placement_scenario
+2 Adjusting security placeholders=task_To_adjust_security_placeholders
+2 Hotkey shortcuts=ref_Hotkey_shortcuts
+1 Using the Command Line
+2 Command Line Tools=cl_Command_Line_Tools
+2 XbDvdImg=cl_XbDvdImage
+2 Xbdvdemu=cl_Xbdvdemu

@@ -1,0 +1,68 @@
+[Version]
+Signature="$Windows NT$"
+Class = EmulatorCard
+ClassGuid = {4EE1B04D-F749-47e7-A57D-AEBA1F236891}
+Provider=%Provider%
+
+[ClassInstall32]
+AddReg=emulator_card_class_addreg   ; create a new device class
+
+
+[emulator_card_class_addreg]
+HKR,,,,%EmulatorCardClassName%
+HKR,,Icon,,"-5"
+
+
+[SourceDisksNames]
+1 = %DiskName%,,,
+
+
+[SourceDisksFiles]
+AmcPci.sys = 1
+
+
+[DestinationDirs]
+DefaultDestDir = 12                 ; set default destination to %windir%\system32\drivers
+
+
+[Manufacturer]
+%MfgName%=RaptorPCICard
+
+
+[RaptorPCICard]
+%DeviceDesc%=AmcPciInstall,PCI\VEN_10E8&DEV_836E&CC_0780
+%DeviceDesc%=AmcPciInstall,PCI\VEN_10E8&DEV_836E
+
+
+[ControlFlags]
+ExcludeFromSelect.win = AMCPCI_0    ; keep device from showing up on Win95 device installer
+
+
+[AmcPciInstall.nt]
+CopyFiles = AmcPci_CopyFiles
+
+
+[AmcPciInstall.nt.Services]
+AddService = AmcPci, 0x00000002, AmcPciServiceInstall
+
+
+[AmcPciServiceInstall]
+DisplayName = %ServiceDesc%
+ServiceType = 1                     ; SERVICE_KERNEL_DRIVER
+StartType = 3                       ; SERVICE_DEMAND_START
+ErrorControl = 1                    ; SERVICE_ERROR_NORMAL
+ServiceBinary = %12%\AmcPci.sys
+
+
+[AmcPci_CopyFiles]
+AmcPci.sys                          ; copy driver to driver install dir
+
+
+[Strings]
+DiskName = "GameOptix DDK CD-ROM"
+MfgName = "Applied Microsysems Corporation"
+DeviceDesc = "AMC Xbox DVD Emulator Card"
+Provider = "Applied Microsystems Corporation"
+ServiceDesc = "AmcPci"
+StartName = "AmcPciDevice"
+EmulatorCardClassName = "Emulator cards"

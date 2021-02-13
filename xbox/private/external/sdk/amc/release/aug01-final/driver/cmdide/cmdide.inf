@@ -1,0 +1,80 @@
+[version]
+Signature="$WINDOWS NT$"
+Class=hdc
+ClassGuid={4D36E96A-E325-11CE-BFC1-08002BE10318}
+Provider=%CMD%
+DriverVer=01/01/2000
+CatalogFile=cmdide.cat
+
+
+[SourceDisksNames]
+1 = "CMD Installation disk",,,
+
+[SourceDisksFiles]
+cmdide.sys = 1
+cmdide.inf = 1
+
+;Class Install
+[ClassInstall32.NT]
+AddReg=HDC_Class
+
+[HDC_Class]
+HKR,,,,%HDCClassName%
+HKR,,Icon,,"-9"
+HKR,,Installer32,,"SysSetup.Dll,HdcClassInstaller"
+
+[DestinationDirs]
+DefaultDestDir = 12 ; DIRID_DRIVERS
+
+[Manufacturer]
+%CMD%=CMD_HDC
+
+[CMD_HDC]
+%PCI\VEN_1095&DEV_0640.DeviceDesc%=cmdide_Inst, PCI\VEN_1095&DEV_0640
+%PCI\VEN_1095&DEV_0646.DeviceDesc%=cmdide_Inst, PCI\VEN_1095&DEV_0646
+%PCI\VEN_1095&DEV_0646U.DeviceDesc%=cmdide_Inst, PCI\VEN_1095&DEV_0646&REV_03
+%PCI\VEN_1095&DEV_0646U2.DeviceDesc%=cmdide_Inst, PCI\VEN_1095&DEV_0646&REV_05
+%PCI\VEN_1095&DEV_0646U2.DeviceDesc%=cmdide_Inst, PCI\VEN_1095&DEV_0646&REV_07
+%PCI\VEN_1095&DEV_0643.DeviceDesc%=cmdide_Inst, PCI\VEN_1095&DEV_0643
+%PCI\VEN_1095&DEV_0643U.DeviceDesc%=cmdide_Inst, PCI\VEN_1095&DEV_0643&REV_06
+%PCI\VEN_1095&DEV_0648.DeviceDesc%=cmdide_Inst, PCI\VEN_1095&DEV_0648
+%PCI\VEN_1095&DEV_0649.DeviceDesc%=cmdide_Inst, PCI\VEN_1095&DEV_0649
+
+[cmdide_Inst]
+CopyFiles = @cmdide.sys
+
+[cmdide_Inst.Services]
+AddService = cmdide, %SPSVCINST_ASSOCSERVICE%, cmdide_Service_Inst
+
+[cmdide_Service_Inst]
+ServiceType    = %SERVICE_KERNEL_DRIVER%
+StartType      = %SERVICE_BOOT_START%
+ErrorControl   = %SERVICE_ERROR_NORMAL%
+ServiceBinary  = %12%\cmdide.sys
+LoadOrderGroup = System Bus Extender
+
+[cmdide_Inst.PosDup]            ;; BUGBUG: What does this do?
+*PNP0600
+
+[Strings]
+HDCClassName            = "IDE ATA/ATAPI controllers"
+CMD="CMD Technology"
+PCI\VEN_1095&DEV_0640.DeviceDesc="CMD PCI-0640 IDE Controller"
+PCI\VEN_1095&DEV_0643.DeviceDesc="CMD PCI-0643 DMA IDE Controller"
+PCI\VEN_1095&DEV_0643U.DeviceDesc="CMD PCI-0643U Ultra DMA IDE Controller"
+PCI\VEN_1095&DEV_0646.DeviceDesc="CMD PCI-0646 DMA IDE Controller"
+PCI\VEN_1095&DEV_0646U.DeviceDesc="CMD PCI-0646U Ultra DMA IDE Controller"
+PCI\VEN_1095&DEV_0646U2.DeviceDesc="CMD PCI-0646U2 Ultra DMA IDE Controller"
+PCI\VEN_1095&DEV_0648.DeviceDesc="CMD PCI-0648 Ultra DMA IDE Controller"
+PCI\VEN_1095&DEV_0649.DeviceDesc="CMD PCI-0649 Ultra DMA IDE Controller"
+
+;*******************************************
+;Handy macro substitutions (non-localizable)
+SPSVCINST_ASSOCSERVICE = 0x00000002
+SERVICE_KERNEL_DRIVER  = 1
+SERVICE_BOOT_START     = 0
+SERVICE_ERROR_NORMAL   = 1
+REG_EXPAND_SZ          = 0x00020000
+REG_DWORD              = 0x00010001
+REG_MULTI_SZ           = 0x00010000
+
