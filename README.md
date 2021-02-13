@@ -18,7 +18,13 @@ A tool in testing for compiling xbox code. Easy to Update script.
 
   
 
-### *Wiki:* https://github.com/Empyreal96/easy-build-xbox/wiki
+### *Wikis:*
+
+###  [Easy-Build Wiki](https://github.com/Empyreal96/easy-build-xbox/wiki)
+
+### [BVTMonitor](https://github.com/Empyreal96/easy-build-xbox/wiki/Build-Verification-Testing-Monitor-Wiki)
+
+### [Xbox 4400 Source Wiki *early stages*](https://github.com/Empyreal96/xbox-original-info/wiki/Xbox-Original-4400-Source-Info-Wiki)
 
 
 
@@ -26,20 +32,33 @@ A tool in testing for compiling xbox code. Easy to Update script.
 You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and CPXXUPD) you can grab the .VHD at the bottom of the page if you want a 'set up' environment
 
 - Have easy-build-xinit.cmd on the ROOT of a drive e.g: D:\easy-build-xinit.cmd
+
 - Open easy-build-xinit.cmd
+
 - Setup the Xbox trunk in your Drive root as specified in easy-build-xinit (VHD users are already set up)
+
 - Let the script apply Team Complex patches (These allow the xbox trunk to be built)
+
 - Once that's done, follow onscreen instructions until Razzle loads
+
 - Type into razzle: easybuild
+
 - (To build chk type "easybuild chk" without quotes)
+
 - You can now build from the Easy-Build mainmenu
+
 - Built binaries will be in %DriveRoot%\xbox\xboxbuilds\\{fre\\chk}\dump
 
   **NOTE: Some Features may not work as expected, whether it be from Source or implemented options, either way please let me know. Also any suggestions to Features or just feedback is very welcome**
 
+
+
+## If you want to use Easy-Build with a different Source Tree, read on [Modifying Easy-Build](https://github.com/Empyreal96/easy-build-xbox/wiki/Modifying-Easy-Build)
+
 ## **What's Updated?**
 
 ```
+- Added starter info on modifying Easy-Build
 - XDKSetup4400.exe is now Buildable! (Some files were missing from the tree and have been included from XDK 3823)
 ```
 

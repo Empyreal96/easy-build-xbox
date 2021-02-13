@@ -10,6 +10,7 @@ if /i "%FOCUS%" == "" set FOCUS=1
 if /i "%_BINPLACE_SUBDIR%" == "" call setfre.cmd
 if /i "%1" == "" call setfre.cmd
 if /i "%1" == "free" call setfre.cmd
+if /i "%1" == "fre" call setfre.cmd
 if /i "%1" == "chk" call setchk.cmd
 if /i "%1" == "XM3" call setfre.cmd
 if /i "%1" == "XM3P" call setfre.cmd
