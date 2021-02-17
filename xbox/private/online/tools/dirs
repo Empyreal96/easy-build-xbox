@@ -1,0 +1,10 @@
+DIRS=ui \
+     OnlineAccounts \
+     SetupOnline \
+     AddOnlineUser \
+     boxid \
+     onlineaccounts2 \
+     errparse \
+     errsay \
+     pwdtokey \
+     rc4hmac 

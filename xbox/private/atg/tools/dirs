@@ -1,0 +1,8 @@
+DIRS = \
+       Bundler \
+       FontMaker \
+       MakeXBG \
+       VSTune \
+       FillRate \
+       xbrc \
+       xbview

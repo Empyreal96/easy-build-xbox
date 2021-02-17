@@ -1,0 +1,17 @@
+DIRS=usbhub\
+     xidex\
+     mu\
+     hawk\
+     ohcd\
+     usbd\
+     xdcs\
+     xkbd\
+     brainbox\
+     usbtest \
+     ezusbdef \
+     mutest \
+     netsim \
+     usbd \
+     usbsamp \
+     xid
+

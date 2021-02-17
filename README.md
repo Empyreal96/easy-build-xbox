@@ -6,7 +6,7 @@
 
 A tool in testing for compiling xbox code. Easy to Update script.
 
-- Buildable on Windows XP - 10 x86.
+- Buildable on Windows XP - 10 x86 and x64 (x64 in testing and will have compile errors)
 
 - Fixed issues with mstools/idw folders incorrectly being set.
 
@@ -15,6 +15,10 @@ A tool in testing for compiling xbox code. Easy to Update script.
 - 'Unofficial' binplace scripts for built files, samples and tools.
 
 - Buildable XDK Samples and other isos (needs testing in xemu/xqemu/xbox).
+
+- Xbox SDK Builder
+
+- Buildable BIOS with Biospack (From the Barnabus repack)
 
   
 
@@ -57,12 +61,30 @@ You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and 
 ## **What's Updated?**
 
 ```
+- Added 'easy-build-xinit64' which will allow easy-build to start on x64 builds
+- Added folders to some 'dirs' files as they are buildable (Mainly test tools)
+
 - Added starter info on modifying Easy-Build
 - XDKSetup4400.exe is now Buildable! (Some files were missing from the tree and have been included from XDK 3823)
 ```
 
 (*Previous updated at bottom of ReadMe*)
 
+
+
+# Building on x64 Windows
+
+**This will have errors in set parts of the tree, ideally we need to look into a cross compiler as `amd64` wasn't a thing during the time of the compiler**
+
+- Currently Easy-Build can load razzle on an x64 version of Windows, the Kernel (`ntos`) is fully buildable on x64.
+- Many things in the tree will be have Syntax errors, issues with inline x86 targeted code and functions causing compiler errors. *(Some DirectX code, MS CRT code and more)*
+- Process for building is no different
+- BVTMonitor is NOT supported on x64 Easy-Build sessions yet, this will come soon after improving x64 scripts.
+  
+
+**NOTES**: I have tried but I can't see an easy way (and a way I know) that will allow a full build on windows Win64 yet.
+
+The actual `easy-build-xinit64.cmd` has very little changes from the 32 bit variant, it sets CPU Arch to x86 and adapted PATH to not hate the `Program Files (x86)` folder when setting MSBUILD and IDW directories,
 
 
 

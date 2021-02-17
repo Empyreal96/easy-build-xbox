@@ -35,6 +35,9 @@ DIRS=   cover35src \
         ui    \
         hvs   \
         common \
-	coverage
+	coverage \
+        PerBoxID \
+        perfbvt \
+        testdll
 
 OPTIONAL_DIRS=

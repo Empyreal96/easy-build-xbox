@@ -1,0 +1,33 @@
+DIRS=\
+    common \
+    accounts \
+    auth \
+    autoupdd \
+    autoupdo \
+    billing \
+    cdtest \
+    codesize \
+    cxonline \
+    dftest \
+    dtmtest \
+    enumtest \
+    uftest \
+    ufmtest \
+    v2app \
+    hdenum \
+    dvdenum \
+    xon \
+    dvdcont \
+    OnlineTitleUpdate \
+    DVDTitleUpdate \
+    cryptotest \
+    dvdenum \
+    gssserver \
+    localcache \
+    match \
+    rng \
+    titlecache \
+    utf8 \
+    xkdctest 
+    
+
