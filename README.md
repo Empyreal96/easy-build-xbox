@@ -24,7 +24,6 @@ A tool in testing for compiling xbox code. Easy to Update script.
 
 ### [BVTMonitor](https://github.com/Empyreal96/easy-build-xbox/wiki/Build-Verification-Testing-Monitor-Wiki)
 
-### [Xbox 4400 Source Wiki *early stages*](https://github.com/Empyreal96/xbox-original-info/wiki/Xbox-Original-4400-Source-Info-Wiki)
 
 
 
