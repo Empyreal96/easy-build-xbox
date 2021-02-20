@@ -54,7 +54,7 @@ You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and 
 
   **NOTE: Some Features may not work as expected, whether it be from Source or implemented options, either way please let me know. Also any suggestions to Features or just feedback is very welcome**
 
-**BUILT BIOS WILL NOT BOOT ON 1.6(b) XBOXES** 
+**BUILT BIOS WILL NOT BOOT ON 1.6(b) XBOXES, SEE EASY-BUILD WIKI FOR INFO** 
 
 
 ## If you want to use Easy-Build with a different Source Tree, read on [Modifying Easy-Build](https://github.com/Empyreal96/easy-build-xbox/wiki/Modifying-Easy-Build)
