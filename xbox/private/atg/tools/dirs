@@ -4,5 +4,4 @@ DIRS = \
        MakeXBG \
        VSTune \
        FillRate \
-       xbrc \
        xbview
