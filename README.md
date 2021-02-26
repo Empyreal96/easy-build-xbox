@@ -6,7 +6,7 @@
 
 A tool in testing for compiling xbox code. Easy to Update script.
 
-- Buildable on Windows XP - 10 x86 and x64 (x64 in testing and will have compile errors)
+- Buildable on Windows 7 - 10 x86 and x64 (x64 in testing and will have compile errors)
 
 - Fixed issues with mstools/idw folders incorrectly being set.
 
