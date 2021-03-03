@@ -28,7 +28,7 @@ A tool in testing for compiling xbox code. Easy to Update script.
 
 ### [BVTMonitor](https://github.com/Empyreal96/easy-build-xbox/wiki/Build-Verification-Testing-Monitor-Wiki)
 
-### [**Easy-Build Devkit Menu**]()
+### [**Easy-Build Devkit Menu**](https://github.com/Empyreal96/easy-build-xbox/wiki/Easy-Build-Developer-Kit-Menu)
 
 
 
