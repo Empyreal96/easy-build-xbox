@@ -28,10 +28,12 @@ A tool in testing for compiling xbox code. Easy to Update script.
 
 ### [BVTMonitor](https://github.com/Empyreal96/easy-build-xbox/wiki/Build-Verification-Testing-Monitor-Wiki)
 
+### [**Easy-Build Devkit Menu**]()
 
 
 
-## **How to use**
+
+## **Overview on how to use**
 You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and CPXXUPD) you can grab the .VHD at the bottom of the page if you want a 'set up' environment
 
 - Have easy-build-xinit.cmd on the ROOT of a drive e.g: D:\easy-build-xinit.cmd
@@ -52,24 +54,56 @@ You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and 
 
 - Built binaries will be in %DriveRoot%\xbox\xboxbuilds\\{fre\\chk}\dump
 
+  
+  
+  
+  
   **NOTE: Some Features may not work as expected, whether it be from Source or implemented options, either way please let me know. Also any suggestions to Features or just feedback is very welcome**
 
-**BUILT BIOS WILL NOT BOOT ON 1.6(b) XBOXES, SEE EASY-BUILD WIKI FOR INFO** 
-
+​       **BUILT BIOS WILL NOT BOOT ON 1.6(b) XBOXES, SEE EASY-BUILD WIKI FOR INFO** 
 
 ## If you want to use Easy-Build with a different Source Tree, read on [Modifying Easy-Build](https://github.com/Empyreal96/easy-build-xbox/wiki/Modifying-Easy-Build)
 
-## **What's Updated?**
+
+
+# **What's Updated?**
 
 ```
-- Added 'easy-build-xinit64' which will allow easy-build to start on x64 builds
-- Added folders to some 'dirs' files as they are buildable (Mainly test tools)
+- Sadly Windows XP is currently NOT SUPPORTED by Easy-Build.. When I tested (on a XP x86 SP3 fresh install,) I recieved errors with the cl.exe and c1.dll. Not sure why maybe I needed to install a few updates so this needs looking at.
 
-- Added starter info on modifying Easy-Build
-- XDKSetup4400.exe is now Buildable! (Some files were missing from the tree and have been included from XDK 3823)
+- Unified 'easy-build-xinit.cmd' for both x86 and amd64
+- Added early 'config' support, Now Settings on 'First run', 'CPXXUPD done' and DevKit IPs are stored in an 'easybuild.conf' (In theory it will automatically update any left over files, there may be issues as its in testing)
+- Updated info displayed in 'easy-build-xinit.cmd'
+- (Main focus for update) Added a 'Developer Kit' menu, this will allow users to interact with their Debug kits with basic activities for now.
+- Added 'Yelo Neighborhood v11' as it is a feature for the Devkit menu
+- 'xbConsole.cmd' is a pop-out cmd for Easy-Build DevKit Menu
+- Added Work aorund fixes for SDK not building when loaded in FRE
+
+Developer Kit Features so far:
+*NOTE* This menu is VERY WIP and you may have a few issues, I will work on any that occur after this initial release. You understand the risks when modifying files on the Xbox HDD!
+
+- Transfer files to and from the console
+- Update the console with the 4400 XDK Launcher (Requires XDK Launcher of any kind already set up with xbdm.dll)
+- Shortcut to install the 4400 XDK
+- Pop-out console to run Xbox CLI tools (e.g xbmemdump.exe)
+- Reboot the console from Easy-Build
+- Launch a debugging session thanks to XBDM.dll and xbWatson.exe
+- Launch Yelo Neigborhood for Functions that provides 
 ```
 
 (*Previous updated at bottom of ReadMe*)
+
+# Third-Party Tools Used
+
+I am in NO WAY AT ALL affiliated with any persons, companies or software used in this tool.
+
+- Yelo Neighborhood 
+  -  https://www.remnantmods.com/forums/viewtopic.php?f=5&t=1771 
+  - https://code.google.com/archive/p/open-sauce/downloads (v10 version)
+- Biospack - Barnabus Xbox 4400 Kernel Repack
+  - https://vetusware.com/download/Microsoft%20Xbox%20Source%201.00.4400/?id=13484
+- 4400 Source 
+  - We all know who originally owned this, then Complex added their magic..
 
 
 
@@ -80,12 +114,8 @@ You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and 
 - Currently Easy-Build can load razzle on an x64 version of Windows, the Kernel (`ntos`) is fully buildable on x64.
 - Many things in the tree will be have Syntax errors, issues with inline x86 targeted code and functions causing compiler errors. *(Some DirectX code, MS CRT code and more)*
 - Process for building is no different
-- BVTMonitor is NOT supported on x64 Easy-Build sessions yet, this will come soon after improving x64 scripts.
-  
 
 **NOTES**: I have tried but I can't see an easy way (and a way I know) that will allow a full build on windows Win64 yet.
-
-The actual `easy-build-xinit64.cmd` has very little changes from the 32 bit variant, it sets CPU Arch to x86 and adapted PATH to not hate the `Program Files (x86)` folder when setting MSBUILD and IDW directories,
 
 
 
@@ -106,6 +136,8 @@ It provides *(With a teeny bit of setup)* an almost fully automated process for 
 - Automatically configure XEMU with source-placed files
 
 - Start as soon as everything is placed and configured
+
+- Can work without a VM, connects to a local Network Share 
 
   
 
@@ -152,6 +184,10 @@ You may encounter issues with **`language Independent Intel 32 Files`** during b
 # **Previous Updates**
 
 ```
+- Added 'easy-build-xinit64' which will allow easy-build to start on x64 builds
+- Added folders to some 'dirs' files as they are buildable (Mainly test tools)
+- Added starter info on modifying Easy-Build
+- XDKSetup4400.exe is now Buildable! (Some files were missing from the tree and have been included from XDK 3823)
 - Modified Wiki
 - Fixed issue with overwriting a saved BVT Address
 - Fixed a few issues which would cause errors during BVT Test

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!--Yelo.Debug Settings-->
+<Settings>
+
+  <!--The version of this settings file-->
+  <Version>1.0.0.4</Version>
+  
+  <!--If the xdk is installed on your computer it will create this registry entry to store the last connection used-->
+  <XdkRegistryPath>HKEY_CURRENT_USER\Software\Microsoft\XboxSDK</XdkRegistryPath>
+  
+</Settings>

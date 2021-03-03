@@ -1,0 +1,21 @@
+<Executables>
+  <Executable Name="Halo 2" Filename="E:\Games\Halo2\default.xbe">
+    <Script Name="Freeze Game" FileType="">CPUContext context = new CPUContext();
+context.Xmm0 = 1.0f;
+context.Xmm1 = 0;
+XBox.CallAddressEx(0x146860, context, true, 0);
+XBox.SetMemory(XBox.GetUInt32(0x510C54) + 12, 0.0f);</Script>
+    <Script Name="Reset Map" FileType="">XBox.SetMemory(0x547F6E, (byte)1, (byte)1);</Script>
+    <Script Name="Win Game" FileType="">XBox.CallAddress(0x1388E0, false);</Script>
+    <Script Name="Load Map as Multiplayer" FileType="map">XBox.SetMemory(0x4ED3A8, 2, (int)0x001E0101, new byte[20], Filename);
+
+XBox.SetMemory(0x4ED39D, (byte)1);</Script>
+    <Script Name="Load Map as Singleplayer" FileType="map">XBox.SetMemory(0x4ED3A8, 1, (int)0x001E0101, new byte[20], Filename);
+XBox.SetMemory(0x4ED39D, (byte)1);</Script>
+    <Script Name="Save Checkpoint" FileType="">XBox.SetMemory(XBox.GetUInt32(0x4E6948), (byte)0);
+XBox.SetMemory(0x547F70, (byte)1);</Script>
+    <Script Name="Load Checkpoint" FileType="">XBox.SetMemory(0x547F6F, (byte)1);
+XBox.SetMemory(0x547F74, (ushort)0x0101);</Script>
+    <Script Name="Enable AI in Multiplayer" FileType="">XBox.SetMemory(0x1C79E5, (UInt64)0x9090C3001C79F668);</Script>
+  </Executable>
+</Executables>

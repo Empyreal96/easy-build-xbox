@@ -49,39 +49,66 @@ REM
  if '%1'=='ELEV' (del "%vbsGetPrivileges%" 1>nul 2>nul  &  shift /1)
 
 :ebinit
-if NOT exist "%~dp0\easy-build_1strun.complete" goto eb-start
-if exist "%~dp0\easy-build_1strun.complete" goto eb-xbox-checks
+if NOT exist "%~d0\xbox\public\tools\easybuild.conf" goto eb-start
+if exist "%~d0\xbox\public\tools\easybuild.conf" goto eb-load-config
+rem if NOT exist "%~dp0\easy-build_1strun.complete" goto eb-start
+rem if exist "%~dp0\easy-build_1strun.complete" goto eb-xbox-checks
+
+:eb-load-config
+set "_EBConf=%~dp0\xbox\public\tools\easybuild.conf"
+
+set "_FIRST_RUN="
+for /F "skip=1 delims=" %%i in (%_EBConf%) do if not defined _FIRST_RUN set "_FIRST_RUN=%%i"
+echo First Run = %_FIRST_RUN%
+echo.
+
+set "_CPXXUPD_DONE="
+for /F "skip=1 delims=" %%i in (%_EBConf%) do if not defined _CPXXUPD_DONE set "_CPXXUPD_DONE=%%i"
+echo Complex = %_CPXXUPD_DONE%
+echo.
+
+goto eb-xbox-checks
 
 :eb-start
 cd /d %~dp0
 Title Easy-Build Environment for Xbox
 echo --------------------------------------------------------
-echo Welcome to Easy-Build for XBOX Original
+echo Welcome to Easy-Build Environment for XBOX Original
 echo.
-echo -- Early test version --
-echo Currently the build methods are based off my knowledge
-echo on NT 5.1/2 and the CPXXUPD readme.. 
-echo There may be other methods so please let me know!
+echo -- In constant testing --
+echo This script sets up the COMPLEX patches and creates
+echo your Razzle 'Profile'. Then will load allow you to load 
+echo Easy-Build. Run this script to load each time.
 echo.
 echo This tool was created off the '4chan repack' Xbox Tree..
 echo It is the same as 'xbox trunk.rar' with 'CPXXUPD.RAR'
+echo If you want to use with a different tree, check the Wiki
+echo On the Github page on how.
 echo. 
-echo I am unsure of the Xbox 'postbuild' method.
 echo --------------------------------------------------------
 echo Make sure your dir structure is as follows:
 echo.
-echo %~d0\xbox\easy-build-xinit.cmd
-echo 	\private\
-echo 	\public\
-echo 	\CPXXUPD\
+echo %~d0
+echo \easy-build-xinit.cmd
+echo \xbox                \
+echo 	                  \private\
+echo 	                  \public\
+echo 	                  \CPXXUPD\
 echo.
 echo Requirements:
-echo Freshly extracted source (xbox_leak_may_2020.7z/xbox trunk.rar + CPXXUPD.rar))
-echo Layout as above and unmodified in the structure above 
+echo - Freshly extracted source (xbox_leak_may_2020.7z/xbox trunk.rar + CPXXUPD.rar))
+echo - Layout as above and unmodified in the structure above 
+echo - Free space
+echo - Patience
 echo.
 echo If you are using the VHD image, this will already be setup for you..
 pause
-echo First run complete! delete this file to show 'First Run' screen >> %~dp0\easy-build_1strun.complete
+rem echo First run complete! delete this file to show 'First Run' screen >> %~dp0\easy-build_1strun.complete
+rem test settings
+echo [FIRST_RUN] > %~d0\xbox\public\tools\easybuild.conf
+echo 1 >> %~d0\xbox\public\tools\easybuild.conf
+set _FIRST_RUN=1
+
 goto eb-xbox-checks
 
 :eb-xbox-checks
@@ -106,9 +133,31 @@ if exist "%~d0\xbox\CPXXUPD" goto eb-xbox-init-check
 REM
 REM
 REM ADD CHECK FOR ALREADY PATCHED SOURCE OR IF TO BE PATCHED
+if exist "%~d0\easy-build_1strun.complete" goto remoldconfig
 if NOT exist "%~d0\xbox\PRIVATE\DEVELOPR\%username%\" (goto eb-setup-cpxxupd) else (goto eb-xbox-mainmenu-init)
 REM
 REM
+
+:remoldconfig
+REM
+REM Remove old config files if exist and switch to easybuild.conf
+REM
+if exist "%~d0\easy-build_1strun.complete" del "%~d0\easy-build_1strun.complete"
+if exist "%~d0\xbox\public\tools\cpxxupd_done.txt" del "%~d0\xbox\public\tools\cpxxupd_done.txt"
+echo [FIRST_RUN] > %~d0\xbox\public\tools\easybuild.conf
+echo 1 >> %~d0\xbox\public\tools\easybuild.conf
+set _FIRST_RUN=1
+echo [CPXXUPD_DONE] >> %~dp0\xbox\public\tools\easybuild.conf
+echo 1 >> %~dp0\xbox\public\tools\easybuild.conf
+echo [BVT_ADDRESS] >> %~dp0\xbox\public\tools\easybuild.conf
+echo \\tsclient\D  >> %~dp0\xbox\public\tools\easybuild.conf
+echo [BVT_KERNEL_ONLY] >> %~dp0\xbox\public\tools\easybuild.conf
+echo 1  >> %~dp0\xbox\public\tools\easybuild.conf
+echo [XBOX_DEBUG_IP] >> %~dp0\xbox\public\tools\easybuild.conf
+echo 192.168.0.5  >> %~dp0\xbox\public\tools\easybuild.conf
+echo [XBOX_TITLE_IP] >> %~dp0\xbox\public\tools\easybuild.conf
+echo 192.168.0.3 >> %~dp0\xbox\public\tools\easybuild.conf
+goto eb-xbox-mainmenu-init
 
 :eb-setup-cpxxupd
 if exist "%ebntroot%\PRIVATE\DEVELOPR\%username%\" echo CPXXUPD already set up && goto xbox-dorazzle
@@ -117,7 +166,7 @@ echo Easy-Build detected the Complex Patches haven't been applied.
 echo Applying 'CPXXUPD' now..
 echo.
 cd /d %~d0\xbox\CPXXUPD
-goto ebcpxxupd
+goto eb-cpxxupd
 
 :eb-setup-profile
 echo.
@@ -125,8 +174,9 @@ echo Creating Razzle profile
 cd /d %~d0\XBOX\PRIVATE\DEVELOPR\TEMPLATE\
 goto xbox-initrazzle
 
-:ebcpxxupd
-if exist "%~dp0\xbox\public\tools\cpxxupd_done.txt" goto eb-xbox-mainmenu-init
+:eb-cpxxupd
+if /i "%_CPXXUPD_DONE%" == "1" goto eb-xbox-mainmenu-init
+rem if exist "%~dp0\xbox\public\tools\cpxxupd_done.txt" goto eb-xbox-mainmenu-init
 REM Contents of 'xbox\CPXXUPD\CPXXUPD.cmd' adapted for Easy-Build
 cd /d %~d0\xbox\CPXXUPD
 setlocal
@@ -147,7 +197,19 @@ xcopy /f /s /y public\*.* %_location_%\public\
 if exist "%_location_%\public\lib-mar02\d3d8i.lib" (
     copy "%_location_%\public\lib-mar02\d3d8i.lib" "%_location_%\public\lib"
 )
-echo Complex Patches applied! >> %~dp0\xbox\public\tools\cpxxupd_done.txt
+
+rem Test config
+echo [CPXXUPD_DONE] >> %~dp0\xbox\public\tools\easybuild.conf
+echo 1 >> %~dp0\xbox\public\tools\easybuild.conf
+REM Finish setup of .conf with 'default' settings.
+echo [BVT_ADDRESS] >> %~dp0\xbox\public\tools\easybuild.conf
+echo \\tsclient\D  >> %~dp0\xbox\public\tools\easybuild.conf
+echo [BVT_KERNEL_ONLY] >> %~dp0\xbox\public\tools\easybuild.conf
+echo 1  >> %~dp0\xbox\public\tools\easybuild.conf
+echo [XBOX_DEBUG_IP] >> %~dp0\xbox\public\tools\easybuild.conf
+echo 192.168.0.5  >> %~dp0\xbox\public\tools\easybuild.conf
+echo [XBOX_TITLE_IP] >> %~dp0\xbox\public\tools\easybuild.conf
+echo 192.168.0.3 >> %~dp0\xbox\public\tools\easybuild.conf
 endlocal
 goto eb-setup-profile
 
@@ -203,19 +265,19 @@ if /i "%1" == "WIN64" (
 REM
 REM Add MSTOOLS, IDW and PUBLIC\TOOLS to the path if not in system directory.
 REM
-if exist %_NTDrive%%_NTRoot%\public\mstools (
-    set MSTOOLS_DIR=%_NTDrive%%_NTRoot%\public\mstools
-    set PATH=%PATH%;%_NTDrive%%_NTRoot%\public\mstools
+if exist "%_NTDrive%%_NTRoot%\public\mstools" (
+    set "MSTOOLS_DIR=%_NTDrive%%_NTRoot%\public\mstools"
+    set "PATH=%PATH%;%_NTDrive%%_NTRoot%\public\mstools"
 )
-if exist %_NTDrive%%_NTRoot%\public\idw (
-    set IDW_DIR=%_NTDrive%%_NTRoot%\public\idw
-    set PATH=%PATH%;%_NTDrive%%_NTRoot%\public\idw
+if exist "%_NTDrive%%_NTRoot%\public\idw" (
+    set "IDW_DIR=%_NTDrive%%_NTRoot%\public\idw"
+    set "PATH=%PATH%;%_NTDrive%%_NTRoot%\public\idw"
 )
-if exist %_NTDrive%%_NTRoot%\public\tools (
-    set PATH=%PATH%;%_NTDrive%%_NTRoot%\public\tools
+if exist "%_NTDrive%%_NTRoot%\public\tools" (
+    set "PATH=%PATH%;%_NTDrive%%_NTRoot%\public\tools"
 )
 REM This adds the Barnabus Repack's BIOSpack to the PATH variable so it can be called easy
-if exist %_NTDrive%%_NTRoot%\public\idw\biospack set PATH=%PATH%;%_NTDrive%%_NTRoot%\public\idw\biospack
+if exist "%_NTDrive%%_NTRoot%\public\idw\biospack" set "PATH=%PATH%;%_NTDrive%%_NTRoot%\public\idw\biospack"
 
 goto ebhandover
 
@@ -240,11 +302,17 @@ echo NOTE: Easy-Build will always set the default build to:
 echo FREE DEVKIT if no options specified
 echo.
 pause
+
+
+
 goto INVOKEIT
+
 :INVOKEIT
 REM
 REM Invoke RAZZLE.CMD, which does the real work of setting up the Razzle window.
 REM
 
+
+if /i "%PROCESSOR_ARCHITECTURE%" == "AMD64" set PROCESSOR_ARCHITECTURE=x86
 cls
 cmd.exe /k "%_NTDrive%%_NTRoot%\public\tools\razzle.cmd %~d0 NTROOT \XBOX SETFRE"
