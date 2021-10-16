@@ -171,9 +171,7 @@ You may encounter issues with **`language Independent Intel 32 Files`** during b
 
 # **Links**
 
-**If you want to help the development of Easy-Build, have some issues join the Matrix chat!**
 
-  https://matrix.to/#/!febkSwamiedCsfevDe:matrix.org?via=matrix.org
 
 **For a VHD image with the SRC set up ready go here (Let me know if link dies):**
 
