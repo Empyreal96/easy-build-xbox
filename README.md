@@ -1,6 +1,6 @@
 # **Easy-Build for XBOX Original**
 
-I have added a [Release](https://github.com/Empyreal96/easy-build-xbox/releases/tag/1.0.22.06.2021) to archive the current state of the project for if anyone wants to retain the BVT side of the script
+I have added a [Release](https://github.com/Empyreal96/easy-build-xbox/releases/tag/1.0.22.06.2021) to archive the old state of the project for if anyone wants to retain the BVT side of the script
 
 
 # **What's Updated?**
