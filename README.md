@@ -6,6 +6,7 @@ I have added a [Release](https://github.com/Empyreal96/easy-build-xbox/releases/
 # **What's Updated?**
 
 ```
+- Removed BVTMonitor in the aim to streamline the build environment. (May write a BVTMonitor replacement in future)
 - Removed COMPLEX source patches as a requirement, aims to stay true to a retail image.
 - Default build target is FRE and XM3. CHk is currently not supported as it needs extra source patching 
 - Source patches to ntos and rombld to allow bootable BIOS roms to be created and tested. BIOSPack is still included but not recommended to use.
