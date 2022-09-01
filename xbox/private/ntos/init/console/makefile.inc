@@ -36,17 +36,29 @@ $(XDK_LIB_PATH)\xboxkrnl.lib: $(SDK_LIB_PATH)\xboxkrnl.lib
     
 !IF DEFINED(RETAILXM3)
 ROMBLDSYS=xm3
+!ELSEIF DEFINED(RETAILXM3P)
+ROMBLDSYS=xm3p
 !ELSE
 ROMBLDSYS=xdk
 !ENDIF
 
 obj\i386\xboxrom_dvt4.bin: obj\i386\xboxkrnl.exe $(TARGETPATH2)\i386\inittbl_dvt4.bin $(TARGETPATH2)\i386\xboxbldr.bin $(TARGETPATH2)\i386\romdec32.bin
-    copy $(_NTDRIVE)\xbox\private\ntos\init\console\obj\i386\xboxkrnl.exe $(IDW_DIR)\biospack\boot\xboxkrnl.img /Y /V
-	biospack -t multi -i $(IDW_DIR)\biospack\boot\ -o $(_NTDRIVE)\xbox\private\ntos\init\console\obj\i386\xboxrom_dvt4.bin
+    rombld /config:<<
+    /out:obj\i386\xboxrom_dvt4.bin
 !IF !DEFINED(NODEVKIT)
-    biospack -t multi -i $(IDW_DIR)\biospack\boot\ -o $(_NTDRIVE)\xbox\private\ntos\init\console\obj\i386\xboxrom_dvt4_ext.bin
+    /outext:obj\i386\xboxrom_dvt4_ext.bin
 !ENDIF
-
+    /sys:$(ROMBLDSYS)
+    /inittbl:$(TARGETPATH2)\i386\inittbl_dvt4.bin
+    /bldr:$(TARGETPATH2)\i386\xboxbldr.bin
+    /kernel:obj\i386\xboxkrnl.exe
+    /romdec:$(TARGETPATH2)\i386\romdec32.bin
+!if $(FREEBUILD)
+    /sizek:256
+!else
+    /sizek:512
+!endif
+<<NOKEEP
 !IFDEF _NT386TREE
     binplace -R $(_NTTREE) $(BINPLACE_DBGFLAGS_NT) $(BINPLACE_FLAGS) $@
 !IF !DEFINED(NODEVKIT)
@@ -56,12 +68,22 @@ obj\i386\xboxrom_dvt4.bin: obj\i386\xboxkrnl.exe $(TARGETPATH2)\i386\inittbl_dvt
 
 
 obj\i386\xboxrom_dvt6.bin: obj\i386\xboxkrnl.exe $(TARGETPATH2)\i386\inittbl_dvt6.bin $(TARGETPATH2)\i386\xboxbldr.bin $(TARGETPATH2)\i386\romdec32.bin
-    copy $(_NTDRIVE)\xbox\private\ntos\init\console\obj\i386\xboxkrnl.exe $(IDW_DIR)\biospack\boot\xboxkrnl.img /Y /V
-	biospack -t multi -i $(IDW_DIR)\biospack\boot\ -o $(_NTDRIVE)\xbox\private\ntos\init\console\obj\i386\xboxrom_dvt6.bin
+    rombld /config:<<
+    /out:obj\i386\xboxrom_dvt6.bin
 !IF !DEFINED(NODEVKIT)
-    biospack -t multi -i $(IDW_DIR)\biospack\boot\ -o $(_NTDRIVE)\xbox\private\ntos\init\console\obj\i386\xboxrom_dvt6_ext.bin
+    /outext:obj\i386\xboxrom_dvt6_ext.bin
 !ENDIF
-
+    /sys:$(ROMBLDSYS)
+    /inittbl:$(TARGETPATH2)\i386\inittbl_dvt6.bin
+    /bldr:$(TARGETPATH2)\i386\xboxbldr.bin
+    /kernel:obj\i386\xboxkrnl.exe
+    /romdec:$(TARGETPATH2)\i386\romdec32.bin
+!if $(FREEBUILD)
+    /sizek:256
+!else
+    /sizek:512
+!endif
+<<NOKEEP
 !IFDEF _NT386TREE
     binplace -R $(_NTTREE) $(BINPLACE_DBGFLAGS_NT) $(BINPLACE_FLAGS) $@
 !IF !DEFINED(NODEVKIT)
@@ -71,12 +93,23 @@ obj\i386\xboxrom_dvt6.bin: obj\i386\xboxkrnl.exe $(TARGETPATH2)\i386\inittbl_dvt
 
 
 obj\i386\xboxrom_qt.bin: obj\i386\xboxkrnl.exe $(TARGETPATH2)\i386\inittbl_qt.bin $(TARGETPATH2)\i386\xboxbldr.bin $(TARGETPATH2)\i386\romdec32.bin
-    copy $(_NTDRIVE)\xbox\private\ntos\init\console\obj\i386\xboxkrnl.exe $(IDW_DIR)\biospack\boot\xboxkrnl.img /Y /V
-	biospack -t multi -i $(IDW_DIR)\biospack\boot\ -o $(_NTDRIVE)\xbox\private\ntos\init\console\obj\i386\xboxrom_qt.bin
+    rombld /config:<<
+    /out:obj\i386\xboxrom_qt.bin
 !IF !DEFINED(NODEVKIT)
-    biospack -t multi -i $(IDW_DIR)\biospack\boot\ -o $(_NTDRIVE)\xbox\private\ntos\init\console\obj\i386\xboxrom_qt_ext.bin
+    /outext:obj\i386\xboxrom_qt_ext.bin
 !ENDIF
-
+    /sys:$(ROMBLDSYS)
+    /inittbl:$(TARGETPATH2)\i386\inittbl_qt.bin
+    /bldr:$(TARGETPATH2)\i386\xboxbldr.bin
+    /preldr:$(TARGETPATH2)\i386\xpreldr.bin
+    /kernel:obj\i386\xboxkrnl.exe
+    /romdec:$(TARGETPATH2)\i386\romdec32.bin
+!if $(FREEBUILD)
+    /sizek:256
+!else
+    /sizek:512
+!endif
+<<NOKEEP
 !IFDEF _NT386TREE
     binplace -R $(_NTTREE) $(BINPLACE_DBGFLAGS_NT) $(BINPLACE_FLAGS) $@
 !IF !DEFINED(NODEVKIT)

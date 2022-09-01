@@ -76,12 +76,12 @@ echo --------------------------------------------------------
 echo Welcome to Easy-Build Environment for XBOX Original
 echo.
 echo -- In constant testing --
-echo This script sets up the COMPLEX patches and creates
-echo your Razzle 'Profile'. Then will load allow you to load 
+echo This script sets up the source tree and creates
+echo your Razzle 'Profile'. Then will load 
 echo Easy-Build. Run this script to load each time.
 echo.
-echo This tool was created off the '4chan repack' Xbox Tree..
-echo It is the same as 'xbox trunk.rar' with 'CPXXUPD.RAR'
+echo This tool focuses on a source tree without COMPLEX patches..
+echo Based off of the 'xbox trunk.rar' that's with 'CPXXUPD.RAR'
 echo If you want to use with a different tree, check the Wiki
 echo On the Github page on how.
 echo. 
@@ -93,10 +93,10 @@ echo \easy-build-xinit.cmd
 echo \xbox                \
 echo 	                  \private\
 echo 	                  \public\
-echo 	                  \CPXXUPD\
+echo 	                  
 echo.
 echo Requirements:
-echo - Freshly extracted source (xbox_leak_may_2020.7z/xbox trunk.rar + CPXXUPD.rar))
+echo - Freshly extracted source (xbox_leak_may_2020.7z/xbox trunk.rar))
 echo - Layout as above and unmodified in the structure above 
 echo - Free space
 echo - Patience
@@ -122,11 +122,7 @@ echo Now running some checks..
 echo.
 if NOT exist "%~d0\xbox\private" echo Xbox Source not setup correctly&& pause&& exit
 if NOT exist "%~d0\xbox\public" echo Xbox Source not setup correctly&& pause&& exit
-if NOT exist "%~d0\xbox\CPXXUPD" echo Complex Updates not found in \xbox\CPXXUPD&& pause&& exit
-if exist "%~d0\xbox\private" goto eb-xbox-checks2
-
-:eb-xbox-checks2
-if exist "%~d0\xbox\CPXXUPD" goto eb-xbox-init-check
+if exist "%~d0\xbox\private" goto eb-xbox-init-check
 
 
 :eb-xbox-init-check
@@ -160,25 +156,16 @@ echo 192.168.0.3 >> %~dp0\xbox\public\tools\easybuild.conf
 goto eb-xbox-mainmenu-init
 
 :eb-setup-cpxxupd
-if exist "%ebntroot%\PRIVATE\DEVELOPR\%username%\" echo CPXXUPD already set up && goto xbox-dorazzle
+if exist "%ebntroot%\PRIVATE\DEVELOPR\%username%\" echo Setup already complete && goto xbox-dorazzle
 echo.
-echo Easy-Build detected the Complex Patches haven't been applied.
-echo Applying 'CPXXUPD' now..
+echo Easy-Build detected the source tree needs configuring.
+echo Cleaning leftover files and creating profile..
 echo.
-cd /d %~d0\xbox\CPXXUPD
 goto eb-cpxxupd
 
-:eb-setup-profile
-echo.
-echo Creating Razzle profile
-cd /d %~d0\XBOX\PRIVATE\DEVELOPR\TEMPLATE\
-goto xbox-initrazzle
 
 :eb-cpxxupd
 if /i "%_CPXXUPD_DONE%" == "1" goto eb-xbox-mainmenu-init
-rem if exist "%~dp0\xbox\public\tools\cpxxupd_done.txt" goto eb-xbox-mainmenu-init
-REM Contents of 'xbox\CPXXUPD\CPXXUPD.cmd' adapted for Easy-Build
-cd /d %~d0\xbox\CPXXUPD
 setlocal
 
 set _location_=%~d0\xbox
@@ -188,11 +175,8 @@ del /f /q "%_location_%\private\p_build.cmd"
 del /f /q "%_location_%\private\windbg.lnk"
 del /s /f /q "%_location_%\copy *"
 del /s /f /q "%_location_%\shortcut *"
+del /s /f /q "%_location_%\public\idw\rombld.exe"
 rmdir /s /q "%_location_%\private\developr\template\old"
-
-REM Update
-xcopy /f /s /y private\*.* %_location_%\private\
-xcopy /f /s /y public\*.* %_location_%\public\
 
 if exist "%_location_%\public\lib-mar02\d3d8i.lib" (
     copy "%_location_%\public\lib-mar02\d3d8i.lib" "%_location_%\public\lib"
@@ -213,6 +197,11 @@ echo 192.168.0.3 >> %~dp0\xbox\public\tools\easybuild.conf
 endlocal
 goto eb-setup-profile
 
+:eb-setup-profile
+echo.
+echo Creating Razzle profile
+cd /d %~d0\XBOX\PRIVATE\DEVELOPR\TEMPLATE\
+goto xbox-initrazzle
 
 REM Contents of 'xbox\private\developr\template\initrazzle.cmd' adapted for Easy-Build
 :xbox-initrazzle
@@ -296,10 +285,11 @@ echo - easybuild free xm3    //For FREE Retail build
 echo - easybuild chk         //For CHK DevKit Build
 echo - easybuild chk xm3     //For CHK Retail Build
 echo.
-echo NOTE: You need to build FREE before CHK
+echo NOTE: You need to build FREE before CHK. CHK is UNTESTED
+echo with the latest patches in the repo
 echo.
 echo NOTE: Easy-Build will always set the default build to:
-echo FREE DEVKIT if no options specified
+echo FREE NODEVKIT if no options specified
 echo.
 pause
 

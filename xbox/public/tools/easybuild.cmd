@@ -1,15 +1,7 @@
 @echo off
-mode con:cols=98 lines=32
+mode con:cols=98 lines=36
 REM Load the config file
 set "_EBConf=%_NTDRIVE%%_NTROOT%\public\tools\easybuild.conf"
-
-set "_BVT_ADDRESS="
-for /F "skip=5 delims=" %%i in (%_EBConf%) do if not defined _BVT_ADDRESS set "_BVT_ADDRESS=%%i"
-echo %_BVT_ADDRESS%
-echo.
-set "_BVT_KERNEL_ONLY="
-for /F "skip=7 delims=" %%i in (%_EBConf%) do if not defined _BVT_KERNEL_ONLY set "_BVT_KERNEL_ONLY=%%i"
-echo %_BVT_KERNEL_ONLY%
 echo. 
 set "_XBOX_TITLE_IP="
 for /F "skip=11 delims=" %%i in (%_EBConf%) do if not defined _XBOX_TITLE_IP set "_XBOX_TITLE_IP=%%i"
@@ -21,15 +13,13 @@ echo %_XBOX_DEBUG_IP%
 echo. 
 cls
 rem Here we set some variables that are not set by Easy-build-xinit.cmd/razzle during load, so we just load them
-set Easy-Build-Version=v0.3
+set Easy-Build-Version=v0.4
 set _BUILDVER=4400
 set COMPUTERNAME=XBuilds
 set "_Yelo_Nbh_Path=%_NTDRIVE%%_NTROOT%\public\tools\Yelo"
 if /i "%NTDEBUG%" == "" set NTDEBUG=ntsdnodbg
-if /i "%COMPLEX%" == "" set COMPLEX=1 
-if /i "%FOCUS%" == "" set FOCUS=1
 if /i "%_BINPLACE_SUBDIR%" == "" call setfre.cmd
-if /i "%1" == "" call setfre.cmd
+if /i "%1" == "" set RETAILXM3=1 && set NODEVKIT=1 && call setfre.cmd
 if /i "%1" == "free" call setfre.cmd
 if /i "%1" == "fre" call setfre.cmd
 if /i "%1" == "chk" call setchk.cmd
@@ -37,27 +27,14 @@ if /i "%1" == "chk" if NOT exist "%_NT386TREE%\dump\xpacker.exe" copy "%_NTDRIVE
 if /i "%1" == "XM3" call setfre.cmd
 if /i "%1" == "XM3P" call setfre.cmd
 if /i "%1" == "XM3" set RETAILXM3=1
-if /i "%1" == "XM3" set OFFICIAL_BUILD=1
+if /i "%1" == "XM3" set NODEVKIT=1
 if /i "%1" == "XM3P" set RETAILXM3P=1
-if /i "%1" == "XM3P" set OFFICIAL_BUILD=1
 if /i "%2" == "XM3" set RETAILXM3=1
-if /i "%2" == "XM3" set OFFICIAL_BUILD=1
+if /i "%2" == "XM3" set NODEVKIT=1
 if /i "%2" == "XM3P" set RETAILXM3P=1
-if /i "%2" == "XM3P" set OFFICIAL_BUILD=1
 if NOT exist "%_NTDRIVE%%_NTROOT%\private\ntos\inc\nv_ref_2a.h" cp "%_NTDRIVE%%_NTROOT%\private\ntos\av\nv_ref_2a.h" "%_NTDRIVE%%_NTROOT%\private\ntos\inc\"
-if exist "%_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def.new" goto applychkpatch
-REM FTP Test and settings.conf test
 goto eb-xbox-mainmenu
 
-
-:applychkpatch
-echo Applying CHK fixes..
-if exist %_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def.old goto eb-xbox-mainmenu
-copy "%_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def" "%_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def.old"
-del "%_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def"
-copy "%_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def.new" "%_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def"
-del "%_NTDRIVE%%_NTROOT%\public\oak\bin\makefile.def.new"
-goto eb-xbox-mainmenu
 
 
 :eb-xbox-mainmenu
@@ -68,6 +45,8 @@ set ebdrive=%_NTDrive%
 set ebntroot=%_NTBINDIR%
 set ebxbbins=%_BINPLACE_DIR%
 set ebxbtype=%_BINPLACE_SUBDIR%
+if /i "%1" == "free" set NODEVKIT=1
+if /i "%2" == "XM3" set RETAILXM3=1 
 if /i "%1" == "XM3" set ebxm3build=RETAILXM3 Defined
 if /i "%1" == "XM3P" set ebxm3build=RETAILXM3P Defined
 if /i "%2" == "XM3" set ebxm3build=RETAILXM3 Defined
@@ -77,58 +56,92 @@ if /i "%_BINPLACE_SUBDIR%" == "chk" set ErrorLogsEB=%ebntroot%\private\buildd.er
 if /i "%_BINPLACE_SUBDIR%" == "fre" set WarningLogsEB=%ebntroot%\private\build.wrn
 if /i "%_BINPLACE_SUBDIR%" == "chk" set WarningLogsEB=%ebntroot%\private\buildd.wrn
 cd /d %ebntroot%
-color 2F
+rem color 2F
 
 echo -------------------------------------------------------------------------------------------------
 echo  Empyreal's Easy-Build for XBOX ORIGINAL (WIP)
 echo -------------------------------------------------------------------------------------------------
-echo  Build User: %_NTUSER%	          Build Machine: %COMPUTERNAME%            BVT Address: %_BVT_ADDRESS%
+echo  Build User: %_NTUSER%	          Build Machine: %COMPUTERNAME%       XBOX IP: %_XBOX_DEBUG_IP%     
 echo  Build Root: %ebntroot%    Razzle Tool Path: %ebntroot%\public\tools
-echo  Postbuild Dir: %ebxbbins%                              XBOX IP Address: %_XBOX_DEBUG_IP%
+echo  Postbuild Dir: %ebxbbins%                              
 echo -------------------------------------------------------------------------------------------------
 echo  Release Type: %ebxbtype%  -  NT Ver: XBOX %BUILD_PRODUCT% %BUILD_PRODUCT_VER%  -  Xbox Ver: %_BUILDVER%  -  %ebxm3build%
 echo -------------------------------------------------------------------------------------------------
-echo  Here you can start the build for the XBOX source (with Team Complex's source patch). 
-echo (WIP.. Suggestions are needed)
+echo  Here you can start the build for the XBOX source. 
 echo.
-echo        THIS KERNEL CURRENTLY IS BROKEN FOR 1.6 XBOXES!! DO NOT FLASH ON A 1.6!!
+echo       ONLY XBOX REVISIONS 1.0 - 1.3 (MCPX 1.0) SUPPORTED! 
+echo       XBOX WITH FOCUS ENCODER AND ABOVE NOT SUPPORTED
 echo -------------------------------------------------------------------------------------------------
 echo  options) Modify Some Build Options.
-echo  BVT) Start BVT Build Process   
 echo -------------------------------------------------------------------------------------------------
 echo  1) Clean Build (Full err path, delete object files)
-echo  2) 'Dirty' Build (Full err path, no checks)
-echo  3) Build Specific Directory Only
+echo  2) Clean Build Kernel (ntos)
+echo  3) 'Dirty' Build (Full err path, no checks)
+echo  4) Build Specific Directory Only
 echo  b/w) Open Build Error or Warning Logs
 echo -------------------------------------------------------------------------------------------------
-echo  4) Binplace Kernel files       # 8) Build Xbox SDK Setup
-echo  5) Build BIOS ROM              # 9) Place 'HVS Launcher'
-echo  6) Build EEPROM                # 10) ISO Building Menu
-echo  7) Binplace Debugging Symbols  # 11) Devkit Main Menu (WIP)
+echo  5) Binplace Kernel files       # 10) Build Xbox SDK Setup
+echo  6) Build BIOS ROM (BIOSPack)   # 11) Place 'HVS Launcher'
+echo  7) Build BIOS ROM (Rombld)     # 12) ISO Building Menu
+echo  8) Build EEPROM                # 13) Devkit Main Menu (WIP)
+echo  9) Binplace Debugging Symbols  # 14) Help and Info
+echo.       
 echo  r) Drop to Razzle Prompt       # x) Extras (Not so important)
 echo.
 echo _________________________________________________________________________________________________
 set /p NTMMENU=Select:
 echo _________________________________________________________________________________________________
 if /i "%NTMMENU%"=="1" goto cleanbuild
-if /i "%NTMMENU%"=="2" goto DirtyBuild
-if /i "%NTMMENU%"=="BVT" goto InitBVTTestrun
+if /i "%NTMMENU%"=="2" goto cleanbuildntos
+if /i "%NTMMENU%"=="3" goto DirtyBuild
 REM Opens the most recent builds error logs in Notepad
 if /i "%NTMMENU%"=="b" cmd.exe /c notepad %ErrorLogsEB%
 if /i "%NTMMENU%"=="w" cmd.exe /c notepad %WarningLogsEB%
-if /i "%NTMMENU%"=="3" goto SpecificBLD
-if /i "%NTMMENU%"=="4" goto postbuild-placeholder
-if /i "%NTMMENU%"=="5" goto BIOSPack_Barnabus
-if /i "%NTMMENU%"=="6" goto EEPROMmenu
-if /i "%NTMMENU%"=="7" goto DebugCopySym
-if /i "%NTMMENU%"=="8" goto SetupSDK
-if /i "%NTMMENU%"=="9" goto HVSLaunchtest
-if /i "%NTMMENU%"=="10" goto eb-ISO-menu
-if /i "%NTMMENU%"=="11" goto eb-devkit-mainmenu
+if /i "%NTMMENU%"=="4" goto SpecificBLD
+if /i "%NTMMENU%"=="5" goto postbuild-placeholder
+if /i "%NTMMENU%"=="6" goto BIOSPack_Barnabus
+if /i "%NTMMENU%"=="7" goto ROMBLD_BIOS
+if /i "%NTMMENU%"=="8" goto EEPROMmenu
+if /i "%NTMMENU%"=="9" goto DebugCopySym
+if /i "%NTMMENU%"=="10" goto SetupSDK
+if /i "%NTMMENU%"=="11" goto HVSLaunchtest
+if /i "%NTMMENU%"=="12" goto eb-ISO-menu
+if /i "%NTMMENU%"=="13" goto eb-devkit-mainmenu
+if /i "%NTMMENU%"=="14" goto eb-help
 if /i "%NTMMENU%"=="x" goto eb-extras-menu
 if /i "%NTMMENU%"=="r" exit /b
 if /i "%NTMMENU%"=="var" set && pause && goto eb-xbox-mainmenu
 if /i "%NTMMENU%"=="options" goto BuildOptions
+goto eb-xbox-mainmenu
+
+
+:eb-help
+Title Easy-Build XBOX Build Environment - Help/Info
+cls
+echo --------------------------------------------------------------------------------------------
+echo  Empyreal's Easy-Build for XBOX ORIGINAL - Help and Info
+echo --------------------------------------------------------------------------------------------
+echo.
+echo A few things to note:
+echo - Building on 64 Bit editions of Windows will have setbacks, some tools and libs 
+echo   have compiler issues due to lack of a working/existing cross compiler. This is NOT on my
+echo   list to fix... The kernel (private\ntos) builds no issues.
+echo.
+echo - No COMPLEX patches are applied by default anymore, the aim is close to "retail"
+echo   as can be.
+echo.
+echo - ONLY Xbox Consoles with revisions 1.0 to 1.2(?) are supported, basically MCPX 1.0 only.
+echo.
+echo - Rombld is the "Official" way to pack the BIOS rom, the code likely isn't exactly as MS
+echo   intended but in it's current state (from patches in this env) it can build a working image
+echo   for xemu and MCPX 1.0 consoles.
+echo.
+echo - The BIOS rom will be produced after building NTOS folder automatically, it's not a
+echo   a requirement to manually build the image from the Main Menu option.
+echo.
+echo - DO NOT FLASH THIS TO ANY XBOX WITH A FOCUS OR XCALIBUR ENCODER, OR MCPX 1.1.
+echo.
+pause
 goto eb-xbox-mainmenu
 
 :eb-ISO-menu
@@ -168,14 +181,12 @@ echo Here are the options that are I feel aren't priority, but could still be wo
 echo.
 echo --------------------------------------------------------------------------------------------
 echo 1) Build Xbox Shell Extension for Windows Setup
-echo 2) Attempt Bios Build Using ROMBLD (ADV.. NOT WORKING YET) 
 echo b) Main Menu
 echo.
 echo ____________________________________________________________________________________________
 set /p EXNTMMENU=Select:
 echo ____________________________________________________________________________________________
 if /i "%EXNTMMENU%"=="1" goto xbsebuild
-if /i "%EXNTMMENU%"=="2" goto BuildBiosImage
 if /i "%EXNTMMENU%"=="b" goto eb-xbox-mainmenu
 goto eb-extras-menu
 
@@ -187,14 +198,32 @@ goto eb-xbox-mainmenu
 Title Easy-Build XBOX Build Environment - Clean Building
 cls
 cd /d %ebntroot%\private
-build -bcDeFZP
+build -cDeFZ
 pause
 goto eb-xbox-mainmenu
+:cleanbuildntos
+
+Title Easy-Build XBOX Build Environment - Clean Building (NTOS)
+echo Checking Rombld tool first.
+if not exist "%_NTDrive%%_NTROOT%\public\idw\rombld.exe" cd /d "%_NTDrive%%_NTROOT%\private\sdktools\rombld" && build -cDeFZ && copy "%_NTDrive%%_NTROOT%\private\sdktools\rombld\obj\i386\rombld.exe" "%_NTDrive%%_NTROOT%\public\idw\rombld.exe"
+cls
+echo Building NTOS
+cd /d "%_NTDrive%%_NTROOT%\private\ntos
+build -cDeFZ
+REM echo rombld.exe /OUT:"%_NTDrive%%_NTROOT%\xbox\xboxbuilds\fre\xboxrom.bin /BLDR:"%_NTDrive%%_NTROOT%\xbox\xboxbuilds\fre\boot\xboxbldr.bin /INITTBL:"%_NTDrive%%_NTROOT%\xbox\xboxbuilds\fre\boot\inittbl_dvt6.bin /ROMDEC:"%_NTDrive%%_NTROOT%\xbox\xboxbuilds\fre\boot\romdec32.bin" /KERNEL:"%_NTDrive%%_NTROOT%\xbox\xboxbuilds\fre\xboxkrnl.exe /SYS:XM3 /V:3
+echo Compiling completed, attempting to build BIOS ROM
+pause
+rombld.exe /OUT:"%_NTDrive%%_NTROOT%\xboxbuilds\fre\xboxrom.bin" /BLDR:"%_NTDrive%%_NTROOT%\xboxbuilds\fre\boot\xboxbldr.bin" /INITTBL:"%_NTDrive%%_NTROOT%\xboxbuilds\fre\boot\inittbl_dvt6.bin" /ROMDEC:"%_NTDrive%%_NTROOT%\xboxbuilds\fre\boot\romdec32.bin" /KERNEL:"%_NTDrive%%_NTROOT%\xboxbuilds\fre\xboxkrnl.exe" /SYS:XM3 /V:3
+if exist "%_NTDrive%%_NTROOT%\xboxbuilds\fre\xboxrom.bin" echo Finished! OUTPUT: "%_NTDrive%%_NTROOT%\xboxbuilds\fre\xboxrom.bin"
+pause
+goto eb-xbox-mainmenu
+
+
 :DirtyBuild
 Title Easy-Build XBOX Build Environment - Rebuilding
 cls
-cd /d %ebntroot%\private
-build -bDeFZP
+cd /d "%_NTDrive%%_NTROOT%\private
+build -DeFZ
 pause
 goto eb-xbox-mainmenu
 
@@ -349,7 +378,7 @@ goto EEPROMmenu
 
 
 
-:BuildBiosImage
+:ROMBLD_BIOS
 Title Easy-Build XBOX Build Environment - RomBld Bios Maker
 cls
 echo This will try to use 'rombld' to build the Xbox BIOS image.
@@ -367,14 +396,17 @@ echo From what I know built Bios roms from source aren't bootable,
 echo if this is bootable please let me know!
 echo. 
 pause
+if not exist "%_NTDrive%%_NTROOT%\private\sdktools\rombld\obj\i386\rombld.exe" set ebromerror=rombld.exe && goto RombldError
 if not exist "%_NT386TREE%\boot\xboxbldr.bin" set ebromerror=xboxbldr.bin && goto RombldError
 if not exist "%_NT386TREE%\boot\xpreldr.bin" set ebromerror=xpreldr.bin && goto RombldError
 if not exist "%_NT386TREE%\xboxkrnl.exe" set ebromerror=xboxkrnl.exe && goto RombldError
 if not exist "%_NT386TREE%\boot\inittbl_ret.bin" set ebromerror=inittbl_ret.bin && goto RombldError
 if not exist "%_NT386TREE%\boot\romdec32.bin" set ebromerror=romdec32.bin && goto RombldError
 if exist "%_NT386TREE%\xboxbios_eb-rombld.bin" rename %_NT386TREE%\xboxbios_eb-rombld.bin xboxbios_eb-rombld-old.bin
+@echo on
 
 cmd /c %_NTDrive%%_NTROOT%\private\sdktools\rombld\obj\i386\rombld.exe /OUT:%_NT386TREE%\xboxbios_%ebxbtype%-rombld.bin /BLDR:%_NT386TREE%\boot\xboxbldr.bin /PRELDR:%_NT386TREE%\boot\xpreldr.bin /KERNEL:%_NT386TREE%\xboxkrnl.exe /INITTBL:%_NT386TREE%\boot\inittbl_ret.bin /SYS:XDK /ROMDEC:%_NT386TREE%\boot\romdec32.bin | tee %_NT386TREE%\rombld.log
+@echo off
 echo.
 if NOT exist "%_NT386TREE%\xboxbios_%ebxbtype%-rombld.bin" echo Failed!
 if exist "%_NT386TREE%\xboxbios_%ebxbtype%-rombld.bin" echo File created at "%_NT386TREE%\xboxbios_%ebxbtype%-rombld.bin"
@@ -383,6 +415,7 @@ goto eb-xbox-mainmenu
 
 
 :RombldError
+if /i %ebromerror% == "rombld.exe" goto RebuildRombld
 echo.
 echo %ebromerror% is missing.. 
 echo Attempting to Rebuild NTOS\BOOTX
@@ -390,8 +423,15 @@ pause
 REM Rebuild private\ntos to ensure bios ROM files get built (mainly xpreldr.bin)
 cd /d %ebntroot%\private\ntos\bootx
 build -bcDeFZP
-goto BuildBiosImage
+goto ROMBLD_BIOS
 
+:RebuildRombld
+cd /d "%_NTDrive%%_NTROOT%\private\sdktools\rombld"
+echo.
+echo Building Rombld.exe
+pause
+build -bcDeFZP
+goto ROMBLD_BIOS
 
 :SpecificBLD
 Title Easy-Build XBOX Build Environment - Build Specific Folder
@@ -501,150 +541,6 @@ if /i "%bldopt%"=="foff" FOCUSOFF && goto BuildOptions
 if /i "%bldopt%"=="showopt" showopt && goto BuildOptions
 if /i "%bldopt%"=="back" goto eb-xbox-mainmenu
 goto BuildOptions
-
-REM
-REM
-REM BVTMONITOR SECTION OF EASYBUILD
-REM
-REM
-REM
-REM
-
-
-:InitBVTTestrun
-if defined _BVT_ADDRESS set _BVTUNCSAVEDPATH=%_BVT_ADDRESS%
-rem if exist "%_NTDRIVE%%_NTROOT%\public\tools\SavedBVTAddress.txt" for /F "delims=" %%i in (%_NTDRIVE%%_NTROOT%\public\tools\SavedBVTAddress.txt) do set "_BVTUNCSAVEDPATH=%%i"
-cls
-echo --------------------------------------------------------------------------------------------
-echo  Build Verification Testing Setup.                  Last Saved Address:%_BVT_ADDRESS%
-echo --------------------------------------------------------------------------------------------
-echo.
-echo  Providing you have already read the instructions shown in 'BVTMonitor.cmd' we will attempt
-echo  to connect to the Shared Folder, then go through the build process 
-echo.
-echo  The Virtual BVT Will boot up when the files have been placed. 
-echo  The network path CAN be used locally i.e No VM needed
-echo.
-echo  YOU MUST KNOW THE SHARE POINT'S ADDRESS.. TYPE IN THIS FORMAT: \\tsclient\D 
-echo.
-echo 'easybuild.conf' will now open so you can set your share point, if no changes are needed,
-echo just close Notepad and continue to init the BVT session.
-echo.
-pause
-notepad %_EBConf%
-echo.
-echo Refreshing Config and initilising connection.
-pause
-set "_BVT_ADDRESS="
-for /F "skip=5 delims=" %%i in (%_EBConf%) do if not defined _BVT_ADDRESS set "_BVT_ADDRESS=%%i"
-echo %_BVT_ADDRESS%
-goto InitBVTConnection
-
-:InitBVTConnection
-echo.
-if defined _BVT_ADDRESS set "_BVTUNCPATH=%_BVT_ADDRESS%"
-net use X: %_BVTUNCPATH%
-if exist "X:\BVTMonitor.cmd" echo BVT Shared Drive found >> "X:\xboxbins\NEEDED_BY_BVTMONITOR\BVTConnected.txt" && goto InitBVTConnectSuccess
-if NOT exist "X:\BVTMonitor.cmd" echo BVTMONITOR.CMD NOT FOUND, PLEASE REVIEW SETTINGS && pause && goto InitBVTTestrun
-
-:InitBVTConnectSuccess
-echo.
-echo Connection Succeeded, Checking file paths...
-echo.
-if not exist "X:\BVT1_XEMU" echo "X:\BVT1_XEMU" Cannot be found! && pause && goto InitBVTTestrun
-if not exist "X:\Bldr_Files" echo "X:\Bldr_Files" Cannot be found! && pause && goto InitBVTTestrun
-if not exist "X:\xboxbins" echo "X:\xboxbins" Cannot be found! && pause && goto InitBVTTestrun
-if exist "X:\BVT1_XEMU\xqemu.exe" echo XQEMU is not supported at this time, please use XEMU && pause && goto InitBVTTestrun
-if not exist "X:\BVT1_XEMU\xemuw.exe" echo "X:\BVT1_XEMU\xemuw.exe" Cannot be found! && pause && goto InitBVTTestrun
-if not exist "X:\BVT1_XEMU\xbox_hdd.qcow2" echo "X:\BVT1_XEMU\xbox_hdd.qcow2" Cannot be found! && pause && goto InitBVTTestrun
-if not exist "X:\Bldr_Files\mcpx.bin" echo "X:\Bldr_Files\mcpx.bin" Cannot be found! && pause && goto InitBVTTestrun
-if not exist "X:\xboxbins\NEEDED_BY_BVTMONITOR" echo "X:\xboxbins\NEEDED_BY_BVTMONITOR" Cannot be found! && pause && got InitBVTTestrun
-echo Everything seems to be in order!
-set _BVTMonSanityChecks=X:\xboxbins\NEEDED_BY_BVTMONITOR
-goto StartBVTBuild
-
-
-:StartBVTBuild
-echo Starting Build.
-if defined _BVT_KERNEL_ONLY goto StartKernelOnlyBVT
-rem if exist "%_NTDRIVE%%_NTROOT%\public\tools\BVTKernelOnly.txt" goto StartKernelOnlyBVT
-echo Build Started >> "%_BVTMonSanityChecks%\BuildStarted.txt"
-cd /d %_NTDRIVE%%_NTROOT%\private\
-if exist "%_NTDRIVE%%_NTROOT%\public\tools\BVTNoCleanBuild.txt" (build -bDeZFP) else (build -bcDeFZP)
-if /i "%ebxbtype%" == "fre" copy "%_NTDRIVE%%_NTROOT%\private\build.log" "%_BVTMonSanityChecks%\"
-if /i "%ebxbtype%" == "fre" copy "%_NTDRIVE%%_NTROOT%\private\build.err" "%_BVTMonSanityChecks%\"
-if /i "%ebxbtype%" == "fre" copy "%_NTDRIVE%%_NTROOT%\private\build.wrn" "%_BVTMonSanityChecks%\"
-if /i "%ebxbtype%" == "chk" copy "%_NTDRIVE%%_NTROOT%\private\buildd.log" "%_BVTMonSanityChecks%\"
-if /i "%ebxbtype%" == "chk" copy "%_NTDRIVE%%_NTROOT%\private\buildd.err" "%_BVTMonSanityChecks%\"
-if /i "%ebxbtype%" == "chk" copy "%_NTDRIVE%%_NTROOT%\private\buildd.wrn" "%_BVTMonSanityChecks%\"
-if exist %_NT386TREE%\xboxkrnl.exe set _BVTKernelBuilt=1
-echo PostBuild Finished >> "%_BVTMonSanityChecks%\FinalBuildPrep.txt"
-if exist "X:\xboxbins\Release\xboxkrnl.exe" del "X:\xboxbins\Release\xboxkrnl.exe"
-if NOT exist "X:\xboxbins\Release\Symbols\" mkdir "X:\xboxbins\Release\Symbols\"
-if /i "%_BVTKernelBuilt%" == "1" copy "%_NT386TREE%\xboxkrnl.exe" "X:\xboxbins\Release\xboxkrnl.exe" /Y /V
-if /i "%_BVTKernelBuilt%" == "1" copy "%_NT386TREE%\xboxkrnl.pdb" "X:\xboxbins\Release\Symbols\xboxkrnl.pdb" /Y /V
-if /i "%_BVTKernelBuilt%" == "1" copy "%_NT386TREE%\xboxkrnl.map" "X:\xboxbins\Release\Symbols\xboxkrnl.map" /Y /V
-REM if NOT exist "%_BVTMonSanityChecks%\KernelFound.txt echo Error Detecting Kernel on Network && pause && goto InitBVTTestrun
-if exist "X:\xboxbins\Release\xboxkrnl.exe" echo Kernel Successfully Transferred >> %_BVTMonSanityChecks%\KernelRecieved.txt && goto MakeBVTBios
-REM if NOT exist "X:\xboxbins\Release\xboxkrnl.exe" echo Xboxkrnl.exe Failed to copy to %_BVTUNCPATH% && goto InitBVTTestrun
-
-:StartKernelOnlyBVT
-echo Kernel Build Started >> "%_BVTMonSanityChecks%\BuildStarted.txt"
-cd /d %_NTDRIVE%%_NTROOT%\private\ntos
-if exist "%_NTDRIVE%%_NTROOT%\public\tools\BVTNoCleanBuild.txt" (build -bDeZFP) else (build -bcDeFZP)
-if /i "%ebxbtype%" == "fre" copy "%_NTDRIVE%%_NTROOT%\private\build.log" "%_BVTMonSanityChecks%\"
-if /i "%ebxbtype%" == "fre" copy "%_NTDRIVE%%_NTROOT%\private\build.err" "%_BVTMonSanityChecks%\"
-if /i "%ebxbtype%" == "fre" copy "%_NTDRIVE%%_NTROOT%\private\build.wrn" "%_BVTMonSanityChecks%\"
-if /i "%ebxbtype%" == "chk" copy "%_NTDRIVE%%_NTROOT%\private\buildd.log" "%_BVTMonSanityChecks%\"
-if /i "%ebxbtype%" == "chk" copy "%_NTDRIVE%%_NTROOT%\private\buildd.err" "%_BVTMonSanityChecks%\"
-if /i "%ebxbtype%" == "chk" copy "%_NTDRIVE%%_NTROOT%\private\buildd.wrn" "%_BVTMonSanityChecks%\"
-if exist %_NT386TREE%\xboxkrnl.exe set _BVTKernelBuilt=1
-echo PostBuild Finished >> "%_BVTMonSanityChecks%\FinalBuildPrep.txt"
-if exist "X:\xboxbins\Release\xboxkrnl.exe" del "X:\xboxbins\Release\xboxkrnl.exe"
-if NOT exist "X:\xboxbins\Release\Symbols\" mkdir "X:\xboxbins\Release\Symbols\"
-if /i "%_BVTKernelBuilt%" == "1" copy "%_NT386TREE%\xboxkrnl.exe" "X:\xboxbins\Release\xboxkrnl.exe" /Y /V
-if /i "%_BVTKernelBuilt%" == "1" copy "%_NT386TREE%\xboxkrnl.pdb" "X:\xboxbins\Release\Symbols\xboxkrnl.pdb" /Y /V
-if /i "%_BVTKernelBuilt%" == "1" copy "%_NT386TREE%\xboxkrnl.map" "X:\xboxbins\Release\Symbols\xboxkrnl.map" /Y /V
-REM if NOT exist "%_BVTMonSanityChecks%\KernelFound.txt echo Error Detecting Kernel on Network && pause && goto InitBVTTestrun
-if exist "X:\xboxbins\Release\xboxkrnl.exe" echo Kernel Successfully Transferred >> %_BVTMonSanityChecks%\KernelRecieved.txt && goto MakeBVTBios
-REM if NOT exist "X:\xboxbins\Release\xboxkrnl.exe" echo Xboxkrnl.exe Failed to copy to %_BVTUNCPATH% && goto InitBVTTestrun
-
-
-
-
-:MakeBVTBios
-if exist "%IDW_DIR%\biospack\boot\xboxkrnl.img" del "%IDW_DIR%\biospack\boot\xboxkrnl.img"
-copy "%_NT386TREE%\xboxkrnl.exe" "%IDW_DIR%\biospack\boot\xboxkrnl.img"
-%IDW_DIR%\biospack\biospack.exe -t multi -i %IDW_DIR%\biospack\boot\ -o %_NT386TREE%\xboxbios_BVT.bin
-if exist "%_NT386TREE%\xboxbios_BVT.bin" (echo Finished! %_NT386TREE%xboxbios_BVT.bin) else (echo Failed && goto eb-xbox-mainmenu )
-if exist "X:\xboxbins\Release\xboxbios.bin" del "X:\xboxbins\Release\xboxbios.bin"
-copy "%_NT386TREE%\xboxbios_BVT.bin" "X:\xboxbins\Release\xboxbios.bin"
-goto WaitForBVTBiosCheck
-
-:WaitForBVTBiosCheck
-echo.
-echo Waiting for BVT to find Bios.
-if exist "%_BVTMonSanityChecks%\BiosFound.txt" goto BVTWaitForSignal
-goto WaitForBVTBiosCheck
-
-:BVTWaitForSignal
-echo.
-echo Waiting for BVT to start up
-if exist "%_BVTMonSanityChecks%\VirtualBVTStarted.txt" goto BVTHasStarted
-goto BVTWaitForSignal
-
-:BVTHasStarted
-echo BVT Started
-if not exist "%_BVTMonSanityChecks%\WaitingOnHost.txt" (
-echo Waiting on HOST BVT Machine >> "%_BVTMonSanityChecks%\WaitingOnHost.txt" 
-)
-echo.
-echo The Virtual BVT has now started, you can now test.
-echo You will be taken to the Main Menu once the test is done.
-echo.
-if exist "%_BVTMonSanityChecks%\BVTTestFinished.txt" echo Build VM going to Main Menu >> %_BVTMonSanityChecks%\VMGoneHome.txt && pause && goto eb-xbox-mainmenu
-goto BVTHasStarted
-
 
 
 rem

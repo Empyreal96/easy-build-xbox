@@ -1,13 +1,17 @@
 # **Easy-Build for XBOX Original**
 
-## I plan to slowly start to revise this build environment, what will be the first changes?
-- BVT Monitor will be removed to 'streamline' the script and complicate it less.
-- (Hopefully, no promises) some specific code changes for the trunk will be applied.
-- Removing requirements for the "Complex" patches
-- Add documentation of what I currently know about the tree.
-
 I have added a [Release](https://github.com/Empyreal96/easy-build-xbox/releases/tag/1.0.22.06.2021) to archive the current state of the project for if anyone wants to retain the BVT side of the script
 
+
+# **What's Updated?**
+
+```
+- Removed COMPLEX source patches as a requirement, aims to stay true to a retail image.
+- Default build target is FRE and XM3. CHk is currently not supported as it needs extra source patching 
+- Source patches to ntos and rombld to allow bootable BIOS roms to be created and tested. BIOSPack is still included but not recommended to use.
+```
+**Note: CHK builds currently are not working, this is due to the current patches that were donated to the tree are aimed for FRE only, CHK fixes may come in the future**
+(*Previous updated at bottom of ReadMe*)
 
 ![menu](https://github.com/Empyreal96/easy-build-xbox/raw/main/menu.png)
 
@@ -27,7 +31,7 @@ A tool in testing for compiling xbox code. Easy to Update script.
 
 - Xbox SDK Builder
 
-- Buildable BIOS with Biospack (From the Barnabus repack)
+- Buildable BIOS for XBOX versions 1.0 - 1.3 and xemu
 
   
 
@@ -35,15 +39,13 @@ A tool in testing for compiling xbox code. Easy to Update script.
 
 ###  [Easy-Build Wiki](https://github.com/Empyreal96/easy-build-xbox/wiki)
 
-### [BVTMonitor](https://github.com/Empyreal96/easy-build-xbox/wiki/Build-Verification-Testing-Monitor-Wiki)
-
 ### [**Easy-Build Devkit Menu**](https://github.com/Empyreal96/easy-build-xbox/wiki/Easy-Build-Developer-Kit-Menu)
 
 
 
 
 ## **Overview on how to use**
-You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and CPXXUPD) you can grab the .VHD at the bottom of the page if you want a 'set up' environment
+You will need access to the Xbox trunk, you can grab the .VHD at the bottom of the page if you want a 'set up' source tree. (recommended for newcomers)
 
 - Have easy-build-xinit.cmd on the ROOT of a drive e.g: D:\easy-build-xinit.cmd
 
@@ -51,56 +53,28 @@ You will need access to the Xbox trunk and Team Complex's patch. (Xbox tree and 
 
 - Setup the Xbox trunk in your Drive root as specified in easy-build-xinit (VHD users are already set up)
 
-- Let the script apply Team Complex patches (These allow the xbox trunk to be built)
+- Let the script configure the source tree and crete razzle profile
 
 - Once that's done, follow onscreen instructions until Razzle loads
 
-- Type into razzle: easybuild
+- Type into razzle: easybuild free xm3
 
 - (To build chk type "easybuild chk" without quotes)
 
 - You can now build from the Easy-Build mainmenu
 
-- Built binaries will be in %DriveRoot%\xbox\xboxbuilds\\{fre\\chk}\dump
+- Built binaries will be in %DriveRoot%\xbox\xboxbuilds\\{fre\\chk}
 
-  
-  
-  
-  
   **NOTE: Some Features may not work as expected, whether it be from Source or implemented options, either way please let me know. Also any suggestions to Features or just feedback is very welcome**
 
-​       **BUILT BIOS WILL NOT BOOT ON 1.6(b) XBOXES, SEE EASY-BUILD WIKI FOR INFO** 
-
-## If you want to use Easy-Build with a different Source Tree, read on [Modifying Easy-Build](https://github.com/Empyreal96/easy-build-xbox/wiki/Modifying-Easy-Build)
+​       **BUILT BIOS WILL ONLY WORK ON XBOX REVISIONS 1.0-1.3 (MCPX 1.0) AND XEMU. NOT BOOTABLE ON XBOX REVISIONS 1.4 AND ABOVE (MCPX 1.1), SEE EASY-BUILD WIKI FOR INFO** 
 
 
+- If you want to use Easy-Build with a different Source Tree, read on [Modifying Easy-Build](https://github.com/Empyreal96/easy-build-xbox/wiki/Modifying-Easy-Build)
 
-# **What's Updated?**
 
-```
-- Sadly Windows XP is currently NOT SUPPORTED by Easy-Build.. When I tested (on a XP x86 SP3 fresh install,) I recieved errors with the cl.exe and c1.dll. Not sure why maybe I needed to install a few updates so this needs looking at.
 
-- Unified 'easy-build-xinit.cmd' for both x86 and amd64
-- Added early 'config' support, Now Settings on 'First run', 'CPXXUPD done' and DevKit IPs are stored in an 'easybuild.conf' (In theory it will automatically update any left over files, there may be issues as its in testing)
-- Updated info displayed in 'easy-build-xinit.cmd'
-- (Main focus for update) Added a 'Developer Kit' menu, this will allow users to interact with their Debug kits with basic activities for now.
-- Added 'Yelo Neighborhood v11' as it is a feature for the Devkit menu
-- 'xbConsole.cmd' is a pop-out cmd for Easy-Build DevKit Menu
-- Added Work aorund fixes for SDK not building when loaded in FRE
 
-Developer Kit Features so far:
-*NOTE* This menu is VERY WIP and you may have a few issues, I will work on any that occur after this initial release. You understand the risks when modifying files on the Xbox HDD!
-
-- Transfer files to and from the console
-- Update the console with the 4400 XDK Launcher (Requires XDK Launcher of any kind already set up with xbdm.dll)
-- Shortcut to install the 4400 XDK
-- Pop-out console to run Xbox CLI tools (e.g xbmemdump.exe)
-- Reboot the console from Easy-Build
-- Launch a debugging session thanks to XBDM.dll and xbWatson.exe
-- Launch Yelo Neigborhood for Functions that provides 
-```
-
-(*Previous updated at bottom of ReadMe*)
 
 # Third-Party Tools Used
 
@@ -112,7 +86,7 @@ I am in NO WAY AT ALL affiliated with any persons, companies or software used in
 - Biospack - Barnabus Xbox 4400 Kernel Repack
   - https://vetusware.com/download/Microsoft%20Xbox%20Source%201.00.4400/?id=13484
 - 4400 Source 
-  - We all know who originally owned this, then Complex added their magic..
+  - We all know who originally owned this, leaked publically several years ago for our pleasure
 
 
 
@@ -124,43 +98,10 @@ I am in NO WAY AT ALL affiliated with any persons, companies or software used in
 - Many things in the tree will be have Syntax errors, issues with inline x86 targeted code and functions causing compiler errors. *(Some DirectX code, MS CRT code and more)*
 - Process for building is no different
 
-**NOTES**: I have tried but I can't see an easy way (and a way I know) that will allow a full build on windows Win64 yet.
-
-
-
-# **Virtual Build Verification Testing (BVT) Machine**
-
-## Brief Overview
-
-The Virtual BVT Consists of an XEMU fork of your choice (Ideally supporting visor hacked Bioses), BVTMonitor.cmd and any Boot files XEMU Required (Just not BIOS, BVTMonitor is used to test the Source Build Kernels).
-
-It provides *(With a teeny bit of setup)* an almost fully automated process for connecting Easy-Build to BVTMonitor, building the source, and Binplacing the files on the BVT Drive and starting the BVT (XEMU) as soon as the required bios files have been placed!
-
-## BVTMonitor's Capabilities 
-
-- Detect when Easy-Build has Initiated the BVT Session.
-
-- Monitor the BVT Drive for any files placed by Easy-Build.
-
-- Automatically configure XEMU with source-placed files
-
-- Start as soon as everything is placed and configured
-
-- Can work without a VM, connects to a local Network Share 
-
-  
-
-### Read for more information on getting setup with BVT:
-
-[**BVTMonitor Readme**](https://github.com/Empyreal96/easy-build-xbox/blob/main/BVT/README.md)
-
-[**Go to the Wiki Page:**](https://github.com/Empyreal96/easy-build-xbox/wiki/Build-Verification-Testing-Monitor-Wiki)
-
-
 
 # **XDK Building** (Main Method)
 
-A small discovery I found was that MS decided to switch from the InstallShield style Setup to a custom build tool called `xpacker.exe`, This is the tool they use to pack the XDK, XBSE and other tools.
+I realised that MS decided to switch from the InstallShield style Setup to a custom build tool called `xpacker.exe`, This is the tool they use to pack the XDK, XBSE and other tools.
 
 This build script is located at **`private\setup\xdk\xdkbuild.bat`**
 
@@ -180,17 +121,37 @@ You may encounter issues with **`language Independent Intel 32 Files`** during b
 
 # **Links**
 
+**For a VHDX image with the SRC set up ready go here (Let me know if link dies I will reupload elsewhere):**
 
+  https://drive.google.com/file/d/1FE6qvxfeC7mWKPBCic9qo1zZruJS0HeN/view?usp=sharing
 
-**For a VHD image with the SRC set up ready go here (Let me know if link dies):**
-
-  https://mega.nz/file/2s5kFBDK#xyg4VEcEvqXDSqofyIOCLDmkt6_dPmtnxhjXVGP_J7A
-
-**NOTE** The version of Easy-Build in the VHD is the initial version, **UPDATE EASY-BUILD** simply by dropping the updated files here in place.
+**NOTE** the image linked above is just a clean, un-complex'd source tree based off "xbox trunk.rar", **UPDATE EASY-BUILD** simply by dropping the repos files in-place and replacing any files.
 
 # **Previous Updates**
 
 ```
+- Sadly Windows XP is currently NOT SUPPORTED by Easy-Build.. When I tested (on a XP x86 SP3 fresh install,) I recieved errors with the cl.exe and c1.dll. Not sure why maybe I needed to install a few updates so this needs looking at.
+- Unified 'easy-build-xinit.cmd' for both x86 and amd64
+- Added early 'config' support, Now Settings on 'First run', 'CPXXUPD done' and DevKit IPs are stored in an 'easybuild.conf' (In theory it will automatically update any left over files, there may be issues as its in testing)
+- Updated info displayed in 'easy-build-xinit.cmd'
+- (Main focus for update) Added a 'Developer Kit' menu, this will allow users to interact with their Debug kits with basic activities for now.
+- Added 'Yelo Neighborhood v11' as it is a feature for the Devkit menu
+- 'xbConsole.cmd' is a pop-out cmd for Easy-Build DevKit Menu
+- Added Work aorund fixes for SDK not building when loaded in FRE
+
+Developer Kit Features so far:
+*NOTE* This menu is VERY WIP and you may have a few issues, I will work on any that occur after this initial release. You understand the risks when modifying files on the Xbox HDD!
+
+- Transfer files to and from the console
+- Update the console with the 4400 XDK Launcher (Requires XDK Launcher of any kind already set up with xbdm.dll)
+- Shortcut to install the 4400 XDK
+- Pop-out console to run Xbox CLI tools (e.g xbmemdump.exe)
+- Reboot the console from Easy-Build
+- Launch a debugging session thanks to XBDM.dll and xbWatson.exe
+- Launch Yelo Neigborhood for Functions that provides 
+
+### 2022 Revisions started ###
+
 - Added 'easy-build-xinit64' which will allow easy-build to start on x64 builds
 - Added folders to some 'dirs' files as they are buildable (Mainly test tools)
 - Added starter info on modifying Easy-Build

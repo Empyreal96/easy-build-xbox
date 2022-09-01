@@ -37,7 +37,7 @@ DIRS=bootx      \
      gdfx       \
      udfx       \
      ani2       \
-     rtl        \
+	 rtl        \
      xprof      \
      phy        \
      av         \
@@ -45,5 +45,5 @@ DIRS=bootx      \
      net        \
      dd         \
      xapi       \
-     dm         \
-     recovery
+
+OPTIONAL_DIRS=dm recovery
